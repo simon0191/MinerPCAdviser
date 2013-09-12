@@ -7,3 +7,9 @@
 
 #Rare files
 *~
+
+#build files
+*/build/
+
+#private netbeans files
+*/nbproject/private/

@@ -1,0 +1,6 @@
+brand div.attrG 1 tbody>tr>td.value
+model div.attrG 1 tbody>tr 2 td.value
+HD div.section.techD div.attrG tbody tr 6 td.value
+ram div.section.techD div.attrG tbody tr 4 td.value
+nextPage table>tbody div.a-pagination.a-text-center>ul.a-pagination>li.a-last>a
+comments table#productReviews td
