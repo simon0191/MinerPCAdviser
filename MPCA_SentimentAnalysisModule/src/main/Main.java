@@ -20,10 +20,9 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("***********");
         MpcaCommentJpaController sumama = new MpcaCommentJpaController();
-        List<MpcaComment> comments = sumama.findByAdditionAndValue(null, "POSITIVE");
+        List<MpcaComment> comments = sumama.findMpcaCommentByValueAndAddition("POSITIVE", "polarity");
         for(int i = 0;i<10;++i) {
             System.out.println(comments.get(i).getAuthor().getAuthorName());
-            
         }
     }
 }
