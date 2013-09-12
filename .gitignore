@@ -13,4 +13,4 @@
 */dist/
 
 #private netbeans files
-*/nbproject/private/
+*/nbproject/private/**/persistence.xml
