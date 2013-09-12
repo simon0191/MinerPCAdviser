@@ -43,11 +43,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "MpcaComment.findByProductId", query = "SELECT m FROM MpcaComment m WHERE m.mpcaCommentPK.productId = :productId"),
     @NamedQuery(name = "MpcaComment.findByAuthorId", query = "SELECT m FROM MpcaComment m WHERE m.mpcaCommentPK.authorId = :authorId"),
     @NamedQuery(name = "MpcaComment.findByBrandId", query = "SELECT m FROM MpcaComment m WHERE m.mpcaCommentPK.brandId = :brandId"),
-    @NamedQuery(name = "MpcaComment.findByAdditionAndValue", 
-        query = "SELECT c FROM MpcaComment c JOIN CommentAddition a WHERE a.co = c.id")
+    @NamedQuery(name = "MpcaComment.findByAdditionAndValue", query = "SELECT c FROM MpcaComment c INNER JOIN c.commentAdditionList a INNER JOIN Addition aa WHERE a.value = :value AND aa.addType = :addType")
 })
-
-//SELECT c1, c2 FROM Country c1 INNER JOIN c1.neighbors c2
 public class MpcaComment implements Serializable {
     private static final long serialVersionUID = 1L;
     @EmbeddedId
@@ -182,7 +179,7 @@ public class MpcaComment implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.MpcaComment[ mpcaCommentPK=" + mpcaCommentPK + " ]";
+        return "entities.MpcaComment[ mpcaCommentPK=" + mpcaCommentPK + ", commentText = " + commentText + " ]";
     }
     
 }

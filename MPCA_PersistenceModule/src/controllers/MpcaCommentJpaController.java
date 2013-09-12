@@ -316,13 +316,12 @@ public class MpcaCommentJpaController implements Serializable {
             em.close();
         }
     }
-    public List<MpcaComment> findByAdditionAndValue(String addition, String value) {
-        //additionValue
+    
+    public List<MpcaComment> findMpcaCommentByValueAndAddition(String value, String addType) {
         EntityManager em = getEntityManager();
         Query q = em.createNamedQuery("MpcaComment.findByAdditionAndValue");
-        q.setParameter("additionValue", value);
-        //List<MpcaComment> resultList = q.getResultList();
-        
+        q.setParameter("value", value);
+        q.setParameter("addType", addType);
         return q.getResultList();
     }
 }
