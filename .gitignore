@@ -8,8 +8,9 @@
 #Rare files
 *~
 
-#build files
+#build and dist files
 */build/
+*/dist/
 
 #private netbeans files
 */nbproject/private/
