@@ -5,12 +5,15 @@
 *.war
 *.ear
 
-#Rare files
+# Rare files #
 *~
 
-#build and dist files
+# Build and dist files #
 */build/
 */dist/
 
-#private netbeans files
-*/nbproject/private/**/persistence.xml
+# Private netbeans files #
+*/nbproject/private/
+
+# Sensitive files #
+**/persistence.xml
