@@ -354,14 +354,18 @@ public class ProductJpaController implements Serializable {
 
     public Product findProductByModel(String model) {
         EntityManager em = getEntityManager();
-        Query q = em.createNamedQuery("Product.findByModel");
-        q.setParameter("model", model);
-        List<Product> ps = q.getResultList();
-        Product p = null;
-        if(!ps.isEmpty()) {
-            p = ps.get(0);
+        try {
+            Query q = em.createNamedQuery("Product.findByModel");
+            q.setParameter("model", model);
+            List<Product> ps = q.getResultList();
+            Product p = null;
+            if(!ps.isEmpty()) {
+                p = ps.get(0);
+            }
+            return p;
+        } finally {
+            em.close();
         }
-        return p;
     }
     
 }

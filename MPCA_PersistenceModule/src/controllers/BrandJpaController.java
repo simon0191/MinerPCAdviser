@@ -212,14 +212,18 @@ public class BrandJpaController implements Serializable {
 
     public Brand findBrandByName(String brand) {
         EntityManager em = getEntityManager();
-        Query q = em.createNamedQuery("Brand.findByBrandName");
-        q.setParameter("brandName", brand);
-        List<Brand> bs = q.getResultList();
-        Brand b = null;
-        if(!bs.isEmpty()) {
-            b = bs.get(0);
+        try {
+            Query q = em.createNamedQuery("Brand.findByBrandName");
+            q.setParameter("brandName", brand);
+            List<Brand> bs = q.getResultList();
+            Brand b = null;
+            if(!bs.isEmpty()) {
+                b = bs.get(0);
+            }
+            return b;
+        } finally {
+            em.close();
         }
-        return b;
     }
     
 }
