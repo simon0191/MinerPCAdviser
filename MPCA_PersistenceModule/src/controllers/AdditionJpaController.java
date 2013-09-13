@@ -266,14 +266,18 @@ public class AdditionJpaController implements Serializable {
 
     public Addition findAdditionByType(String type) {
         EntityManager em = getEntityManager();
-        Query q = em.createNamedQuery("Addition.findByAddType");
-        q.setParameter("addType", type);
-        List<Addition> adds = q.getResultList();
-        Addition add = null;
-        if(!adds.isEmpty()) {
-            add = adds.get(0);
+        try {
+            Query q = em.createNamedQuery("Addition.findByAddType");
+            q.setParameter("addType", type);
+            List<Addition> adds = q.getResultList();
+            Addition add = null;
+            if(!adds.isEmpty()) {
+                add = adds.get(0);
+            }
+            return add;
+        } finally {
+            em.close();
         }
-        return add;
     }
     
 }

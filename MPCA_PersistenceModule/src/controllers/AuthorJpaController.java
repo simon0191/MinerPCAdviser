@@ -212,14 +212,18 @@ public class AuthorJpaController implements Serializable {
 
     public Author findAuthorByName(String name) {
         EntityManager em = getEntityManager();
-        Query q = em.createNamedQuery("Author.findByAuthorName");
-        q.setParameter("authorName", name);
-        Author a = null;
-        List<Author> as = q.getResultList();
-        if(!as.isEmpty()) {
-            a = as.get(0);
+        try {
+            Query q = em.createNamedQuery("Author.findByAuthorName");
+            q.setParameter("authorName", name);
+            Author a = null;
+            List<Author> as = q.getResultList();
+            if(!as.isEmpty()) {
+                a = as.get(0);
+            }
+            return a;
+        } finally {
+            em.close();
         }
-        return a;
     }
     
 }
