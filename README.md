@@ -1,7 +1,7 @@
 MinerPCAdviser
 ==============
-Proyecto de grado.
+
+Final project for graduation.
 
 by Antonio Jiménez and Simón Soriano.
-y la rata es gay
 Pontificia Universidad Javeriana.
