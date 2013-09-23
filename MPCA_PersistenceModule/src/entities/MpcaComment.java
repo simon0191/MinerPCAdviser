@@ -5,17 +5,15 @@
 package entities;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -36,19 +34,14 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "MpcaComment.findAll", query = "SELECT m FROM MpcaComment m"),
-    @NamedQuery(name = "MpcaComment.findByCommentId", query = "SELECT m FROM MpcaComment m WHERE m.mpcaCommentPK.commentId = :commentId"),
-    @NamedQuery(name = "MpcaComment.findByPublicationDate", query = "SELECT m FROM MpcaComment m WHERE m.publicationDate = :publicationDate"),
-    @NamedQuery(name = "MpcaComment.findByCommentUrl", query = "SELECT m FROM MpcaComment m WHERE m.commentUrl = :commentUrl"),
-    @NamedQuery(name = "MpcaComment.findByPageId", query = "SELECT m FROM MpcaComment m WHERE m.mpcaCommentPK.pageId = :pageId"),
-    @NamedQuery(name = "MpcaComment.findByProductId", query = "SELECT m FROM MpcaComment m WHERE m.mpcaCommentPK.productId = :productId"),
-    @NamedQuery(name = "MpcaComment.findByAuthorId", query = "SELECT m FROM MpcaComment m WHERE m.mpcaCommentPK.authorId = :authorId"),
-    @NamedQuery(name = "MpcaComment.findByBrandId", query = "SELECT m FROM MpcaComment m WHERE m.mpcaCommentPK.brandId = :brandId"),
-    @NamedQuery(name = "MpcaComment.findByAdditionAndValue", query = "SELECT c FROM MpcaComment c INNER JOIN c.commentAdditionList a INNER JOIN Addition aa WHERE a.value = :value AND aa.addType = :addType")
-})
+    @NamedQuery(name = "MpcaComment.findByCommentId", query = "SELECT m FROM MpcaComment m WHERE m.commentId = :commentId"),
+    @NamedQuery(name = "MpcaComment.findByPublicationDate", query = "SELECT m FROM MpcaComment m WHERE m.publicationDate = :publicationDate")})
 public class MpcaComment implements Serializable {
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected MpcaCommentPK mpcaCommentPK;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "COMMENT_ID")
+    private Long commentId;
     @Basic(optional = false)
     @Lob
     @Column(name = "COMMENT_TEXT")
@@ -57,47 +50,36 @@ public class MpcaComment implements Serializable {
     @Column(name = "PUBLICATION_DATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date publicationDate;
-    @Basic(optional = false)
-    @Column(name = "COMMENT_URL")
-    private String commentUrl;
-    @JoinColumn(name = "PAGE_ID", referencedColumnName = "PAGE_ID", insertable = false, updatable = false)
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private WebPage webPage;
-    @JoinColumns({
-        @JoinColumn(name = "PRODUCT_ID", referencedColumnName = "PRODUCT_ID", insertable = false, updatable = false),
-        @JoinColumn(name = "BRAND_ID", referencedColumnName = "BRAND_ID", insertable = false, updatable = false)})
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Product product;
-    @JoinColumn(name = "AUTHOR_ID", referencedColumnName = "AUTHOR_ID", insertable = false, updatable = false)
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Author author;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "mpcaComment", fetch = FetchType.LAZY)
-    private List<CommentAddition> commentAdditionList;
+    private List<MpcaCommentIndex> mpcaCommentIndexList;
+    @JoinColumn(name = "PAGE_ID", referencedColumnName = "PAGE_ID")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private MpcaWebPage pageId;
+    @JoinColumn(name = "PRODUCT_ID", referencedColumnName = "PRODUCT_ID")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private MpcaProduct productId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mpcaComment", fetch = FetchType.LAZY)
+    private List<MpcaCommentAddition> mpcaCommentAdditionList;
 
     public MpcaComment() {
     }
 
-    public MpcaComment(MpcaCommentPK mpcaCommentPK) {
-        this.mpcaCommentPK = mpcaCommentPK;
+    public MpcaComment(Long commentId) {
+        this.commentId = commentId;
     }
 
-    public MpcaComment(MpcaCommentPK mpcaCommentPK, String commentText, Date publicationDate, String commentUrl) {
-        this.mpcaCommentPK = mpcaCommentPK;
+    public MpcaComment(Long commentId, String commentText, Date publicationDate) {
+        this.commentId = commentId;
         this.commentText = commentText;
         this.publicationDate = publicationDate;
-        this.commentUrl = commentUrl;
     }
 
-    public MpcaComment(BigInteger commentId, BigInteger pageId, BigInteger productId, BigInteger authorId, BigInteger brandId) {
-        this.mpcaCommentPK = new MpcaCommentPK(commentId, pageId, productId, authorId, brandId);
+    public Long getCommentId() {
+        return commentId;
     }
 
-    public MpcaCommentPK getMpcaCommentPK() {
-        return mpcaCommentPK;
-    }
-
-    public void setMpcaCommentPK(MpcaCommentPK mpcaCommentPK) {
-        this.mpcaCommentPK = mpcaCommentPK;
+    public void setCommentId(Long commentId) {
+        this.commentId = commentId;
     }
 
     public String getCommentText() {
@@ -116,51 +98,44 @@ public class MpcaComment implements Serializable {
         this.publicationDate = publicationDate;
     }
 
-    public String getCommentUrl() {
-        return commentUrl;
+    @XmlTransient
+    public List<MpcaCommentIndex> getMpcaCommentIndexList() {
+        return mpcaCommentIndexList;
     }
 
-    public void setCommentUrl(String commentUrl) {
-        this.commentUrl = commentUrl;
+    public void setMpcaCommentIndexList(List<MpcaCommentIndex> mpcaCommentIndexList) {
+        this.mpcaCommentIndexList = mpcaCommentIndexList;
     }
 
-    public WebPage getWebPage() {
-        return webPage;
+    public MpcaWebPage getPageId() {
+        return pageId;
     }
 
-    public void setWebPage(WebPage webPage) {
-        this.webPage = webPage;
+    public void setPageId(MpcaWebPage pageId) {
+        this.pageId = pageId;
     }
 
-    public Product getProduct() {
-        return product;
+    public MpcaProduct getProductId() {
+        return productId;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public Author getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(Author author) {
-        this.author = author;
+    public void setProductId(MpcaProduct productId) {
+        this.productId = productId;
     }
 
     @XmlTransient
-    public List<CommentAddition> getCommentAdditionList() {
-        return commentAdditionList;
+    public List<MpcaCommentAddition> getMpcaCommentAdditionList() {
+        return mpcaCommentAdditionList;
     }
 
-    public void setCommentAdditionList(List<CommentAddition> commentAdditionList) {
-        this.commentAdditionList = commentAdditionList;
+    public void setMpcaCommentAdditionList(List<MpcaCommentAddition> mpcaCommentAdditionList) {
+        this.mpcaCommentAdditionList = mpcaCommentAdditionList;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (mpcaCommentPK != null ? mpcaCommentPK.hashCode() : 0);
+        hash += (commentId != null ? commentId.hashCode() : 0);
         return hash;
     }
 
@@ -171,7 +146,7 @@ public class MpcaComment implements Serializable {
             return false;
         }
         MpcaComment other = (MpcaComment) object;
-        if ((this.mpcaCommentPK == null && other.mpcaCommentPK != null) || (this.mpcaCommentPK != null && !this.mpcaCommentPK.equals(other.mpcaCommentPK))) {
+        if ((this.commentId == null && other.commentId != null) || (this.commentId != null && !this.commentId.equals(other.commentId))) {
             return false;
         }
         return true;
@@ -179,7 +154,7 @@ public class MpcaComment implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.MpcaComment[ mpcaCommentPK=" + mpcaCommentPK + ", commentText = " + commentText + " ]";
+        return "entities.MpcaComment[ commentId=" + commentId + " ]";
     }
     
 }
