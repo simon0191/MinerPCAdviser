@@ -23,23 +23,14 @@ import javax.persistence.EntityManagerFactory;
  *
  * @author Antonio
  */
-public class MpcaCommentAdditionJpaController implements Serializable {
-
-    public MpcaCommentAdditionJpaController(EntityManagerFactory emf) {
-        this.emf = emf;
-    }
-    private EntityManagerFactory emf = null;
-
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
-    }
+public class MpcaCommentAdditionJpaController extends JpaController implements Serializable {
 
     public void create(MpcaCommentAddition mpcaCommentAddition) throws PreexistingEntityException, Exception {
         if (mpcaCommentAddition.getMpcaCommentAdditionPK() == null) {
             mpcaCommentAddition.setMpcaCommentAdditionPK(new MpcaCommentAdditionPK());
         }
-        mpcaCommentAddition.getMpcaCommentAdditionPK().setMpcaCommentCommentId(mpcaCommentAddition.getMpcaComment().getCommentId());
         mpcaCommentAddition.getMpcaCommentAdditionPK().setMpcaAdditionTypeAddId(mpcaCommentAddition.getMpcaAdditionType().getAddId());
+        mpcaCommentAddition.getMpcaCommentAdditionPK().setMpcaCommentCommentId(mpcaCommentAddition.getMpcaComment().getCommentId());
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -77,8 +68,8 @@ public class MpcaCommentAdditionJpaController implements Serializable {
     }
 
     public void edit(MpcaCommentAddition mpcaCommentAddition) throws NonexistentEntityException, Exception {
-        mpcaCommentAddition.getMpcaCommentAdditionPK().setMpcaCommentCommentId(mpcaCommentAddition.getMpcaComment().getCommentId());
         mpcaCommentAddition.getMpcaCommentAdditionPK().setMpcaAdditionTypeAddId(mpcaCommentAddition.getMpcaAdditionType().getAddId());
+        mpcaCommentAddition.getMpcaCommentAdditionPK().setMpcaCommentCommentId(mpcaCommentAddition.getMpcaComment().getCommentId());
         EntityManager em = null;
         try {
             em = getEntityManager();

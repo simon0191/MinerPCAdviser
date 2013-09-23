@@ -24,23 +24,14 @@ import javax.persistence.EntityManagerFactory;
  *
  * @author Antonio
  */
-public class MpcaCommentIndexJpaController implements Serializable {
-
-    public MpcaCommentIndexJpaController(EntityManagerFactory emf) {
-        this.emf = emf;
-    }
-    private EntityManagerFactory emf = null;
-
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
-    }
+public class MpcaCommentIndexJpaController extends JpaController implements Serializable {
 
     public void create(MpcaCommentIndex mpcaCommentIndex) throws PreexistingEntityException, Exception {
         if (mpcaCommentIndex.getMpcaCommentIndexPK() == null) {
             mpcaCommentIndex.setMpcaCommentIndexPK(new MpcaCommentIndexPK());
         }
-        mpcaCommentIndex.getMpcaCommentIndexPK().setMpcaIndexTypeIndexId(mpcaCommentIndex.getMpcaIndexType().getIndexId());
         mpcaCommentIndex.getMpcaCommentIndexPK().setMpcaCommentCommentId(mpcaCommentIndex.getMpcaComment().getCommentId());
+        mpcaCommentIndex.getMpcaCommentIndexPK().setMpcaIndexTypeIndexId(mpcaCommentIndex.getMpcaIndexType().getIndexId());
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -87,8 +78,8 @@ public class MpcaCommentIndexJpaController implements Serializable {
     }
 
     public void edit(MpcaCommentIndex mpcaCommentIndex) throws NonexistentEntityException, Exception {
-        mpcaCommentIndex.getMpcaCommentIndexPK().setMpcaIndexTypeIndexId(mpcaCommentIndex.getMpcaIndexType().getIndexId());
         mpcaCommentIndex.getMpcaCommentIndexPK().setMpcaCommentCommentId(mpcaCommentIndex.getMpcaComment().getCommentId());
+        mpcaCommentIndex.getMpcaCommentIndexPK().setMpcaIndexTypeIndexId(mpcaCommentIndex.getMpcaIndexType().getIndexId());
         EntityManager em = null;
         try {
             em = getEntityManager();

@@ -12,9 +12,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -42,17 +39,14 @@ public class MpcaProduct implements Serializable {
     @Basic(optional = false)
     @Column(name = "MODEL")
     private String model;
-    @JoinTable(name = "MPCA_PRODUCT_WEB_PAGE", joinColumns = {
-        @JoinColumn(name = "MPCA_PRODUCT_PRODUCT_ID", referencedColumnName = "PRODUCT_ID")}, inverseJoinColumns = {
-        @JoinColumn(name = "MPCA_WEB_PAGE_PAGE_ID", referencedColumnName = "PAGE_ID")})
-    @ManyToMany(fetch = FetchType.LAZY)
-    private List<MpcaWebPage> mpcaWebPageList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "mpcaProduct", fetch = FetchType.LAZY)
     private List<MpcaProductAddition> mpcaProductAdditionList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "productId", fetch = FetchType.LAZY)
     private List<MpcaComment> mpcaCommentList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "mpcaProduct", fetch = FetchType.LAZY)
     private List<MpcaProductIndex> mpcaProductIndexList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mpcaProduct", fetch = FetchType.LAZY)
+    private List<MpcaProductWebPage> mpcaProductWebPageList;
 
     public MpcaProduct() {
     }
@@ -83,15 +77,6 @@ public class MpcaProduct implements Serializable {
     }
 
     @XmlTransient
-    public List<MpcaWebPage> getMpcaWebPageList() {
-        return mpcaWebPageList;
-    }
-
-    public void setMpcaWebPageList(List<MpcaWebPage> mpcaWebPageList) {
-        this.mpcaWebPageList = mpcaWebPageList;
-    }
-
-    @XmlTransient
     public List<MpcaProductAddition> getMpcaProductAdditionList() {
         return mpcaProductAdditionList;
     }
@@ -116,6 +101,15 @@ public class MpcaProduct implements Serializable {
 
     public void setMpcaProductIndexList(List<MpcaProductIndex> mpcaProductIndexList) {
         this.mpcaProductIndexList = mpcaProductIndexList;
+    }
+
+    @XmlTransient
+    public List<MpcaProductWebPage> getMpcaProductWebPageList() {
+        return mpcaProductWebPageList;
+    }
+
+    public void setMpcaProductWebPageList(List<MpcaProductWebPage> mpcaProductWebPageList) {
+        this.mpcaProductWebPageList = mpcaProductWebPageList;
     }
 
     @Override

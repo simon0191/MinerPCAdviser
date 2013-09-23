@@ -23,23 +23,14 @@ import javax.persistence.EntityManagerFactory;
  *
  * @author Antonio
  */
-public class MpcaProductAdditionJpaController implements Serializable {
-
-    public MpcaProductAdditionJpaController(EntityManagerFactory emf) {
-        this.emf = emf;
-    }
-    private EntityManagerFactory emf = null;
-
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
-    }
+public class MpcaProductAdditionJpaController extends JpaController implements Serializable {
 
     public void create(MpcaProductAddition mpcaProductAddition) throws PreexistingEntityException, Exception {
         if (mpcaProductAddition.getMpcaProductAdditionPK() == null) {
             mpcaProductAddition.setMpcaProductAdditionPK(new MpcaProductAdditionPK());
         }
-        mpcaProductAddition.getMpcaProductAdditionPK().setMpcaProductProductId(mpcaProductAddition.getMpcaProduct().getProductId());
         mpcaProductAddition.getMpcaProductAdditionPK().setMpcaAdditionTypeAddId(mpcaProductAddition.getMpcaAdditionType().getAddId());
+        mpcaProductAddition.getMpcaProductAdditionPK().setMpcaProductProductId(mpcaProductAddition.getMpcaProduct().getProductId());
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -77,8 +68,8 @@ public class MpcaProductAdditionJpaController implements Serializable {
     }
 
     public void edit(MpcaProductAddition mpcaProductAddition) throws NonexistentEntityException, Exception {
-        mpcaProductAddition.getMpcaProductAdditionPK().setMpcaProductProductId(mpcaProductAddition.getMpcaProduct().getProductId());
         mpcaProductAddition.getMpcaProductAdditionPK().setMpcaAdditionTypeAddId(mpcaProductAddition.getMpcaAdditionType().getAddId());
+        mpcaProductAddition.getMpcaProductAdditionPK().setMpcaProductProductId(mpcaProductAddition.getMpcaProduct().getProductId());
         EntityManager em = null;
         try {
             em = getEntityManager();

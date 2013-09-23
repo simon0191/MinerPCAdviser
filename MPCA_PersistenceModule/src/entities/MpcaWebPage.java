@@ -12,7 +12,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -44,10 +43,10 @@ public class MpcaWebPage implements Serializable {
     @Basic(optional = false)
     @Column(name = "PAGE_URL")
     private String pageUrl;
-    @ManyToMany(mappedBy = "mpcaWebPageList", fetch = FetchType.LAZY)
-    private List<MpcaProduct> mpcaProductList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "pageId", fetch = FetchType.LAZY)
     private List<MpcaComment> mpcaCommentList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mpcaWebPage", fetch = FetchType.LAZY)
+    private List<MpcaProductWebPage> mpcaProductWebPageList;
 
     public MpcaWebPage() {
     }
@@ -56,6 +55,11 @@ public class MpcaWebPage implements Serializable {
         this.pageId = pageId;
     }
 
+    public MpcaWebPage(String pageName, String pageUrl) {
+        this.pageName = pageName;
+        this.pageUrl = pageUrl;
+    }
+    
     public MpcaWebPage(Long pageId, String pageName, String pageUrl) {
         this.pageId = pageId;
         this.pageName = pageName;
@@ -87,21 +91,21 @@ public class MpcaWebPage implements Serializable {
     }
 
     @XmlTransient
-    public List<MpcaProduct> getMpcaProductList() {
-        return mpcaProductList;
-    }
-
-    public void setMpcaProductList(List<MpcaProduct> mpcaProductList) {
-        this.mpcaProductList = mpcaProductList;
-    }
-
-    @XmlTransient
     public List<MpcaComment> getMpcaCommentList() {
         return mpcaCommentList;
     }
 
     public void setMpcaCommentList(List<MpcaComment> mpcaCommentList) {
         this.mpcaCommentList = mpcaCommentList;
+    }
+
+    @XmlTransient
+    public List<MpcaProductWebPage> getMpcaProductWebPageList() {
+        return mpcaProductWebPageList;
+    }
+
+    public void setMpcaProductWebPageList(List<MpcaProductWebPage> mpcaProductWebPageList) {
+        this.mpcaProductWebPageList = mpcaProductWebPageList;
     }
 
     @Override

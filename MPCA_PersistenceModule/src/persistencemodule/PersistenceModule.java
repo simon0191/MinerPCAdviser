@@ -4,6 +4,7 @@
  */
 package persistencemodule;
 
+import controllers.JpaController;
 import controllers.MpcaAdditionCategoryJpaController;
 import controllers.MpcaAdditionTypeJpaController;
 /*import controllers.MpcaCommentAdditionJpaController;
@@ -27,7 +28,7 @@ public class PersistenceModule {
     
     public static EntityManagerFactory getEntityManagerFactoryInstance() {
         if(em == null) {
-            em = Persistence.createEntityManagerFactory("PersistenceModulePU");
+            em = Persistence.createEntityManagerFactory("MPCA_PersistenceModulePU");
         }
         return em;
     }
@@ -44,6 +45,13 @@ public class PersistenceModule {
             i++;
             if(i >= 10) break;
         }*/
-        MpcaAdditionCategoryJpaController aa = new MpcaAdditionCategoryJpaController(getEntityManagerFactoryInstance());
+        //MpcaAdditionCategoryJpaController aa = new MpcaAdditionCategoryJpaController();
+        Long l = new Long(3l);
+        f(l);
+        System.out.println(l);
+    }
+    
+    public static void f(Long l) {
+        l = l+1;
     }
 }

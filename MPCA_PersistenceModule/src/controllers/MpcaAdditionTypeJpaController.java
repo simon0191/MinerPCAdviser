@@ -25,16 +25,7 @@ import javax.persistence.EntityManagerFactory;
  *
  * @author Antonio
  */
-public class MpcaAdditionTypeJpaController implements Serializable {
-
-    public MpcaAdditionTypeJpaController(EntityManagerFactory emf) {
-        this.emf = emf;
-    }
-    private EntityManagerFactory emf = null;
-
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
-    }
+public class MpcaAdditionTypeJpaController extends JpaController implements Serializable {
 
     public void create(MpcaAdditionType mpcaAdditionType) throws PreexistingEntityException, Exception {
         if (mpcaAdditionType.getMpcaProductAdditionList() == null) {
