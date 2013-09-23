@@ -4,16 +4,12 @@
  */
 package sentimentAnalysis;
 
-import java.util.List;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpContent;
-import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -24,10 +20,11 @@ import com.google.api.services.prediction.PredictionScopes;
 import com.google.api.services.prediction.model.Input;
 import com.google.api.services.prediction.model.Input.InputInput;
 import com.google.api.services.prediction.model.Output;
+import java.io.File;
+import java.io.FileInputStream;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -70,7 +67,7 @@ public class GooglePredictionAPIClassifier implements IClassifier {
 
   /** Directory to store user credentials. */
   private static final java.io.File DATA_STORE_DIR =
-      new java.io.File(System.getProperty("user.home"), ".store/prediction_sample");
+      new java.io.File("store/prediction");
 
   /**
    * Global instance of the {@link DataStoreFactory}. The best practice is to make it a single
@@ -89,8 +86,10 @@ public class GooglePredictionAPIClassifier implements IClassifier {
   /** Authorizes the installed application to access user's protected data. */
   private static Credential authorize() throws Exception {
     // load client secrets
+      
     GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY,
-        new InputStreamReader(GooglePredictionAPIClassifier.class.getResourceAsStream("/client_secrets.json")));
+        new InputStreamReader(new FileInputStream(new File(dataStoreFactory.getDataDirectory(),"/client_secrets.json"))));
+      
     if (clientSecrets.getDetails().getClientId().startsWith("Enter") ||
         clientSecrets.getDetails().getClientSecret().startsWith("Enter ")) {
       System.out.println(
@@ -150,7 +149,13 @@ public class GooglePredictionAPIClassifier implements IClassifier {
       
       Output output = 
     		  client.hostedmodels().predict("414649711441", "sample.sentiment", input).execute();
+                  
       System.out.println(output.toPrettyString());
+      
+      List<Output.OutputMulti> outs = output.getOutputMulti();
+      for(Output.OutputMulti o:outs) {
+          //o.
+      }
           		  
       
     } catch (IOException e) {

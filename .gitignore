@@ -13,3 +13,7 @@ lib/*/docs
 
 # Sensitive files #
 MPCA_PersistenceModule/src/META-INF/persistence.xml
+
+# Store and Data
+*/store/
+*/data/
