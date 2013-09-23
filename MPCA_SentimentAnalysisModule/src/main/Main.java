@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import sentimentAnalysis.GooglePredictionAPIClassifier;
 import sentimentAnalysis.IClassifier;
 import sentimentAnalysis.LingPipeClassifier;
 
@@ -30,15 +32,18 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, GeneralSecurityException, Exception {
         System.out.println("...");
         MpcaCommentJpaController commentsController = new MpcaCommentJpaController();
 
         String[] polarities = {"POSITIVE", "NEGATIVE"};
-        IClassifier classifier = new LingPipeClassifier(polarities);
+        IClassifier classifier = new GooglePredictionAPIClassifier(polarities);
+        
+        int posTraining = 432;
+        int negTraining = 432;
+        /*
         System.out.println("Classifying...");
-        int posTraining = 0;
-        int negTraining = 0;
+        
         StringBuilder sb = new StringBuilder();
         for (String p : polarities) {
             List<MpcaComment> comments = commentsController.findMpcaCommentByValueAndAddition(p, "polarity");
@@ -70,7 +75,7 @@ public class Main {
         finally {
             fw.close();
         }
-        
+        */
         
         int totalTraining = posTraining+negTraining;        
         
@@ -88,6 +93,7 @@ public class Main {
             for(String r: ranks.get(p)) {
                 List<MpcaComment> comments = commentsController.findMpcaCommentByValueAndAddition(r, "rank", 100, 0);
                 for (MpcaComment c : comments) {
+                    
                     if(classifier.classify(c.getCommentText()).equals(p)) {
                         correct[pos]+=1.0;
                     }
@@ -98,6 +104,7 @@ public class Main {
             }
             
         }
+        
         System.out.println("------------------------------------------------------------------------------------------");
         System.out.println("----------------------------------- TRAINING ---------------------------------------------");
         System.out.println("------------------------------------------------------------------------------------------");
@@ -132,7 +139,7 @@ public class Main {
         
     }
     
-    public static void interactiveMain() {
+    public static void interactiveMain() throws Exception {
          System.out.println("...");
         MpcaCommentJpaController commentsController = new MpcaCommentJpaController();
 

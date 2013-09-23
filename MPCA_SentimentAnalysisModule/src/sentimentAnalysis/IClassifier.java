@@ -12,5 +12,5 @@ import java.util.List;
  */
 public interface IClassifier {
     void train(String category,List<String> reviews);
-    String classify(String text);
+    String classify(String text) throws Exception;
 }
