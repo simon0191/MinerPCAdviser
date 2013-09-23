@@ -4,14 +4,16 @@
  */
 package persistencemodule;
 
-import controllers.AdditionJpaController;
-import controllers.CommentAdditionJpaController;
+import controllers.JpaController;
+import controllers.MpcaAdditionCategoryJpaController;
+import controllers.MpcaAdditionTypeJpaController;
+/*import controllers.MpcaCommentAdditionJpaController;
 import controllers.MpcaCommentJpaController;
 import controllers.WebPageJpaController;
 import entities.Addition;
 import entities.CommentAddition;
 import entities.MpcaComment;
-import entities.WebPage;
+import entities.WebPage;*/
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -26,7 +28,7 @@ public class PersistenceModule {
     
     public static EntityManagerFactory getEntityManagerFactoryInstance() {
         if(em == null) {
-            em = Persistence.createEntityManagerFactory("PersistenceModulePU");
+            em = Persistence.createEntityManagerFactory("MPCA_PersistenceModulePU");
         }
         return em;
     }
@@ -35,13 +37,21 @@ public class PersistenceModule {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
-        MpcaCommentJpaController cac = new MpcaCommentJpaController();
+        /*MpcaCommentJpaController cac = new MpcaCommentJpaController();
         List<MpcaComment> ff = cac.findMpcaCommentByValueAndAddition("POSITIVE", "polarity");
         int i = 0;
         for (MpcaComment comment : ff) {
             System.out.println(comment);
             i++;
             if(i >= 10) break;
-        }
+        }*/
+        //MpcaAdditionCategoryJpaController aa = new MpcaAdditionCategoryJpaController();
+        Long l = new Long(3l);
+        f(l);
+        System.out.println(l);
+    }
+    
+    public static void f(Long l) {
+        l = l+1;
     }
 }

@@ -7,111 +7,90 @@ package controllers;
 import controllers.exceptions.IllegalOrphanException;
 import controllers.exceptions.NonexistentEntityException;
 import controllers.exceptions.PreexistingEntityException;
+import entities.MpcaComment;
 import java.io.Serializable;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import entities.WebPage;
-import entities.Product;
-import entities.Author;
-import entities.CommentAddition;
-import entities.MpcaComment;
-import entities.MpcaCommentPK;
+import entities.MpcaWebPage;
+import entities.MpcaProduct;
+import entities.MpcaCommentIndex;
 import java.util.ArrayList;
 import java.util.List;
+import entities.MpcaCommentAddition;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import persistencemodule.PersistenceModule;
 
 /**
  *
  * @author Antonio
  */
-public class MpcaCommentJpaController implements Serializable {
-
-    public MpcaCommentJpaController() {
-        this.emf = PersistenceModule.getEntityManagerFactoryInstance();
-    }
-    public MpcaCommentJpaController(EntityManagerFactory emf) {
-        this.emf = emf;
-    }
-    private EntityManagerFactory emf = null;
-
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
-    }
+public class MpcaCommentJpaController extends JpaController implements Serializable {
 
     public void create(MpcaComment mpcaComment) throws PreexistingEntityException, Exception {
-        
-        if (mpcaComment.getMpcaCommentPK() == null) {
-            mpcaComment.setMpcaCommentPK(new MpcaCommentPK());
+        if (mpcaComment.getMpcaCommentIndexList() == null) {
+            mpcaComment.setMpcaCommentIndexList(new ArrayList<MpcaCommentIndex>());
         }
-        if (mpcaComment.getCommentAdditionList() == null) {
-            mpcaComment.setCommentAdditionList(new ArrayList<CommentAddition>());
+        if (mpcaComment.getMpcaCommentAdditionList() == null) {
+            mpcaComment.setMpcaCommentAdditionList(new ArrayList<MpcaCommentAddition>());
         }
-        
-        mpcaComment.getMpcaCommentPK().setBrandId(mpcaComment.getProduct().getProductPK().getBrandId());
-        mpcaComment.getMpcaCommentPK().setAuthorId(mpcaComment.getAuthor().getAuthorId().toBigInteger());
-        mpcaComment.getMpcaCommentPK().setPageId(mpcaComment.getWebPage().getPageId().toBigInteger());
-        mpcaComment.getMpcaCommentPK().setProductId(mpcaComment.getProduct().getProductPK().getProductId());
-        
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            WebPage webPage = mpcaComment.getWebPage();
-            if (webPage != null) {
-                webPage = em.getReference(webPage.getClass(), webPage.getPageId());
-                mpcaComment.setWebPage(webPage);
+            MpcaWebPage pageId = mpcaComment.getPageId();
+            if (pageId != null) {
+                pageId = em.getReference(pageId.getClass(), pageId.getPageId());
+                mpcaComment.setPageId(pageId);
             }
-            Product product = mpcaComment.getProduct();
-            if (product != null) {
-                product = em.getReference(product.getClass(), product.getProductPK());
-                mpcaComment.setProduct(product);
+            MpcaProduct productId = mpcaComment.getProductId();
+            if (productId != null) {
+                productId = em.getReference(productId.getClass(), productId.getProductId());
+                mpcaComment.setProductId(productId);
             }
-            Author author = mpcaComment.getAuthor();
-            if (author != null) {
-                author = em.getReference(author.getClass(), author.getAuthorId());
-                mpcaComment.setAuthor(author);
+            List<MpcaCommentIndex> attachedMpcaCommentIndexList = new ArrayList<MpcaCommentIndex>();
+            for (MpcaCommentIndex mpcaCommentIndexListMpcaCommentIndexToAttach : mpcaComment.getMpcaCommentIndexList()) {
+                mpcaCommentIndexListMpcaCommentIndexToAttach = em.getReference(mpcaCommentIndexListMpcaCommentIndexToAttach.getClass(), mpcaCommentIndexListMpcaCommentIndexToAttach.getMpcaCommentIndexPK());
+                attachedMpcaCommentIndexList.add(mpcaCommentIndexListMpcaCommentIndexToAttach);
             }
-            
-            List<CommentAddition> attachedCommentAdditionList = new ArrayList<CommentAddition>();
-            for (CommentAddition commentAdditionListCommentAdditionToAttach : mpcaComment.getCommentAdditionList()) {
-                commentAdditionListCommentAdditionToAttach = em.getReference(commentAdditionListCommentAdditionToAttach.getClass(), commentAdditionListCommentAdditionToAttach.getCommentAdditionPK());
-                attachedCommentAdditionList.add(commentAdditionListCommentAdditionToAttach);
+            mpcaComment.setMpcaCommentIndexList(attachedMpcaCommentIndexList);
+            List<MpcaCommentAddition> attachedMpcaCommentAdditionList = new ArrayList<MpcaCommentAddition>();
+            for (MpcaCommentAddition mpcaCommentAdditionListMpcaCommentAdditionToAttach : mpcaComment.getMpcaCommentAdditionList()) {
+                mpcaCommentAdditionListMpcaCommentAdditionToAttach = em.getReference(mpcaCommentAdditionListMpcaCommentAdditionToAttach.getClass(), mpcaCommentAdditionListMpcaCommentAdditionToAttach.getMpcaCommentAdditionPK());
+                attachedMpcaCommentAdditionList.add(mpcaCommentAdditionListMpcaCommentAdditionToAttach);
             }
-            
-            mpcaComment.setCommentAdditionList(attachedCommentAdditionList);
+            mpcaComment.setMpcaCommentAdditionList(attachedMpcaCommentAdditionList);
             em.persist(mpcaComment);
-            
-            if (webPage != null) {
-                webPage.getMpcaCommentList().add(mpcaComment);
-                webPage = em.merge(webPage);
+            if (pageId != null) {
+                pageId.getMpcaCommentList().add(mpcaComment);
+                pageId = em.merge(pageId);
             }
-            if (product != null) {
-                product.getMpcaCommentList().add(mpcaComment);
-                product = em.merge(product);
+            if (productId != null) {
+                productId.getMpcaCommentList().add(mpcaComment);
+                productId = em.merge(productId);
             }
-            
-            if (author != null) {
-                author.getMpcaCommentList().add(mpcaComment);
-                author = em.merge(author);
-            }
-            for (CommentAddition commentAdditionListCommentAddition : mpcaComment.getCommentAdditionList()) {
-                MpcaComment oldMpcaCommentOfCommentAdditionListCommentAddition = commentAdditionListCommentAddition.getMpcaComment();
-                commentAdditionListCommentAddition.setMpcaComment(mpcaComment);
-                commentAdditionListCommentAddition = em.merge(commentAdditionListCommentAddition);
-                if (oldMpcaCommentOfCommentAdditionListCommentAddition != null) {
-                    oldMpcaCommentOfCommentAdditionListCommentAddition.getCommentAdditionList().remove(commentAdditionListCommentAddition);
-                    oldMpcaCommentOfCommentAdditionListCommentAddition = em.merge(oldMpcaCommentOfCommentAdditionListCommentAddition);
+            for (MpcaCommentIndex mpcaCommentIndexListMpcaCommentIndex : mpcaComment.getMpcaCommentIndexList()) {
+                MpcaComment oldMpcaCommentOfMpcaCommentIndexListMpcaCommentIndex = mpcaCommentIndexListMpcaCommentIndex.getMpcaComment();
+                mpcaCommentIndexListMpcaCommentIndex.setMpcaComment(mpcaComment);
+                mpcaCommentIndexListMpcaCommentIndex = em.merge(mpcaCommentIndexListMpcaCommentIndex);
+                if (oldMpcaCommentOfMpcaCommentIndexListMpcaCommentIndex != null) {
+                    oldMpcaCommentOfMpcaCommentIndexListMpcaCommentIndex.getMpcaCommentIndexList().remove(mpcaCommentIndexListMpcaCommentIndex);
+                    oldMpcaCommentOfMpcaCommentIndexListMpcaCommentIndex = em.merge(oldMpcaCommentOfMpcaCommentIndexListMpcaCommentIndex);
                 }
             }
-            
+            for (MpcaCommentAddition mpcaCommentAdditionListMpcaCommentAddition : mpcaComment.getMpcaCommentAdditionList()) {
+                MpcaComment oldMpcaCommentOfMpcaCommentAdditionListMpcaCommentAddition = mpcaCommentAdditionListMpcaCommentAddition.getMpcaComment();
+                mpcaCommentAdditionListMpcaCommentAddition.setMpcaComment(mpcaComment);
+                mpcaCommentAdditionListMpcaCommentAddition = em.merge(mpcaCommentAdditionListMpcaCommentAddition);
+                if (oldMpcaCommentOfMpcaCommentAdditionListMpcaCommentAddition != null) {
+                    oldMpcaCommentOfMpcaCommentAdditionListMpcaCommentAddition.getMpcaCommentAdditionList().remove(mpcaCommentAdditionListMpcaCommentAddition);
+                    oldMpcaCommentOfMpcaCommentAdditionListMpcaCommentAddition = em.merge(oldMpcaCommentOfMpcaCommentAdditionListMpcaCommentAddition);
+                }
+            }
             em.getTransaction().commit();
-            
         } catch (Exception ex) {
-            if (findMpcaComment(mpcaComment.getMpcaCommentPK()) != null) {
+            if (findMpcaComment(mpcaComment.getCommentId()) != null) {
                 throw new PreexistingEntityException("MpcaComment " + mpcaComment + " already exists.", ex);
             }
             throw ex;
@@ -123,87 +102,97 @@ public class MpcaCommentJpaController implements Serializable {
     }
 
     public void edit(MpcaComment mpcaComment) throws IllegalOrphanException, NonexistentEntityException, Exception {
-        mpcaComment.getMpcaCommentPK().setBrandId(mpcaComment.getProduct().getProductPK().getBrandId());
-        mpcaComment.getMpcaCommentPK().setAuthorId(mpcaComment.getAuthor().getAuthorId().toBigInteger());
-        mpcaComment.getMpcaCommentPK().setPageId(mpcaComment.getWebPage().getPageId().toBigInteger());
-        mpcaComment.getMpcaCommentPK().setProductId(mpcaComment.getProduct().getProductPK().getProductId());
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            MpcaComment persistentMpcaComment = em.find(MpcaComment.class, mpcaComment.getMpcaCommentPK());
-            WebPage webPageOld = persistentMpcaComment.getWebPage();
-            WebPage webPageNew = mpcaComment.getWebPage();
-            Product productOld = persistentMpcaComment.getProduct();
-            Product productNew = mpcaComment.getProduct();
-            Author authorOld = persistentMpcaComment.getAuthor();
-            Author authorNew = mpcaComment.getAuthor();
-            List<CommentAddition> commentAdditionListOld = persistentMpcaComment.getCommentAdditionList();
-            List<CommentAddition> commentAdditionListNew = mpcaComment.getCommentAdditionList();
+            MpcaComment persistentMpcaComment = em.find(MpcaComment.class, mpcaComment.getCommentId());
+            MpcaWebPage pageIdOld = persistentMpcaComment.getPageId();
+            MpcaWebPage pageIdNew = mpcaComment.getPageId();
+            MpcaProduct productIdOld = persistentMpcaComment.getProductId();
+            MpcaProduct productIdNew = mpcaComment.getProductId();
+            List<MpcaCommentIndex> mpcaCommentIndexListOld = persistentMpcaComment.getMpcaCommentIndexList();
+            List<MpcaCommentIndex> mpcaCommentIndexListNew = mpcaComment.getMpcaCommentIndexList();
+            List<MpcaCommentAddition> mpcaCommentAdditionListOld = persistentMpcaComment.getMpcaCommentAdditionList();
+            List<MpcaCommentAddition> mpcaCommentAdditionListNew = mpcaComment.getMpcaCommentAdditionList();
             List<String> illegalOrphanMessages = null;
-            for (CommentAddition commentAdditionListOldCommentAddition : commentAdditionListOld) {
-                if (!commentAdditionListNew.contains(commentAdditionListOldCommentAddition)) {
+            for (MpcaCommentIndex mpcaCommentIndexListOldMpcaCommentIndex : mpcaCommentIndexListOld) {
+                if (!mpcaCommentIndexListNew.contains(mpcaCommentIndexListOldMpcaCommentIndex)) {
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
-                    illegalOrphanMessages.add("You must retain CommentAddition " + commentAdditionListOldCommentAddition + " since its mpcaComment field is not nullable.");
+                    illegalOrphanMessages.add("You must retain MpcaCommentIndex " + mpcaCommentIndexListOldMpcaCommentIndex + " since its mpcaComment field is not nullable.");
+                }
+            }
+            for (MpcaCommentAddition mpcaCommentAdditionListOldMpcaCommentAddition : mpcaCommentAdditionListOld) {
+                if (!mpcaCommentAdditionListNew.contains(mpcaCommentAdditionListOldMpcaCommentAddition)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain MpcaCommentAddition " + mpcaCommentAdditionListOldMpcaCommentAddition + " since its mpcaComment field is not nullable.");
                 }
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
-            if (webPageNew != null) {
-                webPageNew = em.getReference(webPageNew.getClass(), webPageNew.getPageId());
-                mpcaComment.setWebPage(webPageNew);
+            if (pageIdNew != null) {
+                pageIdNew = em.getReference(pageIdNew.getClass(), pageIdNew.getPageId());
+                mpcaComment.setPageId(pageIdNew);
             }
-            if (productNew != null) {
-                productNew = em.getReference(productNew.getClass(), productNew.getProductPK());
-                mpcaComment.setProduct(productNew);
+            if (productIdNew != null) {
+                productIdNew = em.getReference(productIdNew.getClass(), productIdNew.getProductId());
+                mpcaComment.setProductId(productIdNew);
             }
-            if (authorNew != null) {
-                authorNew = em.getReference(authorNew.getClass(), authorNew.getAuthorId());
-                mpcaComment.setAuthor(authorNew);
+            List<MpcaCommentIndex> attachedMpcaCommentIndexListNew = new ArrayList<MpcaCommentIndex>();
+            for (MpcaCommentIndex mpcaCommentIndexListNewMpcaCommentIndexToAttach : mpcaCommentIndexListNew) {
+                mpcaCommentIndexListNewMpcaCommentIndexToAttach = em.getReference(mpcaCommentIndexListNewMpcaCommentIndexToAttach.getClass(), mpcaCommentIndexListNewMpcaCommentIndexToAttach.getMpcaCommentIndexPK());
+                attachedMpcaCommentIndexListNew.add(mpcaCommentIndexListNewMpcaCommentIndexToAttach);
             }
-            List<CommentAddition> attachedCommentAdditionListNew = new ArrayList<CommentAddition>();
-            for (CommentAddition commentAdditionListNewCommentAdditionToAttach : commentAdditionListNew) {
-                commentAdditionListNewCommentAdditionToAttach = em.getReference(commentAdditionListNewCommentAdditionToAttach.getClass(), commentAdditionListNewCommentAdditionToAttach.getCommentAdditionPK());
-                attachedCommentAdditionListNew.add(commentAdditionListNewCommentAdditionToAttach);
+            mpcaCommentIndexListNew = attachedMpcaCommentIndexListNew;
+            mpcaComment.setMpcaCommentIndexList(mpcaCommentIndexListNew);
+            List<MpcaCommentAddition> attachedMpcaCommentAdditionListNew = new ArrayList<MpcaCommentAddition>();
+            for (MpcaCommentAddition mpcaCommentAdditionListNewMpcaCommentAdditionToAttach : mpcaCommentAdditionListNew) {
+                mpcaCommentAdditionListNewMpcaCommentAdditionToAttach = em.getReference(mpcaCommentAdditionListNewMpcaCommentAdditionToAttach.getClass(), mpcaCommentAdditionListNewMpcaCommentAdditionToAttach.getMpcaCommentAdditionPK());
+                attachedMpcaCommentAdditionListNew.add(mpcaCommentAdditionListNewMpcaCommentAdditionToAttach);
             }
-            commentAdditionListNew = attachedCommentAdditionListNew;
-            mpcaComment.setCommentAdditionList(commentAdditionListNew);
+            mpcaCommentAdditionListNew = attachedMpcaCommentAdditionListNew;
+            mpcaComment.setMpcaCommentAdditionList(mpcaCommentAdditionListNew);
             mpcaComment = em.merge(mpcaComment);
-            if (webPageOld != null && !webPageOld.equals(webPageNew)) {
-                webPageOld.getMpcaCommentList().remove(mpcaComment);
-                webPageOld = em.merge(webPageOld);
+            if (pageIdOld != null && !pageIdOld.equals(pageIdNew)) {
+                pageIdOld.getMpcaCommentList().remove(mpcaComment);
+                pageIdOld = em.merge(pageIdOld);
             }
-            if (webPageNew != null && !webPageNew.equals(webPageOld)) {
-                webPageNew.getMpcaCommentList().add(mpcaComment);
-                webPageNew = em.merge(webPageNew);
+            if (pageIdNew != null && !pageIdNew.equals(pageIdOld)) {
+                pageIdNew.getMpcaCommentList().add(mpcaComment);
+                pageIdNew = em.merge(pageIdNew);
             }
-            if (productOld != null && !productOld.equals(productNew)) {
-                productOld.getMpcaCommentList().remove(mpcaComment);
-                productOld = em.merge(productOld);
+            if (productIdOld != null && !productIdOld.equals(productIdNew)) {
+                productIdOld.getMpcaCommentList().remove(mpcaComment);
+                productIdOld = em.merge(productIdOld);
             }
-            if (productNew != null && !productNew.equals(productOld)) {
-                productNew.getMpcaCommentList().add(mpcaComment);
-                productNew = em.merge(productNew);
+            if (productIdNew != null && !productIdNew.equals(productIdOld)) {
+                productIdNew.getMpcaCommentList().add(mpcaComment);
+                productIdNew = em.merge(productIdNew);
             }
-            if (authorOld != null && !authorOld.equals(authorNew)) {
-                authorOld.getMpcaCommentList().remove(mpcaComment);
-                authorOld = em.merge(authorOld);
+            for (MpcaCommentIndex mpcaCommentIndexListNewMpcaCommentIndex : mpcaCommentIndexListNew) {
+                if (!mpcaCommentIndexListOld.contains(mpcaCommentIndexListNewMpcaCommentIndex)) {
+                    MpcaComment oldMpcaCommentOfMpcaCommentIndexListNewMpcaCommentIndex = mpcaCommentIndexListNewMpcaCommentIndex.getMpcaComment();
+                    mpcaCommentIndexListNewMpcaCommentIndex.setMpcaComment(mpcaComment);
+                    mpcaCommentIndexListNewMpcaCommentIndex = em.merge(mpcaCommentIndexListNewMpcaCommentIndex);
+                    if (oldMpcaCommentOfMpcaCommentIndexListNewMpcaCommentIndex != null && !oldMpcaCommentOfMpcaCommentIndexListNewMpcaCommentIndex.equals(mpcaComment)) {
+                        oldMpcaCommentOfMpcaCommentIndexListNewMpcaCommentIndex.getMpcaCommentIndexList().remove(mpcaCommentIndexListNewMpcaCommentIndex);
+                        oldMpcaCommentOfMpcaCommentIndexListNewMpcaCommentIndex = em.merge(oldMpcaCommentOfMpcaCommentIndexListNewMpcaCommentIndex);
+                    }
+                }
             }
-            if (authorNew != null && !authorNew.equals(authorOld)) {
-                authorNew.getMpcaCommentList().add(mpcaComment);
-                authorNew = em.merge(authorNew);
-            }
-            for (CommentAddition commentAdditionListNewCommentAddition : commentAdditionListNew) {
-                if (!commentAdditionListOld.contains(commentAdditionListNewCommentAddition)) {
-                    MpcaComment oldMpcaCommentOfCommentAdditionListNewCommentAddition = commentAdditionListNewCommentAddition.getMpcaComment();
-                    commentAdditionListNewCommentAddition.setMpcaComment(mpcaComment);
-                    commentAdditionListNewCommentAddition = em.merge(commentAdditionListNewCommentAddition);
-                    if (oldMpcaCommentOfCommentAdditionListNewCommentAddition != null && !oldMpcaCommentOfCommentAdditionListNewCommentAddition.equals(mpcaComment)) {
-                        oldMpcaCommentOfCommentAdditionListNewCommentAddition.getCommentAdditionList().remove(commentAdditionListNewCommentAddition);
-                        oldMpcaCommentOfCommentAdditionListNewCommentAddition = em.merge(oldMpcaCommentOfCommentAdditionListNewCommentAddition);
+            for (MpcaCommentAddition mpcaCommentAdditionListNewMpcaCommentAddition : mpcaCommentAdditionListNew) {
+                if (!mpcaCommentAdditionListOld.contains(mpcaCommentAdditionListNewMpcaCommentAddition)) {
+                    MpcaComment oldMpcaCommentOfMpcaCommentAdditionListNewMpcaCommentAddition = mpcaCommentAdditionListNewMpcaCommentAddition.getMpcaComment();
+                    mpcaCommentAdditionListNewMpcaCommentAddition.setMpcaComment(mpcaComment);
+                    mpcaCommentAdditionListNewMpcaCommentAddition = em.merge(mpcaCommentAdditionListNewMpcaCommentAddition);
+                    if (oldMpcaCommentOfMpcaCommentAdditionListNewMpcaCommentAddition != null && !oldMpcaCommentOfMpcaCommentAdditionListNewMpcaCommentAddition.equals(mpcaComment)) {
+                        oldMpcaCommentOfMpcaCommentAdditionListNewMpcaCommentAddition.getMpcaCommentAdditionList().remove(mpcaCommentAdditionListNewMpcaCommentAddition);
+                        oldMpcaCommentOfMpcaCommentAdditionListNewMpcaCommentAddition = em.merge(oldMpcaCommentOfMpcaCommentAdditionListNewMpcaCommentAddition);
                     }
                 }
             }
@@ -211,7 +200,7 @@ public class MpcaCommentJpaController implements Serializable {
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                MpcaCommentPK id = mpcaComment.getMpcaCommentPK();
+                Long id = mpcaComment.getCommentId();
                 if (findMpcaComment(id) == null) {
                     throw new NonexistentEntityException("The mpcaComment with id " + id + " no longer exists.");
                 }
@@ -224,7 +213,7 @@ public class MpcaCommentJpaController implements Serializable {
         }
     }
 
-    public void destroy(MpcaCommentPK id) throws IllegalOrphanException, NonexistentEntityException {
+    public void destroy(Long id) throws IllegalOrphanException, NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -232,35 +221,37 @@ public class MpcaCommentJpaController implements Serializable {
             MpcaComment mpcaComment;
             try {
                 mpcaComment = em.getReference(MpcaComment.class, id);
-                mpcaComment.getMpcaCommentPK();
+                mpcaComment.getCommentId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The mpcaComment with id " + id + " no longer exists.", enfe);
             }
             List<String> illegalOrphanMessages = null;
-            List<CommentAddition> commentAdditionListOrphanCheck = mpcaComment.getCommentAdditionList();
-            for (CommentAddition commentAdditionListOrphanCheckCommentAddition : commentAdditionListOrphanCheck) {
+            List<MpcaCommentIndex> mpcaCommentIndexListOrphanCheck = mpcaComment.getMpcaCommentIndexList();
+            for (MpcaCommentIndex mpcaCommentIndexListOrphanCheckMpcaCommentIndex : mpcaCommentIndexListOrphanCheck) {
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("This MpcaComment (" + mpcaComment + ") cannot be destroyed since the CommentAddition " + commentAdditionListOrphanCheckCommentAddition + " in its commentAdditionList field has a non-nullable mpcaComment field.");
+                illegalOrphanMessages.add("This MpcaComment (" + mpcaComment + ") cannot be destroyed since the MpcaCommentIndex " + mpcaCommentIndexListOrphanCheckMpcaCommentIndex + " in its mpcaCommentIndexList field has a non-nullable mpcaComment field.");
+            }
+            List<MpcaCommentAddition> mpcaCommentAdditionListOrphanCheck = mpcaComment.getMpcaCommentAdditionList();
+            for (MpcaCommentAddition mpcaCommentAdditionListOrphanCheckMpcaCommentAddition : mpcaCommentAdditionListOrphanCheck) {
+                if (illegalOrphanMessages == null) {
+                    illegalOrphanMessages = new ArrayList<String>();
+                }
+                illegalOrphanMessages.add("This MpcaComment (" + mpcaComment + ") cannot be destroyed since the MpcaCommentAddition " + mpcaCommentAdditionListOrphanCheckMpcaCommentAddition + " in its mpcaCommentAdditionList field has a non-nullable mpcaComment field.");
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
-            WebPage webPage = mpcaComment.getWebPage();
-            if (webPage != null) {
-                webPage.getMpcaCommentList().remove(mpcaComment);
-                webPage = em.merge(webPage);
+            MpcaWebPage pageId = mpcaComment.getPageId();
+            if (pageId != null) {
+                pageId.getMpcaCommentList().remove(mpcaComment);
+                pageId = em.merge(pageId);
             }
-            Product product = mpcaComment.getProduct();
-            if (product != null) {
-                product.getMpcaCommentList().remove(mpcaComment);
-                product = em.merge(product);
-            }
-            Author author = mpcaComment.getAuthor();
-            if (author != null) {
-                author.getMpcaCommentList().remove(mpcaComment);
-                author = em.merge(author);
+            MpcaProduct productId = mpcaComment.getProductId();
+            if (productId != null) {
+                productId.getMpcaCommentList().remove(mpcaComment);
+                productId = em.merge(productId);
             }
             em.remove(mpcaComment);
             em.getTransaction().commit();
@@ -295,7 +286,7 @@ public class MpcaCommentJpaController implements Serializable {
         }
     }
 
-    public MpcaComment findMpcaComment(MpcaCommentPK id) {
+    public MpcaComment findMpcaComment(Long id) {
         EntityManager em = getEntityManager();
         try {
             return em.find(MpcaComment.class, id);
@@ -317,27 +308,4 @@ public class MpcaCommentJpaController implements Serializable {
         }
     }
     
-    public List<MpcaComment> findMpcaCommentByValueAndAddition(Object value, String addType) {
-        return findMpcaCommentByValueAndAddition(value,addType,true,-1,-1);
-        
-    }
-    public List<MpcaComment> findMpcaCommentByValueAndAddition(Object value, String addType, int maxResults, int firstResult) {
-        return findMpcaCommentByValueAndAddition(value,addType,false,maxResults,firstResult);
-    }
-    private List<MpcaComment> findMpcaCommentByValueAndAddition(Object value, String addType, boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try{
-            Query q = em.createNamedQuery("MpcaComment.findByAdditionAndValue");
-            q.setParameter("value", value);
-            q.setParameter("addType", addType);
-            if(!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        }
-        finally {
-            em.close();
-        }
-    }
 }
