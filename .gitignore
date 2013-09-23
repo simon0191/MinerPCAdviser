@@ -4,6 +4,9 @@
 # Build and dist files #
 */build/
 */dist/
+# Libraries src files and docs
+lib/*/src/
+lib/*/docs
 
 # Private netbeans files #
 */nbproject/private/
