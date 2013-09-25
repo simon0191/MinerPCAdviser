@@ -16,7 +16,7 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.MPCA_Comment;
-import model.Polarity;
+import utils.Polarity;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 

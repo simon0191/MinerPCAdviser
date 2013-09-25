@@ -4,6 +4,7 @@
  */
 package model;
 
+import utils.Polarity;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 

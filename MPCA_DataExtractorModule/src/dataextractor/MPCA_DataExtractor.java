@@ -4,34 +4,30 @@
  */
 package dataextractor;
 
-import controllers.AdditionJpaController;
-import controllers.AuthorJpaController;
-import controllers.BrandJpaController;
-import controllers.CommentAdditionJpaController;
+import controllers.JpaController;
+import controllers.MpcaAdditionCategoryJpaController;
+import controllers.MpcaAdditionTypeJpaController;
+import controllers.MpcaCommentAdditionJpaController;
 import controllers.MpcaCommentJpaController;
-import controllers.ProductAdditionJpaController;
-import controllers.ProductJpaController;
-import controllers.ProductWebPageJpaController;
-import controllers.WebPageJpaController;
+import controllers.MpcaProductAdditionJpaController;
+import controllers.MpcaProductJpaController;
+import controllers.MpcaProductWebPageJpaController;
+import controllers.MpcaWebPageJpaController;
 import controllers.exceptions.PreexistingEntityException;
-import entities.Addition;
-import entities.Author;
-import entities.Brand;
-import entities.CommentAddition;
+import entities.MpcaAdditionCategory;
+import entities.MpcaAdditionType;
 import entities.MpcaComment;
-import entities.MpcaCommentPK;
-import entities.Product;
-import entities.ProductAddition;
-import entities.ProductWebPage;
-import entities.WebPage;
+import entities.MpcaCommentAddition;
+import entities.MpcaProduct;
+import entities.MpcaProductAddition;
+import entities.MpcaProductWebPage;
+import entities.MpcaWebPage;
 import exceptions.CommentsExtractorNotFoundException;
 import exceptions.UnrecognizedExtensionException;
 import interfaces.ICommentsExtractor;
 import interfaces.IDataExtractor;
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,7 +38,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import model.MPCA_Comment;
-import model.Polarity;
+import utils.Polarity;
 import org.jsoup.nodes.Element;
 
 /**
@@ -58,15 +54,14 @@ public class MPCA_DataExtractor implements IDataExtractor {
     // Grupo de descriptores por Página
     private Map<String, Map<String, List<MPCA_Selector>>> descriptors;
     
-    private WebPageJpaController wpc = new WebPageJpaController();
+    private MpcaWebPageJpaController wpc = new MpcaWebPageJpaController();
     private MpcaCommentJpaController cc = new MpcaCommentJpaController();
-    private ProductJpaController pc = new ProductJpaController();
-    private BrandJpaController bc = new BrandJpaController();
-    private ProductAdditionJpaController pac = new ProductAdditionJpaController();
-    private AdditionJpaController ac = new AdditionJpaController();
-    private ProductWebPageJpaController pwpc = new ProductWebPageJpaController();
-    private AuthorJpaController authorC = new AuthorJpaController();
-    private CommentAdditionJpaController cac = new CommentAdditionJpaController();
+    private MpcaProductJpaController pc = new MpcaProductJpaController();
+    private MpcaProductAdditionJpaController pac = new MpcaProductAdditionJpaController();
+    private MpcaAdditionTypeJpaController ac = new MpcaAdditionTypeJpaController();
+    private MpcaProductWebPageJpaController pwpc = new MpcaProductWebPageJpaController();
+    private MpcaCommentAdditionJpaController cac = new MpcaCommentAdditionJpaController();
+    private MpcaAdditionCategoryJpaController macc = new MpcaAdditionCategoryJpaController();
     
     public static IDataExtractor getInstance() {
         if(dataExtractor == null) {
@@ -93,35 +88,34 @@ public class MPCA_DataExtractor implements IDataExtractor {
            comentarios */
         long lastComment = cc.getMpcaCommentCount();
         
-        BigDecimal biggest = BigDecimal.ZERO;
         Set<String> keySet = descriptors.keySet();
         for (String pageName : keySet) {
             pageName = pageName.trim();
             // Crea o busca el nombre de la página
-            WebPage wp = createOrGetWebPageByName(biggest, pageName);
+            MpcaWebPage wp = createOrGetWebPageByName(pageName);
             System.out.println("WebPage created or updated = " + pageName);
             
             List<MPCA_Page> urls = computersURLs.get(pageName);
             Map<String, List<MPCA_Selector>> des = descriptors.get(pageName);
             // Se trasladan los descriptores de los comentarios del antiguo mapa para poder tratar página por página
             Map<String, List<MPCA_Selector>> comments = new TreeMap<>();
-            comments.put(MPCA_DataExtractor.COMMENTS_TAG, des.remove(MPCA_DataExtractor.COMMENTS_TAG));
-            if(des.containsKey(MPCA_DataExtractor.NEXT_PAGE_TAG)) {
-                comments.put(MPCA_DataExtractor.NEXT_PAGE_TAG, des.remove(MPCA_DataExtractor.NEXT_PAGE_TAG));
+            comments.put(JpaController.COMMENTS_TAG, des.remove(JpaController.COMMENTS_TAG));
+            if(des.containsKey(JpaController.NEXT_PAGE_TAG)) {
+                comments.put(JpaController.NEXT_PAGE_TAG, des.remove(JpaController.NEXT_PAGE_TAG));
             }
-            if(des.containsKey(MPCA_DataExtractor.TOTAL_PAGES_TAG)) {
-                comments.put(MPCA_DataExtractor.TOTAL_PAGES_TAG, des.remove(MPCA_DataExtractor.TOTAL_PAGES_TAG));
+            if(des.containsKey(JpaController.TOTAL_PAGES_TAG)) {
+                comments.put(JpaController.TOTAL_PAGES_TAG, des.remove(JpaController.TOTAL_PAGES_TAG));
             }
             for (MPCA_Page p : urls) {
                 System.out.println("Url = " + p.getCommentsPageURL());
                 Map<String, Element> data = MPCA_PageExtractor.get(p.getMainPageURL().toString(), des);
                 List<Element> allComments = extractCommentsFromURL(p.getCommentsPageURL(), comments, pageName);
                 
-                String brand = data.get(MPCA_DataExtractor.BRAND_TAG).text().trim().toUpperCase();
-                String model = data.get(MPCA_DataExtractor.MODEL_TAG).text().trim().toUpperCase();
+                String brand = data.get(JpaController.BRAND_TAG).text().trim().toUpperCase();
+                String model = data.get(JpaController.MODEL_TAG).text().trim().toUpperCase();
                 
                 // Crea o actualiza un producto
-                Product product = createOrUpdateProduct(model, brand, wp, p, data);
+                MpcaProduct product = createOrUpdateProduct(model, brand, wp, p, data);
                 
                 // Extrae los comentarios de los HTMLs y los estructura
                 List<MPCA_Comment> commentsExtracted = extractComments(pageName, allComments);
@@ -153,7 +147,7 @@ public class MPCA_DataExtractor implements IDataExtractor {
             // Omite comentarios
             if(line.charAt(0) != '#') {
                 // Extractor de URLs
-                if(line.endsWith(MPCA_DataExtractor.URL_EXTENSION)) {
+                if(line.endsWith(JpaController.URL_EXTENSION)) {
                     StringBuffer urlData = MPCA_PageExtractor.readFile(new File(line.trim()));
                     String []urls = urlData.toString().split("\n+");
                     List<MPCA_Page> urlPages = new ArrayList<>();
@@ -174,7 +168,7 @@ public class MPCA_DataExtractor implements IDataExtractor {
                     computersURLs.put(page, urlPages);
 
                     // Extractor de selectors
-                } else if(line.endsWith(MPCA_DataExtractor.DESCRIPTOR_EXTENSION)) {
+                } else if(line.endsWith(JpaController.DESCRIPTOR_EXTENSION)) {
                     Map<String, List<MPCA_Selector>> parseDescriptor = MPCA_PageExtractor.parseDescriptor(new File(line));
                     descriptors.put(page, parseDescriptor);
                 } else {
@@ -191,8 +185,8 @@ public class MPCA_DataExtractor implements IDataExtractor {
         
         List<Element> allComments = new ArrayList<>();
         
-        if(pageName.equals(MPCA_DataExtractor.NEWEGG_NAME)) {
-            Element ele = commentsData.get(MPCA_DataExtractor.TOTAL_PAGES_TAG);
+        if(pageName.equals(JpaController.NEWEGG_NAME)) {
+            Element ele = commentsData.get(JpaController.TOTAL_PAGES_TAG);
             String totalPagesS = "0";
             if(ele != null) {
                 totalPagesS = ele.text().replaceAll("[^0-9]", "");
@@ -202,27 +196,27 @@ public class MPCA_DataExtractor implements IDataExtractor {
             for (int i = 1; i <= totalPages; ++i) {
                 String newURL = commentsURL.toString().replaceFirst("Page=" + "[0-9]+", "Page=" + i);
                 Map<String, Element> comms = MPCA_PageExtractor.get(newURL, comments);
-                allComments.add(comms.get(MPCA_DataExtractor.COMMENTS_TAG));
+                allComments.add(comms.get(JpaController.COMMENTS_TAG));
                 System.out.println("Page = " + i);
             }
             return allComments;
         }
         
-        allComments.add(commentsData.get(MPCA_DataExtractor.COMMENTS_TAG));
-        Element ele = commentsData.get(MPCA_DataExtractor.NEXT_PAGE_TAG);
+        allComments.add(commentsData.get(JpaController.COMMENTS_TAG));
+        Element ele = commentsData.get(JpaController.NEXT_PAGE_TAG);
         
         String nextPage = ((ele!=null)?ele.attr("href").trim():"");
         
         String prefix = "";
-        if(pageName.equals(MPCA_DataExtractor.TIGERDIRECT_NAME)) {
+        if(pageName.equals(JpaController.TIGERDIRECT_NAME)) {
             prefix = "http://www.tigerdirect.com";
         }
         
         int a = 1;
         while(!nextPage.equals("")) {
             Map<String, Element> comms = MPCA_PageExtractor.get(prefix + nextPage, comments);
-            allComments.add(comms.get(MPCA_DataExtractor.COMMENTS_TAG));
-            ele = comms.get(MPCA_DataExtractor.NEXT_PAGE_TAG);
+            allComments.add(comms.get(JpaController.COMMENTS_TAG));
+            ele = comms.get(JpaController.NEXT_PAGE_TAG);
             if(ele != null && ele.text().toLowerCase().contains("next")) {
                 nextPage = ele.attr("href").trim();
             }
@@ -245,22 +239,24 @@ public class MPCA_DataExtractor implements IDataExtractor {
      * @return
      * @throws Exception 
      */
-    private WebPage createOrGetWebPageByName(BigDecimal biggest, String pageName) throws Exception {
-        List<WebPage> webPages = wpc.findWebPageEntities();
-        WebPage webPage = null;
-        for (WebPage wp : webPages) {
-            if(biggest.compareTo(wp.getPageId()) < 0) {
+    private MpcaWebPage createOrGetWebPageByName(String pageName) throws Exception {
+        List<MpcaWebPage> webPages = wpc.findMpcaWebPageEntities();
+        MpcaWebPage webPage = null;
+        long biggest = 0;
+        for (MpcaWebPage wp : webPages) {
+            /*if(biggest < wp.getPageId()) {
                 biggest = wp.getPageId();
-            }
+            }*/
             if(wp.getPageName().equalsIgnoreCase(pageName)) {
                 webPage = wp;
                 break;
             }
+            biggest++;
         }
         if(webPage == null) {
-            webPage = new WebPage(pageName, "http://www." + pageName + ".com");
+            webPage = new MpcaWebPage(pageName, "http://www." + pageName + ".com");
             wpc.create(webPage);
-            biggest = biggest.add(BigDecimal.ONE);
+            biggest++;
             webPage.setPageId(biggest);
         }
         return webPage;
@@ -281,26 +277,23 @@ public class MPCA_DataExtractor implements IDataExtractor {
      * @return Retorna el producto nuevo o actualizado
      * @throws Exception 
      */
-    private Product createOrUpdateProduct(String model, String brand, WebPage wp, MPCA_Page p, Map<String, Element> data) throws Exception {
-        Product product = pc.findProductByModel(model);
+    private MpcaProduct createOrUpdateProduct(String model, String brand, MpcaWebPage wp, MPCA_Page p, Map<String, Element> data) throws Exception {
+        MpcaProduct product = pc.findProductByModel(model);
         if(product == null) {
-            Brand b = bc.findBrandByName(brand);
-            if(b == null) {
-                b = new Brand();
-                b.setBrandName(brand);
-                bc.create(b);
-                b = bc.findBrandByName(brand);
-                System.out.println("Brand created");
-            }
-            product = new Product(null, model);
-            product.setBrand(b);
+            product = new MpcaProduct(null, model);
             pc.create(product);
             product = pc.findProductByModel(model);
+            
+            MpcaAdditionType at = createOrGetAddition(JpaController.BRAND_TAG, JpaController.PRODUCT_TAG);
+            
+            MpcaProductAddition pa = new MpcaProductAddition(product.getProductId(),at.getAddId());
+            pa.setValue(brand);
+            
             System.out.println("Product created");
         }
         boolean find = false;
-        for (ProductWebPage productWebPage : product.getProductWebPageList()) {
-            if(productWebPage.getWebPage().getPageId().compareTo(wp.getPageId()) == 0) {
+        for (MpcaProductWebPage productWebPage : product.getMpcaProductWebPageList()) {
+            if(productWebPage.getMpcaWebPage().getPageId() == wp.getPageId()) {
                 find = true;
             }
         }
@@ -309,13 +302,13 @@ public class MPCA_DataExtractor implements IDataExtractor {
         }
         
         // Se eliminan el modelo y el productor para que no sean contadas como adiciones
-        data.remove(MPCA_DataExtractor.BRAND_TAG);
-        data.remove(MPCA_DataExtractor.MODEL_TAG);
+        data.remove(JpaController.BRAND_TAG);
+        data.remove(JpaController.MODEL_TAG);
         
         // Se actualizan las adiciones que el producto ya tenga
-        if(product.getProductAdditionList() != null) {
-            for (ProductAddition pa : product.getProductAdditionList()) {
-                Addition add = pa.getAddition();
+        if(product.getMpcaProductAdditionList() != null) {
+            for (MpcaProductAddition pa : product.getMpcaProductAdditionList()) {
+                MpcaAdditionType add = pa.getMpcaAdditionType();
                 if(data.containsKey(add.getAddType())) {
                     pa.setValue(data.get(add.getAddType()).text().trim());
                     data.remove(add.getAddType());
@@ -325,19 +318,19 @@ public class MPCA_DataExtractor implements IDataExtractor {
         }
         // Adiciones que faltan en la tabla principal
         for (Map.Entry<String, Element> es : data.entrySet()) {
-            Addition theAdd = createOrGetAddition(es.getKey());
+            MpcaAdditionType theAdd = createOrGetAddition(es.getKey(), JpaController.PRODUCT_TAG);
             System.out.println(theAdd);
             // Se agrega la nueva adición al producto con su respectivo valor
-            ProductAddition pa = new ProductAddition();
-            pa.setProduct(product);
-            pa.setAddition(theAdd);
+            MpcaProductAddition pa = new MpcaProductAddition();
+            pa.setMpcaProduct(product);
+            pa.setMpcaAdditionType(theAdd);
             if(es.getValue() != null) {
                 pa.setValue(es.getValue().text().trim());
                 pac.create(pa);
                 System.out.println("Product Addition created");
             }
         }
-        return pc.findProduct(product.getProductPK());
+        return pc.findMpcaProduct(product.getProductId());
     }
     
     /**
@@ -350,12 +343,16 @@ public class MPCA_DataExtractor implements IDataExtractor {
     private List<MPCA_Comment> extractComments(String pageName, List<Element> allComments) throws CommentsExtractorNotFoundException {
         /* Extracción de comentarios */
         ICommentsExtractor extractor = null;
-        if(pageName.equals(MPCA_DataExtractor.AMAZON_NAME)) {
-            extractor = AmazonCommentsExtractor.getExtractor();
-        } else if(pageName.equals(MPCA_DataExtractor.TIGERDIRECT_NAME)) {
-            extractor = TigerDirectCommentsExtractor.getExtractor();
-        } else if(pageName.equals(MPCA_DataExtractor.NEWEGG_NAME)) {
-            extractor = NeweggCommentsExtractor.getExtractor();
+        switch (pageName) {
+            case JpaController.AMAZON_NAME:
+                extractor = AmazonCommentsExtractor.getExtractor();
+                break;
+            case JpaController.TIGERDIRECT_NAME:
+                extractor = TigerDirectCommentsExtractor.getExtractor();
+                break;
+            case JpaController.NEWEGG_NAME:
+                extractor = NeweggCommentsExtractor.getExtractor();
+                break;
         }
         if(extractor == null) {
             throw new CommentsExtractorNotFoundException(pageName);
@@ -367,12 +364,15 @@ public class MPCA_DataExtractor implements IDataExtractor {
         return commentsExtracted;
     }
     
-    private Addition createOrGetAddition(String type) throws Exception {
-        Addition theAdd = ac.findAdditionByType(type);
+    private MpcaAdditionType createOrGetAddition(String type, String category) 
+            throws PreexistingEntityException, Exception {
+        MpcaAdditionType theAdd = ac.findAdditionByType(type);
         // Se crea la adición en caso de que no exista
         if(theAdd == null) {
-            theAdd = new Addition();
+            theAdd = new MpcaAdditionType();
             theAdd.setAddType(type);
+            MpcaAdditionCategory mac = createOrGetCategory(category);
+            theAdd.setCategoryId(mac);
             ac.create(theAdd);
             theAdd = ac.findAdditionByType(theAdd.getAddType());
             System.out.println("Addition Created");
@@ -380,10 +380,10 @@ public class MPCA_DataExtractor implements IDataExtractor {
         return theAdd;
     }
     
-    private void createProductWebPage(Product product, WebPage wp, MPCA_Page p) throws Exception {
-        ProductWebPage pwb = new ProductWebPage();
-        pwb.setProduct(product);
-        pwb.setWebPage(wp);
+    private void createProductWebPage(MpcaProduct product, MpcaWebPage wp, MPCA_Page p) throws Exception {
+        MpcaProductWebPage pwb = new MpcaProductWebPage();
+        pwb.setMpcaProduct(product);
+        pwb.setMpcaWebPage(wp);
         pwb.setProductUrl(p.getMainPageURL().toString());
         pwb.setCommentUrl(p.getCommentsPageURL().toString());
         pwb.setLastUpdate(new Date(1945, 5, 6));
@@ -391,10 +391,10 @@ public class MPCA_DataExtractor implements IDataExtractor {
         System.out.println("ProductWebPage created");
     }
 
-    private long createOrUpdateComments(Product product, WebPage wp, List<MPCA_Comment> commentsExtracted, long lastComment, MPCA_Page p) throws Exception {
+    private long createOrUpdateComments(MpcaProduct product, MpcaWebPage wp, List<MPCA_Comment> commentsExtracted, long lastComment, MPCA_Page p) throws Exception {
         Date lastUpdate = null;
-        for (ProductWebPage productWebPage : product.getProductWebPageList()) {
-            if(productWebPage.getWebPage().getPageId().compareTo(wp.getPageId()) == 0) {
+        for (MpcaProductWebPage productWebPage : product.getMpcaProductWebPageList()) {
+            if(productWebPage.getMpcaWebPage().getPageId().compareTo(wp.getPageId()) == 0) {
                 lastUpdate = productWebPage.getLastUpdate();
                 GregorianCalendar gc = new GregorianCalendar();
                 productWebPage.setLastUpdate(
@@ -418,86 +418,70 @@ public class MPCA_DataExtractor implements IDataExtractor {
                         + "/" + gc2.get(Calendar.MONTH) + "/" + gc2.get(Calendar.YEAR);
                 String lastUpdateS = gc.get(Calendar.DAY_OF_MONTH) 
                         + "/" + gc.get(Calendar.MONTH) + "/" + gc.get(Calendar.YEAR);
-                System.out.println("Comment posted: " + commentPosted + ", LastUpdate: " + lastUpdateS);
-                String a = c.getAuthor();
-                if(a != null) {
-                    a = a.trim();
-                }
-                if(a == null || a.equalsIgnoreCase("na") || a.equalsIgnoreCase("n/a") || 
-                        a.equalsIgnoreCase("") || a.equalsIgnoreCase(",")) {
-                    a = NA_AUTHOR;
-                }
                 
-                // Crea o busca al Autor
-                Author author = authorC.findAuthorByName(a);
-                if(author == null) {
-                    author = new Author();
-                    author.setAuthorName(a);
-                    authorC.create(author);
-                    author = authorC.findAuthorByName(a);
+                System.out.println("Comment posted: " + commentPosted + ", LastUpdate: " + lastUpdateS);
+                
+                String authorUsername = c.getAuthor();
+                if(authorUsername != null) {
+                    authorUsername = authorUsername.trim();
+                }
+                if(authorUsername == null || authorUsername.equalsIgnoreCase("na") || authorUsername.equalsIgnoreCase("n/a") || 
+                        authorUsername.equalsIgnoreCase("") || authorUsername.equalsIgnoreCase(",")) {
+                    authorUsername = JpaController.NA_AUTHOR;
                 }
                 
                 MpcaComment persisComment = new MpcaComment();
-                persisComment.setMpcaCommentPK(new MpcaCommentPK(
-                        new BigInteger((++lastComment) + ""), wp.getPageId().toBigInteger(), 
-                        product.getProductPK().getBrandId(), author.getAuthorId().toBigInteger(), 
-                        product.getProductPK().getBrandId()));
-                persisComment.setWebPage(wp);
-                persisComment.setProduct(product);
-                persisComment.setAuthor(author);
+                //persisComment.setCommentId(lastComment);
+                persisComment.setPageId(wp);
+                persisComment.setProductId(product);
                 persisComment.setCommentText(c.getComment());
                 persisComment.setPublicationDate(c.getDate().getTime());
-                persisComment.setCommentUrl(p.getCommentsPageURL().toString());
                 
                 cc.create(persisComment);
                 System.out.println(lastComment + " Comment Created");
                 
+                // Crea al Autor
+                createCommentAddition(JpaController.AUTHOR_TAG, 
+                        JpaController.COMMENTS_TAG, persisComment, authorUsername);
                 
                 if(c.getTitle() == null || c.getTitle().trim().equals("")) {
                     c.setTitle("-");
                 }
-                /*System.out.println("title = " + c.getTitle());
-                System.out.println("rank = " + c.getStars());
-                System.out.println("Polarity = " + c.getPolarity());*/
                 
-                Addition add = createOrGetAddition(ADDITION_TITLE);
-                CommentAddition ca = new CommentAddition();
-                ca.setAddition(add);
-                ca.setMpcaComment(persisComment);
-                ca.setValue(c.getTitle());
-                cac.create(ca);
-                add = createOrGetAddition(ADDITION_RANK);
-                ca.setAddition(add);
-                ca.setValue(c.getStars() + "");
-                cac.create(ca);
-                add = createOrGetAddition(ADDITION_POLARITY);
-                ca.setAddition(add);
-                ca.setValue(c.getPolarity() + "");
-                cac.create(ca);
+                // Crea el Titulo
+                createCommentAddition(JpaController.ADDITION_TITLE, 
+                        JpaController.COMMENTS_TAG, persisComment, c.getTitle());
+                
+                // Crea el Rank
+                createCommentAddition(JpaController.ADDITION_RANK, 
+                        JpaController.COMMENTS_TAG, persisComment, c.getStars() + "");
+                
+                // Crea la Polaridad
+                createCommentAddition(JpaController.ADDITION_POLARITY, 
+                        JpaController.COMMENTS_TAG, persisComment, c.getPolarity() + "");
             }
             
         }
         return lastComment;
     }
+
+    private MpcaAdditionCategory createOrGetCategory(String category) throws PreexistingEntityException, Exception {
+        MpcaAdditionCategory mac = macc.findMpcaAdditionCategoryByName(category);
+        if(mac == null) {
+            mac = new MpcaAdditionCategory();
+            mac.setName(category);
+            macc.create(mac);
+            mac = macc.findMpcaAdditionCategoryByName(category);
+        }
+        return mac;
+    }
+
+    private void createCommentAddition(String addType, String categoryTag, MpcaComment persisComment, String authorUsername) throws Exception {
+        MpcaAdditionType at = createOrGetAddition(addType, categoryTag);
+        MpcaCommentAddition ca = new MpcaCommentAddition(persisComment.getCommentId(), at.getAddId());
+        ca.setValue(authorUsername);
+        cac.create(ca);
+    }
     
-    private static String URL_EXTENSION = ".urls";
-    private static String DESCRIPTOR_EXTENSION = ".descriptor";
-    private static String BRAND_TAG = "brand";
-    private static String MODEL_TAG = "model";
-    private static String HARD_DRIVE_TAG = "HD";
-    private static String RAM_TAG = "ram";
-    private static String TOTAL_PAGES_TAG = "totalPages";
-    private static String NEXT_PAGE_TAG = "nextPage";
-    private static String COMMENTS_TAG = "comments";
-    private static String TIGERDIRECT_NAME = "tigerdirect";
-    private static String AMAZON_NAME = "amazon";
-    private static String NEWEGG_NAME = "newegg";
-    private static String NA_AUTHOR = "N/A";
-    private static String ADDITION_TITLE = "title";
-    private static String ADDITION_RANK = "rank";
-    private static String ADDITION_POLARITY = "polarity";
-    private static Polarity ADDITION_POSITIVE = Polarity.POSITIVE;
-    private static Polarity ADDITION_NEGATIVE = Polarity.NEGATIVE;
-    private static Polarity ADDITION_NEUTRAL = Polarity.NEUTRAL;
     
 }
