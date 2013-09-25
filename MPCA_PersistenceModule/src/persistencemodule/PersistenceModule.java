@@ -4,21 +4,8 @@
  */
 package persistencemodule;
 
-import controllers.JpaController;
-import controllers.MpcaAdditionCategoryJpaController;
-import controllers.MpcaAdditionTypeJpaController;
 import controllers.MpcaWebPageJpaController;
 import entities.MpcaWebPage;
-/*import controllers.MpcaCommentAdditionJpaController;
-import controllers.MpcaCommentJpaController;
-import controllers.WebPageJpaController;
-import entities.Addition;
-import entities.CommentAddition;
-import entities.MpcaComment;
-import entities.WebPage;*/
-import java.util.List;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 /**
  *
