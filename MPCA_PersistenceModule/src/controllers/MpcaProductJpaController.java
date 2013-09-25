@@ -357,5 +357,21 @@ public class MpcaProductJpaController extends JpaController implements Serializa
             em.close();
         }
     }
+
+    public MpcaProduct findProductByModel(String model) {
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createNamedQuery("MpcaProduct.findByModel");
+            q.setParameter("model", model);
+            List<MpcaProduct> resultList = q.getResultList();
+            MpcaProduct pro = null;
+            if(!resultList.isEmpty()) {
+                pro = resultList.get(0);
+            }
+            return pro;
+        } finally {
+            em.close();
+        }
+    }
     
 }

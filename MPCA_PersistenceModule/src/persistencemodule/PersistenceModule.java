@@ -7,6 +7,8 @@ package persistencemodule;
 import controllers.JpaController;
 import controllers.MpcaAdditionCategoryJpaController;
 import controllers.MpcaAdditionTypeJpaController;
+import controllers.MpcaWebPageJpaController;
+import entities.MpcaWebPage;
 /*import controllers.MpcaCommentAdditionJpaController;
 import controllers.MpcaCommentJpaController;
 import controllers.WebPageJpaController;
@@ -46,12 +48,8 @@ public class PersistenceModule {
             if(i >= 10) break;
         }*/
         //MpcaAdditionCategoryJpaController aa = new MpcaAdditionCategoryJpaController();
-        Long l = new Long(3l);
-        f(l);
-        System.out.println(l);
-    }
-    
-    public static void f(Long l) {
-        l = l+1;
+        MpcaWebPage wp = new MpcaWebPage("aja", "www.aja.com");
+        MpcaWebPageJpaController wpc = new MpcaWebPageJpaController();
+        wpc.create(wp);
     }
 }

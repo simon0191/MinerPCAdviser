@@ -278,5 +278,21 @@ public class MpcaAdditionTypeJpaController extends JpaController implements Seri
             em.close();
         }
     }
+
+    public MpcaAdditionType findAdditionByType(String type) {
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createNamedQuery("MpcaAdditionType.findByAddType");
+            q.setParameter("addType", type);
+            List<MpcaAdditionType> resultList = q.getResultList();
+            MpcaAdditionType add = null;
+            if(!resultList.isEmpty()) {
+                add = resultList.get(0);
+            }
+            return add;
+        } finally {
+            em.close();
+        }
+    }
     
 }
