@@ -26,15 +26,6 @@ import javax.persistence.Persistence;
  */
 public class PersistenceModule {
     
-    private static EntityManagerFactory em = null;
-    
-    public static EntityManagerFactory getEntityManagerFactoryInstance() {
-        if(em == null) {
-            em = Persistence.createEntityManagerFactory("MPCA_PersistenceModulePU");
-        }
-        return em;
-    }
-
     /**
      * @param args the command line arguments
      */

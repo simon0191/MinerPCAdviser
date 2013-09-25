@@ -182,5 +182,9 @@ public class MpcaAdditionCategoryJpaController extends JpaController implements 
             em.close();
         }
     }
+
+    public MpcaAdditionCategory findMpcaAdditionCategoryByName(String category) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }
