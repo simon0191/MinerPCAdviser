@@ -1,5 +1,5 @@
-brand  fieldset>dl>dd
-model fieldset dl 1 dd
+brand  fieldset
+model fieldset
 HD div#Details_Content>div#Specs fieldset 6 dd
 ram div#Details_Content>div#Specs fieldset 7 dd
 totalPages table.grpReviews form#TopPaginationForm div.pageNav>div.pageTotal

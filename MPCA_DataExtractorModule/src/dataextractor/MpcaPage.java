@@ -13,24 +13,24 @@ import java.util.logging.Logger;
  *
  * @author simon
  */
-public class MPCA_Page {
+public class MpcaPage {
     private URL mainPageURL;
     private URL commentsPageURL;
 
-    public MPCA_Page(URL mainPageURL) {
+    public MpcaPage(URL mainPageURL) {
         this.mainPageURL = this.commentsPageURL = mainPageURL;
     }
 
-    public MPCA_Page(URL mainPageURL, URL commentsPageURL) {
+    public MpcaPage(URL mainPageURL, URL commentsPageURL) {
         this.mainPageURL = mainPageURL;
         this.commentsPageURL = commentsPageURL;
     }
     
-    public MPCA_Page(String mainPageURL) throws MalformedURLException {
+    public MpcaPage(String mainPageURL) throws MalformedURLException {
         this.mainPageURL = this.commentsPageURL = new URL(mainPageURL);
     }
 
-    public MPCA_Page(String mainPageURL, String commentsPageURL) throws MalformedURLException {
+    public MpcaPage(String mainPageURL, String commentsPageURL) throws MalformedURLException {
         this.mainPageURL = new URL(mainPageURL);
         this.commentsPageURL = new URL(commentsPageURL);
     }
