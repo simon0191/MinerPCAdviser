@@ -4,7 +4,7 @@
  */
 package dataextractor;
 
-import interfaces.ICommentsExtractor;
+import interfaces.IMpcaCommentsExtractor;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,7 +14,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.MPCA_Comment;
+import model.MpcaCommentModel;
 import utils.Polarity;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -23,22 +23,22 @@ import org.jsoup.select.Elements;
  *
  * @author Antonio
  */
-public class AmazonCommentsExtractor implements ICommentsExtractor {
+public class MpcaAmazonCommentsExtractor implements IMpcaCommentsExtractor {
     
-    private static ICommentsExtractor extractor = null;
+    private static IMpcaCommentsExtractor extractor = null;
     
-    private AmazonCommentsExtractor() {}
+    private MpcaAmazonCommentsExtractor() {}
     
-    public static ICommentsExtractor getExtractor() {
+    public static IMpcaCommentsExtractor getExtractor() {
         if(extractor == null) {
-            extractor = new AmazonCommentsExtractor();
+            extractor = new MpcaAmazonCommentsExtractor();
         }
         return extractor;
     }
     
     @Override
-    public List<MPCA_Comment> commentExtractor(Element comments) {
-        List<MPCA_Comment> coms = new ArrayList<>();
+    public List<MpcaCommentModel> commentExtractor(Element comments) {
+        List<MpcaCommentModel> coms = new ArrayList<>();
         Elements everyComment = comments.select("div[style=margin-left:0.5em;]");
         for (Element singleComment : everyComment) {
             double rate = Double.parseDouble(singleComment.select("div>span>span>span").first().text().substring(0, 3));
@@ -51,13 +51,13 @@ public class AmazonCommentsExtractor implements ICommentsExtractor {
                 Date d = fmt.parse(eleDate);
                 datePosted.setTime(d);
             } catch (ParseException ex) {
-                Logger.getLogger(AmazonCommentsExtractor.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(MpcaAmazonCommentsExtractor.class.getName()).log(Level.SEVERE, null, ex);
             }
             String comnt = singleComment.ownText();
             
             String author = singleComment.select("div[style=float:left;] span[style=font-weight: bold;]").first().text();
             
-            MPCA_Comment newComment = new MPCA_Comment(title, rate, comnt, Polarity.NEUTRAL, datePosted, author);
+            MpcaCommentModel newComment = new MpcaCommentModel(title, rate, comnt, Polarity.NEUTRAL, datePosted, author);
             coms.add(newComment);
             
             //System.out.println(newComment);
@@ -65,6 +65,34 @@ public class AmazonCommentsExtractor implements ICommentsExtractor {
         }
         
         return coms;
+    }
+
+    @Override
+    public String brandExtractor(Element brandEle) {
+        Elements eles = brandEle.select("tr");
+        for (Element ele : eles) {
+            Elements block = ele.select("td");
+            Element title = block.first();
+            
+            if(title.text().toLowerCase().contains("brand")) {
+                return block.get(1).text().trim().toUpperCase();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String modelExtractor(Element modelEle) {
+        Elements eles = modelEle.select("tr");
+        for (Element ele : eles) {
+            Elements block = ele.select("td");
+            Element title = block.first();
+            
+            if(title.text().toLowerCase().contains("model")) {
+                return block.get(1).text().trim().toUpperCase();
+            }
+        }
+        return null;
     }
     
 }

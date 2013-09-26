@@ -4,6 +4,8 @@
  */
 package dataextractor;
 
+import exceptions.MpcaFeatureNotFound;
+import exceptions.MpcaPageNameNotFound;
 import controllers.JpaController;
 import controllers.MpcaAdditionCategoryJpaController;
 import controllers.MpcaAdditionTypeJpaController;
@@ -22,10 +24,10 @@ import entities.MpcaProduct;
 import entities.MpcaProductAddition;
 import entities.MpcaProductWebPage;
 import entities.MpcaWebPage;
-import exceptions.CommentsExtractorNotFoundException;
-import exceptions.UnrecognizedExtensionException;
-import interfaces.ICommentsExtractor;
-import interfaces.IDataExtractor;
+import exceptions.MpcaCommentsExtractorNotFoundException;
+import exceptions.MpcaUnrecognizedExtensionException;
+import interfaces.IMpcaCommentsExtractor;
+import interfaces.IMpcaDataExtractor;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -37,22 +39,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import model.MPCA_Comment;
-import utils.Polarity;
+import model.MpcaCommentModel;
 import org.jsoup.nodes.Element;
 
 /**
  *
  * @author Antonio
  */
-public class MPCA_DataExtractor implements IDataExtractor {
+public class MpcaDataExtractor implements IMpcaDataExtractor {
     
     // Singleton
-    private static IDataExtractor dataExtractor = null;
+    private static IMpcaDataExtractor dataExtractor = null;
     // Lista de URLs por página
-    private Map<String, List<MPCA_Page>> computersURLs;
+    private Map<String, List<MpcaPage>> computersURLs;
     // Grupo de descriptores por Página
-    private Map<String, Map<String, List<MPCA_Selector>>> descriptors;
+    private Map<String, Map<String, List<MpcaSelector>>> descriptors;
     
     private MpcaWebPageJpaController wpc = new MpcaWebPageJpaController();
     private MpcaCommentJpaController cc = new MpcaCommentJpaController();
@@ -63,22 +64,22 @@ public class MPCA_DataExtractor implements IDataExtractor {
     private MpcaCommentAdditionJpaController cac = new MpcaCommentAdditionJpaController();
     private MpcaAdditionCategoryJpaController macc = new MpcaAdditionCategoryJpaController();
     
-    public static IDataExtractor getInstance() {
+    public static IMpcaDataExtractor getInstance() {
         if(dataExtractor == null) {
-            dataExtractor = new MPCA_DataExtractor();
+            dataExtractor = new MpcaDataExtractor();
         }
         return dataExtractor;
     }
     
-    private MPCA_DataExtractor() {
+    private MpcaDataExtractor() {
         computersURLs = new TreeMap<>();
         descriptors = new TreeMap<>();
     }
 
     @Override
     public void updateFromFiles(String files) 
-            throws IOException, PreexistingEntityException, CommentsExtractorNotFoundException, Exception {
-        StringBuffer fileData = MPCA_PageExtractor.readFile(new File(files));
+            throws IOException, PreexistingEntityException, MpcaCommentsExtractorNotFoundException, Exception {
+        StringBuffer fileData = MpcaPageExtractor.readFile(new File(files));
         String []lines = fileData.toString().split("\n");
         
         // Se leen los archivos que contienen los descriptores y URLs para guardarlos en memoria
@@ -95,10 +96,10 @@ public class MPCA_DataExtractor implements IDataExtractor {
             MpcaWebPage wp = createOrGetWebPageByName(pageName);
             System.out.println("WebPage created or updated = " + pageName);
             
-            List<MPCA_Page> urls = computersURLs.get(pageName);
-            Map<String, List<MPCA_Selector>> des = descriptors.get(pageName);
+            List<MpcaPage> urls = computersURLs.get(pageName);
+            Map<String, List<MpcaSelector>> des = descriptors.get(pageName);
             // Se trasladan los descriptores de los comentarios del antiguo mapa para poder tratar página por página
-            Map<String, List<MPCA_Selector>> comments = new TreeMap<>();
+            Map<String, List<MpcaSelector>> comments = new TreeMap<>();
             comments.put(JpaController.COMMENTS_TAG, des.remove(JpaController.COMMENTS_TAG));
             if(des.containsKey(JpaController.NEXT_PAGE_TAG)) {
                 comments.put(JpaController.NEXT_PAGE_TAG, des.remove(JpaController.NEXT_PAGE_TAG));
@@ -106,19 +107,21 @@ public class MPCA_DataExtractor implements IDataExtractor {
             if(des.containsKey(JpaController.TOTAL_PAGES_TAG)) {
                 comments.put(JpaController.TOTAL_PAGES_TAG, des.remove(JpaController.TOTAL_PAGES_TAG));
             }
-            for (MPCA_Page p : urls) {
+            for (MpcaPage p : urls) {
                 System.out.println("Url = " + p.getCommentsPageURL());
-                Map<String, Element> data = MPCA_PageExtractor.get(p.getMainPageURL().toString(), des);
+                Map<String, Element> data = MpcaPageExtractor.get(p.getMainPageURL().toString(), des);
                 List<Element> allComments = extractCommentsFromURL(p.getCommentsPageURL(), comments, pageName);
                 
-                String brand = data.get(JpaController.BRAND_TAG).text().trim().toUpperCase();
-                String model = data.get(JpaController.MODEL_TAG).text().trim().toUpperCase();
+                //String brand = data.get(JpaController.BRAND_TAG).text().trim().toUpperCase();
+                String brand = extractFeature(data.get(JpaController.BRAND_TAG), pageName, JpaController.BRAND_TAG);
+                //String model = data.get(JpaController.MODEL_TAG).text().trim().toUpperCase();
+                String model = extractFeature(data.get(JpaController.MODEL_TAG), pageName, JpaController.MODEL_TAG);
                 
                 // Crea o actualiza un producto
                 MpcaProduct product = createOrUpdateProduct(model, brand, wp, p, data);
                 
                 // Extrae los comentarios de los HTMLs y los estructura
-                List<MPCA_Comment> commentsExtracted = extractComments(pageName, allComments);
+                List<MpcaCommentModel> commentsExtracted = extractComments(pageName, allComments);
                 
                 // Crea o actualiza la base de datos de comentarios
                 lastComment = createOrUpdateComments(product, wp, commentsExtracted, lastComment, p);
@@ -148,19 +151,19 @@ public class MPCA_DataExtractor implements IDataExtractor {
             if(line.charAt(0) != '#') {
                 // Extractor de URLs
                 if(line.endsWith(JpaController.URL_EXTENSION)) {
-                    StringBuffer urlData = MPCA_PageExtractor.readFile(new File(line.trim()));
+                    StringBuffer urlData = MpcaPageExtractor.readFile(new File(line.trim()));
                     String []urls = urlData.toString().split("\n+");
-                    List<MPCA_Page> urlPages = new ArrayList<>();
+                    List<MpcaPage> urlPages = new ArrayList<>();
                     for (String urlLine : urls) {
                         if(urlLine.trim().charAt(0) != '#') {
                             String []pages = urlLine.split(" +");
-                            MPCA_Page p;
+                            MpcaPage p;
                             // Una sola URL indica que los comentarios están en esa misma página, de lo contrario,
                             //los comentarios se encuentran en la segunda página
                             if(pages.length == 1) {
-                                p = new MPCA_Page(pages[0].trim());
+                                p = new MpcaPage(pages[0].trim());
                             } else {
-                                p = new MPCA_Page(pages[0].trim(), pages[1].trim());
+                                p = new MpcaPage(pages[0].trim(), pages[1].trim());
                             }
                             urlPages.add(p);
                         }
@@ -169,19 +172,19 @@ public class MPCA_DataExtractor implements IDataExtractor {
 
                     // Extractor de selectors
                 } else if(line.endsWith(JpaController.DESCRIPTOR_EXTENSION)) {
-                    Map<String, List<MPCA_Selector>> parseDescriptor = MPCA_PageExtractor.parseDescriptor(new File(line));
+                    Map<String, List<MpcaSelector>> parseDescriptor = MpcaPageExtractor.parseDescriptor(new File(line));
                     descriptors.put(page, parseDescriptor);
                 } else {
-                    throw new UnrecognizedExtensionException(line.substring(line.indexOf(".")));
+                    throw new MpcaUnrecognizedExtensionException(line.substring(line.indexOf(".")));
                 }
             } // fi line.charAt()
         }
     }
     
     private List<Element> extractCommentsFromURL(URL commentsURL, Map<String, 
-            List<MPCA_Selector>> comments, String pageName) throws IOException, NumberFormatException {
+            List<MpcaSelector>> comments, String pageName) throws IOException, NumberFormatException {
         
-        Map<String, Element> commentsData = MPCA_PageExtractor.get(commentsURL.toString().trim(), comments);
+        Map<String, Element> commentsData = MpcaPageExtractor.get(commentsURL.toString().trim(), comments);
         
         List<Element> allComments = new ArrayList<>();
         
@@ -195,7 +198,7 @@ public class MPCA_DataExtractor implements IDataExtractor {
             System.out.println(totalPages);
             for (int i = 1; i <= totalPages; ++i) {
                 String newURL = commentsURL.toString().replaceFirst("Page=" + "[0-9]+", "Page=" + i);
-                Map<String, Element> comms = MPCA_PageExtractor.get(newURL, comments);
+                Map<String, Element> comms = MpcaPageExtractor.get(newURL, comments);
                 allComments.add(comms.get(JpaController.COMMENTS_TAG));
                 System.out.println("Page = " + i);
             }
@@ -214,7 +217,7 @@ public class MPCA_DataExtractor implements IDataExtractor {
         
         int a = 1;
         while(!nextPage.equals("")) {
-            Map<String, Element> comms = MPCA_PageExtractor.get(prefix + nextPage, comments);
+            Map<String, Element> comms = MpcaPageExtractor.get(prefix + nextPage, comments);
             allComments.add(comms.get(JpaController.COMMENTS_TAG));
             ele = comms.get(JpaController.NEXT_PAGE_TAG);
             if(ele != null && ele.text().toLowerCase().contains("next")) {
@@ -277,10 +280,11 @@ public class MPCA_DataExtractor implements IDataExtractor {
      * @return Retorna el producto nuevo o actualizado
      * @throws Exception 
      */
-    private MpcaProduct createOrUpdateProduct(String model, String brand, MpcaWebPage wp, MPCA_Page p, Map<String, Element> data) throws Exception {
+    private MpcaProduct createOrUpdateProduct(String model, String brand, MpcaWebPage wp, MpcaPage p, Map<String, Element> data) throws Exception {
         MpcaProduct product = pc.findProductByModel(model);
         if(product == null) {
-            product = new MpcaProduct(null, model);
+            product = new MpcaProduct();
+            product.setModel(model);
             pc.create(product);
             product = pc.findProductByModel(model);
             
@@ -337,27 +341,27 @@ public class MPCA_DataExtractor implements IDataExtractor {
      * Método que extrae los comentarios de un bloque de HTML para estructurarlo.
      * @param pageName Nombre de la página que va a ser utilizada para encontrar su Extractor respectivo
      * @param allComments Lista de comentarios semiestructurados en HTML
-     * @return Retorna una lista de comentarios estructurados en la clase MPCA_Comment
-     * @throws CommentsExtractorNotFoundException 
+     * @return Retorna una lista de comentarios estructurados en la clase MpcaCommentModel
+     * @throws MpcaCommentsExtractorNotFoundException 
      */
-    private List<MPCA_Comment> extractComments(String pageName, List<Element> allComments) throws CommentsExtractorNotFoundException {
+    private List<MpcaCommentModel> extractComments(String pageName, List<Element> allComments) throws MpcaCommentsExtractorNotFoundException {
         /* Extracción de comentarios */
-        ICommentsExtractor extractor = null;
+        IMpcaCommentsExtractor extractor = null;
         switch (pageName) {
             case JpaController.AMAZON_NAME:
-                extractor = AmazonCommentsExtractor.getExtractor();
+                extractor = MpcaAmazonCommentsExtractor.getExtractor();
                 break;
             case JpaController.TIGERDIRECT_NAME:
-                extractor = TigerDirectCommentsExtractor.getExtractor();
+                extractor = MpcaTigerDirectCommentsExtractor.getExtractor();
                 break;
             case JpaController.NEWEGG_NAME:
-                extractor = NeweggCommentsExtractor.getExtractor();
+                extractor = MpcaNeweggCommentsExtractor.getExtractor();
                 break;
         }
         if(extractor == null) {
-            throw new CommentsExtractorNotFoundException(pageName);
+            throw new MpcaCommentsExtractorNotFoundException(pageName);
         }
-        List<MPCA_Comment> commentsExtracted = new ArrayList<>();
+        List<MpcaCommentModel> commentsExtracted = new ArrayList<>();
         for (Element coms : allComments) {
             commentsExtracted.addAll(extractor.commentExtractor(coms));
         }
@@ -380,7 +384,7 @@ public class MPCA_DataExtractor implements IDataExtractor {
         return theAdd;
     }
     
-    private void createProductWebPage(MpcaProduct product, MpcaWebPage wp, MPCA_Page p) throws Exception {
+    private void createProductWebPage(MpcaProduct product, MpcaWebPage wp, MpcaPage p) throws Exception {
         MpcaProductWebPage pwb = new MpcaProductWebPage();
         pwb.setMpcaProduct(product);
         pwb.setMpcaWebPage(wp);
@@ -391,7 +395,7 @@ public class MPCA_DataExtractor implements IDataExtractor {
         System.out.println("ProductWebPage created");
     }
 
-    private long createOrUpdateComments(MpcaProduct product, MpcaWebPage wp, List<MPCA_Comment> commentsExtracted, long lastComment, MPCA_Page p) throws Exception {
+    private long createOrUpdateComments(MpcaProduct product, MpcaWebPage wp, List<MpcaCommentModel> commentsExtracted, long lastComment, MpcaPage p) throws Exception {
         Date lastUpdate = null;
         for (MpcaProductWebPage productWebPage : product.getMpcaProductWebPageList()) {
             if(productWebPage.getMpcaWebPage().getPageId().compareTo(wp.getPageId()) == 0) {
@@ -409,7 +413,7 @@ public class MPCA_DataExtractor implements IDataExtractor {
         GregorianCalendar gc = new GregorianCalendar(
                 lastUpdate.getYear(), lastUpdate.getMonth(), lastUpdate.getDay());
         
-        for (MPCA_Comment c : commentsExtracted) {
+        for (MpcaCommentModel c : commentsExtracted) {
             /* Si la fecha de publicación del comentario es más reciente que la de la última actualización
                entonces se tiene en cuenta */
             if(c.getDate().after(gc)) {
@@ -449,7 +453,7 @@ public class MPCA_DataExtractor implements IDataExtractor {
                 }
                 
                 // Crea el Titulo
-                createCommentAddition(JpaController.ADDITION_TITLE, 
+                createCommentAddition(JpaController.TAG_TITLE, 
                         JpaController.COMMENTS_TAG, persisComment, c.getTitle());
                 
                 // Crea el Rank
@@ -481,6 +485,33 @@ public class MPCA_DataExtractor implements IDataExtractor {
         MpcaCommentAddition ca = new MpcaCommentAddition(persisComment.getCommentId(), at.getAddId());
         ca.setValue(authorUsername);
         cac.create(ca);
+    }
+
+    private String extractFeature(Element featureBlock, String pageName, String feature) 
+            throws MpcaPageNameNotFound, MpcaFeatureNotFound {
+        IMpcaCommentsExtractor extractor;
+        switch(pageName) {
+            case JpaController.TIGERDIRECT_NAME:
+                extractor = MpcaTigerDirectCommentsExtractor.getExtractor();
+                break;
+            case JpaController.AMAZON_NAME:
+                extractor = MpcaAmazonCommentsExtractor.getExtractor();
+                break;
+            case JpaController.NEWEGG_NAME:
+                extractor = MpcaNeweggCommentsExtractor.getExtractor();
+                break;
+            default:
+                throw new MpcaPageNameNotFound(pageName);
+        }
+        
+        switch(feature) {
+            case JpaController.BRAND_TAG:
+                return extractor.brandExtractor(featureBlock);
+            case JpaController.MODEL_TAG:
+                return extractor.modelExtractor(featureBlock);
+            default:
+                throw new MpcaFeatureNotFound(feature);
+        }
     }
     
     

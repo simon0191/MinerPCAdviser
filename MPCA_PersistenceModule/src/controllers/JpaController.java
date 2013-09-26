@@ -51,7 +51,7 @@ public class JpaController {
     public static final String AMAZON_NAME = "amazon";
     public static final String NEWEGG_NAME = "newegg";
     public static final String NA_AUTHOR = "N/A";
-    public static final String ADDITION_TITLE = "title";
+    public static final String TAG_TITLE = "title";
     public static final String ADDITION_RANK = "rank";
     public static final String ADDITION_POLARITY = "polarity";
     public static final Polarity ADDITION_POSITIVE = Polarity.POSITIVE;

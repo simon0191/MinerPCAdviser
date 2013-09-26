@@ -12,7 +12,7 @@ import java.util.GregorianCalendar;
  *
  * @author Antonio
  */
-public class MPCA_Comment {
+public class MpcaCommentModel {
     private double stars;
     private String comment;
     private String title;
@@ -20,7 +20,7 @@ public class MPCA_Comment {
     private GregorianCalendar date;
     private String author;
     
-    public MPCA_Comment(String title, double stars, String comment, Polarity pol, GregorianCalendar date, String author) {
+    public MpcaCommentModel(String title, double stars, String comment, Polarity pol, GregorianCalendar date, String author) {
         this.title = title;
         this.stars = stars;
         this.comment = comment;

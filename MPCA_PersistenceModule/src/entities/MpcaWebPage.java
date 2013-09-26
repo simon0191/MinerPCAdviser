@@ -37,7 +37,7 @@ public class MpcaWebPage implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "PAGE_ID") @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "PAGE_ID") //@GeneratedValue(strategy = GenerationType.AUTO)
     private Long pageId;
     @Basic(optional = false)
     @Column(name = "PAGE_NAME")

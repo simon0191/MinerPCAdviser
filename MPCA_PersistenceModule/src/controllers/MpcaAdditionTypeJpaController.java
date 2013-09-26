@@ -80,9 +80,9 @@ public class MpcaAdditionTypeJpaController extends JpaController implements Seri
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
-            if (findMpcaAdditionType(mpcaAdditionType.getAddId()) != null) {
+            /*if (findMpcaAdditionType(mpcaAdditionType.getAddId()) != null) {
                 throw new PreexistingEntityException("MpcaAdditionType " + mpcaAdditionType + " already exists.", ex);
-            }
+            }*/
             throw ex;
         } finally {
             if (em != null) {

@@ -4,7 +4,11 @@
  */
 package persistencemodule;
 
+import controllers.MpcaAdditionCategoryJpaController;
+import controllers.MpcaProductJpaController;
 import controllers.MpcaWebPageJpaController;
+import entities.MpcaAdditionCategory;
+import entities.MpcaProduct;
 import entities.MpcaWebPage;
 
 /**
@@ -26,8 +30,19 @@ public class PersistenceModule {
             if(i >= 10) break;
         }*/
         //MpcaAdditionCategoryJpaController aa = new MpcaAdditionCategoryJpaController();
-        MpcaWebPage wp = new MpcaWebPage("aja", "www.aja.com");
+        /*MpcaWebPage wp = new MpcaWebPage();
+        wp.setPageName("aja");
+        wp.setPageUrl("www.aja.com");
         MpcaWebPageJpaController wpc = new MpcaWebPageJpaController();
-        wpc.create(wp);
+        wpc.create(wp);*/
+        /*MpcaAdditionCategory ac = new MpcaAdditionCategory();
+        ac.setName("aja");
+        MpcaAdditionCategoryJpaController acc = new MpcaAdditionCategoryJpaController();
+        acc.create(ac);
+        */
+        MpcaProduct p = new MpcaProduct();
+        p.setModel("aja");
+        MpcaProductJpaController pc = new MpcaProductJpaController();
+        pc.create(p);
     }
 }

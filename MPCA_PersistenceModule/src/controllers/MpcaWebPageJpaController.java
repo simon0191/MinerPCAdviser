@@ -18,7 +18,6 @@ import java.util.List;
 import entities.MpcaProductWebPage;
 import entities.MpcaWebPage;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 /**
  *

@@ -4,7 +4,7 @@
  */
 package dataextractor;
 
-import interfaces.ICommentsExtractor;
+import interfaces.IMpcaCommentsExtractor;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.MPCA_Comment;
+import model.MpcaCommentModel;
 import utils.Polarity;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -24,22 +24,22 @@ import org.jsoup.select.Elements;
  *
  * @author Antonio
  */
-public class TigerDirectCommentsExtractor implements ICommentsExtractor {
+public class MpcaTigerDirectCommentsExtractor implements IMpcaCommentsExtractor {
     
-    private static ICommentsExtractor extractor = null;
+    private static IMpcaCommentsExtractor extractor = null;
     
-    private TigerDirectCommentsExtractor() {}
+    private MpcaTigerDirectCommentsExtractor() {}
     
-    public static ICommentsExtractor getExtractor() {
+    public static IMpcaCommentsExtractor getExtractor() {
         if(extractor == null) {
-            extractor = new TigerDirectCommentsExtractor();
+            extractor = new MpcaTigerDirectCommentsExtractor();
         }
         return extractor;
     }
 
     @Override
-    public List<MPCA_Comment> commentExtractor(Element comments) {
-        List<MPCA_Comment> coms = new ArrayList<>();
+    public List<MpcaCommentModel> commentExtractor(Element comments) {
+        List<MpcaCommentModel> coms = new ArrayList<>();
         
         //Elements everyComment = comments.select("div#customerReviews");
         Elements everyComment = comments.select("div#customerReviews>div#customerReviews");
@@ -54,7 +54,7 @@ public class TigerDirectCommentsExtractor implements ICommentsExtractor {
                 Date d = fmt.parse(ss.select("dl.reviewer>dd").get(1).text());
                 datePosted.setTime(d);
             } catch (ParseException ex) {
-                Logger.getLogger(TigerDirectCommentsExtractor.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(MpcaTigerDirectCommentsExtractor.class.getName()).log(Level.SEVERE, null, ex);
             }
             String title = singleCom.select("div.rightCol h6").first().text();
             String comnt = singleCom.select("div.rightCol p").first().text();
@@ -64,7 +64,7 @@ public class TigerDirectCommentsExtractor implements ICommentsExtractor {
                 author = null;
             }
             
-            MPCA_Comment newComment = new MPCA_Comment(title, rate, comnt, Polarity.NEUTRAL, datePosted, author);
+            MpcaCommentModel newComment = new MpcaCommentModel(title, rate, comnt, Polarity.NEUTRAL, datePosted, author);
             coms.add(newComment);
             
             
@@ -72,6 +72,19 @@ public class TigerDirectCommentsExtractor implements ICommentsExtractor {
             System.out.println("============================================");
         }
         return coms;
+    }
+
+    @Override
+    public String brandExtractor(Element brandEle) {
+        return brandEle.text().trim().toUpperCase();
+    }
+
+    @Override
+    public String modelExtractor(Element modelEle) {
+        String modelLine = modelEle.text();
+        String modelTag = "model#:";
+        int indexOf = modelLine.toLowerCase().indexOf(modelTag);
+        return modelLine.substring(indexOf+modelTag.length()+1).trim().toUpperCase();
     }
     
 }

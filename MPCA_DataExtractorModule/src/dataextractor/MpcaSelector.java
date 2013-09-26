@@ -8,16 +8,16 @@ package dataextractor;
  *
  * @author simon
  */
-public class MPCA_Selector {
+public class MpcaSelector {
     private String selector;
     private int childNumber;
 
-    public MPCA_Selector(String selector) {
+    public MpcaSelector(String selector) {
         this.selector = selector;
         this.childNumber = 0;
     }
     
-    public MPCA_Selector(String selector, int childNumber) {
+    public MpcaSelector(String selector, int childNumber) {
         this.selector = selector;
         this.childNumber = childNumber;
     }

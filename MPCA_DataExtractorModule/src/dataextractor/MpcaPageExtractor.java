@@ -26,15 +26,15 @@ import org.jsoup.select.Elements;
  *
  * @author simon
  */
-public class MPCA_PageExtractor {
+public class MpcaPageExtractor {
     public static Pattern SPLITTER = Pattern.compile("[ ]+[0-9]+");
     //public static String CHROME_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64) "
             //+ "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.2 Safari/537.36";
     public static String CHROME_AGENT = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 "
             + "(KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36";
     
-    public static Map<String,Element> get(String url, Map<String,List<MPCA_Selector> > descriptor) throws IOException {
-        //Document doc = Jsoup.connect(url).userAgent(MPCA_PageExtractor.CHROME_AGENT).get();
+    public static Map<String,Element> get(String url, Map<String,List<MpcaSelector> > descriptor) throws IOException {
+        //Document doc = Jsoup.connect(url).userAgent(MpcaPageExtractor.CHROME_AGENT).get();
         //Document doc = Jsoup.parse(new URL(url), 3000);
         Document doc = Jsoup.parse(new URL(url), 10000);
         
@@ -43,7 +43,7 @@ public class MPCA_PageExtractor {
         
         for(String k:keys) {
             
-            List<MPCA_Selector> selectors = descriptor.get(k);
+            List<MpcaSelector> selectors = descriptor.get(k);
             Element e = doc.body();
             for(int i = 0;i<selectors.size();++i) {
                 Elements els = e.select(selectors.get(i).getSelector());
@@ -59,9 +59,9 @@ public class MPCA_PageExtractor {
         return result;
         
     }
-    public static Map<String,List<MPCA_Selector>> parseDescriptor(String str) {
+    public static Map<String,List<MpcaSelector>> parseDescriptor(String str) {
         
-        HashMap<String,List<MPCA_Selector>> descriptor = new HashMap<String,List<MPCA_Selector>>();
+        HashMap<String,List<MpcaSelector>> descriptor = new HashMap<String,List<MpcaSelector>>();
         
         String[] lines = str.split("\n+");
         
@@ -82,10 +82,10 @@ public class MPCA_PageExtractor {
                 pos.add(new Pair(lastStart,selector.length()));
             }
             
-            List<MPCA_Selector> selectors = new ArrayList<MPCA_Selector>();
+            List<MpcaSelector> selectors = new ArrayList<MpcaSelector>();
             for(int j = 0;j<pos.size();++j) {
                 if(j+1 < pos.size()) {
-                    selectors.add(new MPCA_Selector(
+                    selectors.add(new MpcaSelector(
                             selector.substring(pos.get(j).first,pos.get(j).second).trim(),
                             Integer.parseInt(selector.substring(pos.get(j+1).first,pos.get(j+1).second).trim())
                             ));    
@@ -93,20 +93,20 @@ public class MPCA_PageExtractor {
                 }
                 else{
                     System.out.println("Selector: " + selector.substring(pos.get(j).first,pos.get(j).second));
-                    selectors.add(new MPCA_Selector(
+                    selectors.add(new MpcaSelector(
                             selector.substring(pos.get(j).first,pos.get(j).second)));
                 }
                 
             }
             descriptor.put(key, selectors);
             
-            /*for (MPCA_Selector selector1 : selectors) {
+            /*for (MpcaSelector selector1 : selectors) {
                 System.out.println("selector = " + selector1.getSelector() + ", child = " + selector1.getChildNumber());
             }*/
         }
         return descriptor;
     }
-    public static Map<String,List<MPCA_Selector>> parseDescriptor(File file) throws FileNotFoundException, IOException {
+    public static Map<String,List<MpcaSelector>> parseDescriptor(File file) throws FileNotFoundException, IOException {
         StringBuffer fileData = readFile(file);
         return parseDescriptor(fileData.toString());
     }
