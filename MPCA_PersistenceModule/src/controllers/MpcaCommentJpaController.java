@@ -307,5 +307,20 @@ public class MpcaCommentJpaController extends JpaController implements Serializa
             em.close();
         }
     }
-    
+
+    public List<MpcaComment> findMpcaCommentByValueAndAddition(String r, String rank, int i, int i0) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        
+        
+    }    
+    /*
+    public List<MpcaComment> findMpcaCommentByValueAndAddition(String value, String addType) {
+        EntityManager em = getEntityManager();
+        Query q = em.createNamedQuery("MpcaComment.findByAdditionAndValue");
+        q.setParameter("value", value);
+        q.setParameter("addType", addType);
+        return q.getResultList();
+    }
+    * */
 }
