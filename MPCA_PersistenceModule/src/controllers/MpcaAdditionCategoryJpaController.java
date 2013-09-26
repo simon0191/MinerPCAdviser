@@ -182,5 +182,21 @@ public class MpcaAdditionCategoryJpaController extends JpaController implements 
             em.close();
         }
     }
+
+    public MpcaAdditionCategory findMpcaAdditionCategoryByName(String category) {
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createNamedQuery("MpcaAdditionCategory.findByName");
+            q.setParameter("name", category);
+            MpcaAdditionCategory ac = null;
+            List<MpcaAdditionCategory> list = q.getResultList();
+            if(!list.isEmpty()) {
+                ac = list.get(0);
+            }
+            return ac;
+        } finally {
+            em.close();
+        }
+    }
     
 }

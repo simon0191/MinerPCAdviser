@@ -80,9 +80,9 @@ public class MpcaAdditionTypeJpaController extends JpaController implements Seri
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
-            if (findMpcaAdditionType(mpcaAdditionType.getAddId()) != null) {
+            /*if (findMpcaAdditionType(mpcaAdditionType.getAddId()) != null) {
                 throw new PreexistingEntityException("MpcaAdditionType " + mpcaAdditionType + " already exists.", ex);
-            }
+            }*/
             throw ex;
         } finally {
             if (em != null) {
@@ -274,6 +274,22 @@ public class MpcaAdditionTypeJpaController extends JpaController implements Seri
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();
+        } finally {
+            em.close();
+        }
+    }
+
+    public MpcaAdditionType findAdditionByType(String type) {
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createNamedQuery("MpcaAdditionType.findByAddType");
+            q.setParameter("addType", type);
+            List<MpcaAdditionType> resultList = q.getResultList();
+            MpcaAdditionType add = null;
+            if(!resultList.isEmpty()) {
+                add = resultList.get(0);
+            }
+            return add;
         } finally {
             em.close();
         }

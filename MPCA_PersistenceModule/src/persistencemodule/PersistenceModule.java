@@ -4,21 +4,12 @@
  */
 package persistencemodule;
 
-import controllers.JpaController;
 import controllers.MpcaAdditionCategoryJpaController;
-import controllers.MpcaAdditionTypeJpaController;
+import controllers.MpcaProductJpaController;
 import controllers.MpcaWebPageJpaController;
+import entities.MpcaAdditionCategory;
+import entities.MpcaProduct;
 import entities.MpcaWebPage;
-/*import controllers.MpcaCommentAdditionJpaController;
-import controllers.MpcaCommentJpaController;
-import controllers.WebPageJpaController;
-import entities.Addition;
-import entities.CommentAddition;
-import entities.MpcaComment;
-import entities.WebPage;*/
-import java.util.List;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 /**
  *
@@ -26,15 +17,6 @@ import javax.persistence.Persistence;
  */
 public class PersistenceModule {
     
-    private static EntityManagerFactory em = null;
-    
-    public static EntityManagerFactory getEntityManagerFactoryInstance() {
-        if(em == null) {
-            em = Persistence.createEntityManagerFactory("MPCA_PersistenceModulePU");
-        }
-        return em;
-    }
-
     /**
      * @param args the command line arguments
      */
@@ -48,20 +30,19 @@ public class PersistenceModule {
             if(i >= 10) break;
         }*/
         //MpcaAdditionCategoryJpaController aa = new MpcaAdditionCategoryJpaController();
-        /*Long l = new Long(3l);
-        f(l);
-        System.out.println(l);
-        * */
-        
-        MpcaWebPage w = new MpcaWebPage();
-        w.setPageName("asdfas");
-        w.setPageName("asdf");
-        MpcaWebPageJpaController wc = new MpcaWebPageJpaController();
-        wc.create(w);
-       System.out.println(w.getPageId());
-    }
-    
-    public static void f(Long l) {
-        l = l+1;
+        /*MpcaWebPage wp = new MpcaWebPage();
+        wp.setPageName("aja");
+        wp.setPageUrl("www.aja.com");
+        MpcaWebPageJpaController wpc = new MpcaWebPageJpaController();
+        wpc.create(wp);*/
+        /*MpcaAdditionCategory ac = new MpcaAdditionCategory();
+        ac.setName("aja");
+        MpcaAdditionCategoryJpaController acc = new MpcaAdditionCategoryJpaController();
+        acc.create(ac);
+        */
+        MpcaProduct p = new MpcaProduct();
+        p.setModel("aja");
+        MpcaProductJpaController pc = new MpcaProductJpaController();
+        pc.create(p);
     }
 }
