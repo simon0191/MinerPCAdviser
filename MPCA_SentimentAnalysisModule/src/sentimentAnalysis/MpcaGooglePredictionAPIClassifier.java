@@ -35,11 +35,11 @@ import java.util.Set;
  *
  * @author simon
  */
-public class GooglePredictionAPIClassifier implements IClassifier {
+public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
 
     private String[] categories;
 
-    public GooglePredictionAPIClassifier(String[] categories) throws GeneralSecurityException, IOException, Exception {
+    public MpcaGooglePredictionAPIClassifier(String[] categories) throws GeneralSecurityException, IOException, Exception {
         this.categories = Arrays.copyOf(categories, categories.length);
 
 
@@ -195,5 +195,20 @@ public class GooglePredictionAPIClassifier implements IClassifier {
             t.printStackTrace();
         }
         System.exit(1);
+    }
+
+    @Override
+    public String[] getCategories() {
+        return this.categories;
+    }
+    //TODO
+    @Override
+    public boolean isTrained() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    //TODO
+    @Override
+    public int trainingSize() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -4,6 +4,7 @@
  */
 package main;
 
+import controllers.JpaController;
 import controllers.MpcaCommentJpaController;
 import entities.MpcaComment;
 import java.io.File;
@@ -19,9 +20,9 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import sentimentAnalysis.GooglePredictionAPIClassifier;
-import sentimentAnalysis.IClassifier;
-import sentimentAnalysis.LingPipeClassifier;
+import sentimentAnalysis.MpcaGooglePredictionAPIClassifier;
+import sentimentAnalysis.MpcaIClassifier;
+import sentimentAnalysis.MpcaLingPipeClassifier;
 
 /**
  *
@@ -37,7 +38,7 @@ public class Main {
         MpcaCommentJpaController commentsController = new MpcaCommentJpaController();
 
         String[] polarities = {"POSITIVE", "NEGATIVE"};
-        IClassifier classifier = new GooglePredictionAPIClassifier(polarities);
+        MpcaIClassifier classifier = new MpcaGooglePredictionAPIClassifier(polarities);
         
         int posTraining = 432;
         int negTraining = 432;
@@ -91,7 +92,8 @@ public class Main {
         for (String p : polarities) {
             int pos = (p.equals("POSITIVE")?positivePos:negativePos);
             for(String r: ranks.get(p)) {
-                List<MpcaComment> comments = commentsController.findMpcaCommentByValueAndAddition(r, "rank", 100, 0);
+                List<MpcaComment> comments = commentsController.findMpcaCommentByAdditionAndValue(JpaController.ADDITION_RANK,r, 100, 0);
+                //List<MpcaComment> comments = commentsController.findMpcaCommentByValueAndAddition(r, "rank", 100, 0);
                 for (MpcaComment c : comments) {
                     
                     if(classifier.classify(c.getCommentText()).equals(p)) {
@@ -144,10 +146,10 @@ public class Main {
         MpcaCommentJpaController commentsController = new MpcaCommentJpaController();
 
         String[] polarities = {"POSITIVE", "NEGATIVE"};
-        IClassifier classifier = new LingPipeClassifier(polarities);
+        MpcaIClassifier classifier = new MpcaLingPipeClassifier(polarities);
         System.out.println("Classifying...");
         for (String p : polarities) {
-            List<MpcaComment> comments = commentsController.findMpcaCommentByValueAndAddition(p, "polarity", 500, 0);
+            List<MpcaComment> comments = commentsController.findMpcaCommentByAdditionAndValue(JpaController.ADDITION_POLARITY,p, 500, 0);
             List<String> reviews = new ArrayList<String>();
             for (MpcaComment c : comments) {
                 reviews.add(c.getCommentText());

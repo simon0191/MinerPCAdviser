@@ -4,13 +4,13 @@
  */
 package sentimentAnalysis;
 
-import java.util.List;
+import java.io.Serializable;
 
 /**
  *
  * @author simon
  */
-public interface IClassifier {
-    void train(String category,List<String> reviews);
-    String classify(String text) throws Exception;
+//TODO 
+public interface MpcaICompilableClassifier extends MpcaIClassifier {
+    
 }
