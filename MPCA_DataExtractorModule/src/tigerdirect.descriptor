@@ -1,6 +1,0 @@
-brand div.productFootnote.itemModuleBox>ul.pInfo>li>strong
-model div.rightCol>div.prodName span.sku
-HD div#tabContent.rightCol.tabContent table.prodSpec tbody tr:nth-child(19) td
-ram div#tabContent.rightCol.tabContent table.prodSpec tbody tr:nth-child(4) td
-nextPage div#CustomerReviewsBlock div.reviewsPagination>dl.reviewPage>dd>a:last-child
-comments div#customerReviews

@@ -4,8 +4,8 @@
  */
 package main;
 
-import controllers.MpcaCommentJpaController;
-import entities.MpcaComment;
+import model.controllers.MpcaCommentJpaController;
+import model.entities.MpcaComment;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import sentimentAnalysis.IClassifier;
-import sentimentAnalysis.LingPipeClassifier;
+import dataProcessing.sentimentAnalysis.IClassifier;
+import dataProcessing.sentimentAnalysis.LingPipeClassifier;
 
 /**
  *
@@ -41,7 +41,7 @@ public class Main {
         int negTraining = 0;
         StringBuilder sb = new StringBuilder();
         for (String p : polarities) {
-            List<MpcaComment> comments = commentsController.findMpcaCommentByValueAndAddition(p, "polarity");
+            List<MpcaComment> comments = commentsController.findMpcaCommentByAdditionAndValue("polarity", p);
             posTraining+=(p.equals("POSITIVE")?comments.size():0);
             negTraining+=(p.equals("NEGATIVE")?comments.size():0);
             
@@ -86,7 +86,7 @@ public class Main {
         for (String p : polarities) {
             int pos = (p.equals("POSITIVE")?positivePos:negativePos);
             for(String r: ranks.get(p)) {
-                List<MpcaComment> comments = commentsController.findMpcaCommentByValueAndAddition(r, "rank", 100, 0);
+                List<MpcaComment> comments = commentsController.findMpcaCommentByAdditionAndValue("rank", r, 100, 0);
                 for (MpcaComment c : comments) {
                     if(classifier.classify(c.getCommentText()).equals(p)) {
                         correct[pos]+=1.0;
@@ -140,7 +140,7 @@ public class Main {
         IClassifier classifier = new LingPipeClassifier(polarities);
         System.out.println("Classifying...");
         for (String p : polarities) {
-            List<MpcaComment> comments = commentsController.findMpcaCommentByValueAndAddition(p, "polarity", 500, 0);
+            List<MpcaComment> comments = commentsController.findMpcaCommentByAdditionAndValue("polarity", p, 500, 0);
             List<String> reviews = new ArrayList<String>();
             for (MpcaComment c : comments) {
                 reviews.add(c.getCommentText());

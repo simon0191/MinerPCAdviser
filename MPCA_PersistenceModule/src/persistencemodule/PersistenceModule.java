@@ -4,12 +4,22 @@
  */
 package persistencemodule;
 
-import controllers.MpcaAdditionCategoryJpaController;
-import controllers.MpcaProductJpaController;
-import controllers.MpcaWebPageJpaController;
-import entities.MpcaAdditionCategory;
-import entities.MpcaProduct;
-import entities.MpcaWebPage;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import model.controllers.JpaController;
+import model.controllers.MpcaAdditionCategoryJpaController;
+import model.controllers.MpcaAdditionTypeJpaController;
+import model.controllers.MpcaCommentJpaController;
+import model.controllers.MpcaProductJpaController;
+import model.controllers.MpcaWebPageJpaController;
+import model.controllers.exceptions.PreexistingEntityException;
+import model.entities.MpcaAdditionCategory;
+import model.entities.MpcaAdditionType;
+import model.entities.MpcaComment;
+import model.entities.MpcaProduct;
+import model.entities.MpcaWebPage;
 
 /**
  *
@@ -40,9 +50,34 @@ public class PersistenceModule {
         MpcaAdditionCategoryJpaController acc = new MpcaAdditionCategoryJpaController();
         acc.create(ac);
         */
-        MpcaProduct p = new MpcaProduct();
+        /*MpcaProduct p = new MpcaProduct();
         p.setModel("aja");
         MpcaProductJpaController pc = new MpcaProductJpaController();
-        pc.create(p);
+        pc.create(p);*/
+        /*MpcaCommentJpaController cc = new MpcaCommentJpaController();
+        List<MpcaComment> comms = cc.findMpcaCommentEntities(100, 0);
+        for (int i = 0; i < 50; i++) {
+            System.out.println(comms.get(i));
+        }*/
+       
+        
+        Date d = new Date(new GregorianCalendar(1945, 5, 18).getTimeInMillis());
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.setTime(d);
+        System.out.println(gc.get(Calendar.YEAR) + " " + gc.get(Calendar.MONTH) + " " + gc.get(Calendar.DAY_OF_MONTH));
+        System.out.println(d);
+    }
+    
+    private static MpcaAdditionCategory createOrGetCategory(String category) throws PreexistingEntityException, Exception {
+        MpcaAdditionCategoryJpaController macc = new MpcaAdditionCategoryJpaController();
+        MpcaAdditionCategory mac = macc.findMpcaAdditionCategoryByName(category);
+        if(mac == null) {
+            mac = new MpcaAdditionCategory();
+            mac.setName(category);
+            macc.create(mac);
+            mac = macc.findMpcaAdditionCategoryByName(category);
+            macc.getMpcaAdditionCategoryCount();
+        }
+        return mac;
     }
 }
