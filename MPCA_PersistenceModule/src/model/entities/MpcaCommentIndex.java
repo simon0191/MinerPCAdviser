@@ -5,6 +5,9 @@
 package model.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -25,11 +28,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "MpcaCommentIndex.findAll", query = "SELECT m FROM MpcaCommentIndex m"),
     @NamedQuery(name = "MpcaCommentIndex.findByMpcaIndexTypeIndexId", query = "SELECT m FROM MpcaCommentIndex m WHERE m.mpcaCommentIndexPK.mpcaIndexTypeIndexId = :mpcaIndexTypeIndexId"),
-    @NamedQuery(name = "MpcaCommentIndex.findByMpcaCommentCommentId", query = "SELECT m FROM MpcaCommentIndex m WHERE m.mpcaCommentIndexPK.mpcaCommentCommentId = :mpcaCommentCommentId")})
+    @NamedQuery(name = "MpcaCommentIndex.findByMpcaCommentCommentId", query = "SELECT m FROM MpcaCommentIndex m WHERE m.mpcaCommentIndexPK.mpcaCommentCommentId = :mpcaCommentCommentId"),
+    @NamedQuery(name = "MpcaCommentIndex.findByIndexValue", query = "SELECT m FROM MpcaCommentIndex m WHERE m.indexValue = :indexValue")})
 public class MpcaCommentIndex implements Serializable {
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected MpcaCommentIndexPK mpcaCommentIndexPK;
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Basic(optional = false)
+    @Column(name = "INDEX_VALUE")
+    private BigDecimal indexValue;
     @JoinColumn(name = "LABEL_ID", referencedColumnName = "LABEL_ID")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private MpcaLabelType labelId;
@@ -47,6 +55,11 @@ public class MpcaCommentIndex implements Serializable {
         this.mpcaCommentIndexPK = mpcaCommentIndexPK;
     }
 
+    public MpcaCommentIndex(MpcaCommentIndexPK mpcaCommentIndexPK, BigDecimal indexValue) {
+        this.mpcaCommentIndexPK = mpcaCommentIndexPK;
+        this.indexValue = indexValue;
+    }
+
     public MpcaCommentIndex(long mpcaIndexTypeIndexId, long mpcaCommentCommentId) {
         this.mpcaCommentIndexPK = new MpcaCommentIndexPK(mpcaIndexTypeIndexId, mpcaCommentCommentId);
     }
@@ -57,6 +70,14 @@ public class MpcaCommentIndex implements Serializable {
 
     public void setMpcaCommentIndexPK(MpcaCommentIndexPK mpcaCommentIndexPK) {
         this.mpcaCommentIndexPK = mpcaCommentIndexPK;
+    }
+
+    public BigDecimal getIndexValue() {
+        return indexValue;
+    }
+
+    public void setIndexValue(BigDecimal indexValue) {
+        this.indexValue = indexValue;
     }
 
     public MpcaLabelType getLabelId() {
@@ -105,7 +126,7 @@ public class MpcaCommentIndex implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.MpcaCommentIndex[ mpcaCommentIndexPK=" + mpcaCommentIndexPK + " ]";
+        return "model.entities.MpcaCommentIndex[ mpcaCommentIndexPK=" + mpcaCommentIndexPK + " ]";
     }
     
 }

@@ -4,22 +4,9 @@
  */
 package persistencemodule;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import model.controllers.JpaController;
 import model.controllers.MpcaAdditionCategoryJpaController;
-import model.controllers.MpcaAdditionTypeJpaController;
-import model.controllers.MpcaCommentJpaController;
-import model.controllers.MpcaProductJpaController;
-import model.controllers.MpcaWebPageJpaController;
 import model.controllers.exceptions.PreexistingEntityException;
 import model.entities.MpcaAdditionCategory;
-import model.entities.MpcaAdditionType;
-import model.entities.MpcaComment;
-import model.entities.MpcaProduct;
-import model.entities.MpcaWebPage;
 
 /**
  *
@@ -59,13 +46,8 @@ public class PersistenceModule {
         for (int i = 0; i < 50; i++) {
             System.out.println(comms.get(i));
         }*/
-       
         
-        Date d = new Date(new GregorianCalendar(1945, 5, 18).getTimeInMillis());
-        GregorianCalendar gc = new GregorianCalendar();
-        gc.setTime(d);
-        System.out.println(gc.get(Calendar.YEAR) + " " + gc.get(Calendar.MONTH) + " " + gc.get(Calendar.DAY_OF_MONTH));
-        System.out.println(d);
+        
     }
     
     private static MpcaAdditionCategory createOrGetCategory(String category) throws PreexistingEntityException, Exception {
