@@ -4,26 +4,25 @@ package dataProcessing.sentimentAnalysis;
 import com.aliasi.classify.Classification;
 import com.aliasi.classify.Classified;
 import com.aliasi.classify.DynamicLMClassifier;
-import com.aliasi.classify.JointClassifier;
 import com.aliasi.lm.NGramProcessLM;
-import com.aliasi.util.AbstractExternalizable;
-import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author simon
  *
  */
-public class LingPipeClassifier implements IClassifier {
+public class MpcaLingPipeClassifier implements MpcaIClassifier {
 
     private DynamicLMClassifier<NGramProcessLM> classifier;
-
-    public LingPipeClassifier(String[] categories) {
+    private boolean isTrained;
+    private int trainingSize;
+    
+    public MpcaLingPipeClassifier(String[] categories) {
         classifier = DynamicLMClassifier.createNGramProcess(categories, 8);
+        isTrained = false;
+        trainingSize = 0;
     }
-    public LingPipeClassifier(String[] categories, int maxCharNGram) {
+    public MpcaLingPipeClassifier(String[] categories, int maxCharNGram) {
         classifier = DynamicLMClassifier.createNGramProcess(categories, maxCharNGram);
     }
     @Override
@@ -33,15 +32,17 @@ public class LingPipeClassifier implements IClassifier {
             Classified<CharSequence> classified = new Classified<CharSequence>(r, classification);
             classifier.handle(classified);
         }
+        trainingSize = reviews.size();
+        isTrained = true;
         //TODO: Intentar compilar el clasificador
         /*
         try {
             JointClassifier<CharSequence> compiledClassifier = 
                     (JointClassifier<CharSequence>)AbstractExternalizable.compile(classifier);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(LingPipeClassifier.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MpcaLingPipeClassifier.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(LingPipeClassifier.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MpcaLingPipeClassifier.class.getName()).log(Level.SEVERE, null, ex);
         }
         * */
         
@@ -52,4 +53,19 @@ public class LingPipeClassifier implements IClassifier {
         Classification classification = classifier.classify(text);
         return classification.bestCategory();
     }    
+
+    @Override
+    public String[] getCategories() {
+        return this.classifier.categories();
+    }
+
+    @Override
+    public boolean isTrained() {
+        return this.isTrained;
+    }
+
+    @Override
+    public int trainingSize() {
+        return this.trainingSize;
+    }
 }

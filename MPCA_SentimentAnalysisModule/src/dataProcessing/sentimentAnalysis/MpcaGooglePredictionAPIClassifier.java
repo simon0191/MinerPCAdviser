@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +35,28 @@ import java.util.Set;
  *
  * @author simon
  */
-public class GooglePredictionAPIClassifier implements IClassifier {
+public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
+
+    private String[] categories;
+
+    public MpcaGooglePredictionAPIClassifier(String[] categories) throws GeneralSecurityException, IOException, Exception {
+        this.categories = Arrays.copyOf(categories, categories.length);
+
+
+
+        // initialize the transport
+        httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+
+        // initialize the data store factory
+        dataStoreFactory = new FileDataStoreFactory(DATA_STORE_DIR);
+
+        // authorization
+        Credential credential = authorize();
+        // set up global Prediction instance
+        client = new Prediction.Builder(httpTransport, JSON_FACTORY, credential)
+                .setApplicationName(APPLICATION_NAME).build();
+
+    }
 
     @Override
     public void train(String category, List<String> reviews) {
@@ -42,8 +64,24 @@ public class GooglePredictionAPIClassifier implements IClassifier {
     }
 
     @Override
-    public String classify(String text) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String classify(String text) throws IOException {
+        Input input = new Input();
+
+
+        InputInput inputInput = new InputInput();
+        List<Object> params = Arrays.asList(new Object[]{"I'm Very happy"});
+
+        inputInput.setCsvInstance(params);
+        input.setInput(inputInput);
+
+
+
+        Output output =
+                //client.hostedmodels().predict("414649711441", "sample.sentiment", input).execute();
+                client.trainedmodels().predict("109973074802", "sentiment", input).execute();
+        //System.out.println(output.toPrettyString());
+        //output.
+        return output.getOutputLabel();
     }
     /**
      * Be sure to specify the name of your application. If the application name
@@ -113,6 +151,8 @@ public class GooglePredictionAPIClassifier implements IClassifier {
 
     public static void main(String[] args) {
         try {
+
+
             // initialize the transport
             httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 
@@ -132,14 +172,15 @@ public class GooglePredictionAPIClassifier implements IClassifier {
 
             InputInput inputInput = new InputInput();
             List<Object> params = Arrays.asList(new Object[]{"I'm Very happy"});
+
             inputInput.setCsvInstance(params);
             input.setInput(inputInput);
 
 
 
             Output output =
-                    client.hostedmodels().predict("414649711441", "sample.sentiment", input).execute();
-
+                    //client.hostedmodels().predict("414649711441", "sample.sentiment", input).execute();
+                    client.trainedmodels().predict("109973074802", "sentiment", input).execute();
             System.out.println(output.toPrettyString());
 
             List<Output.OutputMulti> outs = output.getOutputMulti();
@@ -154,5 +195,20 @@ public class GooglePredictionAPIClassifier implements IClassifier {
             t.printStackTrace();
         }
         System.exit(1);
+    }
+
+    @Override
+    public String[] getCategories() {
+        return this.categories;
+    }
+    //TODO
+    @Override
+    public boolean isTrained() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    //TODO
+    @Override
+    public int trainingSize() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

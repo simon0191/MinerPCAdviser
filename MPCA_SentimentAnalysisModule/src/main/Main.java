@@ -4,22 +4,22 @@
  */
 package main;
 
-import model.controllers.MpcaCommentJpaController;
-import model.entities.MpcaComment;
-import java.io.File;
-import java.io.FileWriter;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import dataProcessing.sentimentAnalysis.IClassifier;
-import dataProcessing.sentimentAnalysis.LingPipeClassifier;
+import model.controllers.MpcaCommentJpaController;
+import model.entities.MpcaComment;
+import model.utils.MpcaIConstants;
+import dataProcessing.sentimentAnalysis.MpcaGooglePredictionAPIClassifier;
+import dataProcessing.sentimentAnalysis.MpcaIClassifier;
+import dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier;
 
 /**
  *
@@ -30,18 +30,21 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, GeneralSecurityException, Exception {
         System.out.println("...");
         MpcaCommentJpaController commentsController = new MpcaCommentJpaController();
 
-        String[] polarities = {"POSITIVE", "NEGATIVE"};
-        IClassifier classifier = new LingPipeClassifier(polarities);
+        String[] polarities = {"positive", "negative"};
+        MpcaIClassifier classifier = new MpcaGooglePredictionAPIClassifier(polarities);
+        
+        int posTraining = 432;
+        int negTraining = 432;
+        /*
         System.out.println("Classifying...");
-        int posTraining = 0;
-        int negTraining = 0;
+        
         StringBuilder sb = new StringBuilder();
         for (String p : polarities) {
-            List<MpcaComment> comments = commentsController.findMpcaCommentByAdditionAndValue("polarity", p);
+            List<MpcaComment> comments = commentsController.findMpcaCommentByValueAndAddition(p, "polarity");
             posTraining+=(p.equals("POSITIVE")?comments.size():0);
             negTraining+=(p.equals("NEGATIVE")?comments.size():0);
             
@@ -70,7 +73,7 @@ public class Main {
         finally {
             fw.close();
         }
-        
+        */
         
         int totalTraining = posTraining+negTraining;        
         
@@ -86,8 +89,10 @@ public class Main {
         for (String p : polarities) {
             int pos = (p.equals("POSITIVE")?positivePos:negativePos);
             for(String r: ranks.get(p)) {
-                List<MpcaComment> comments = commentsController.findMpcaCommentByAdditionAndValue("rank", r, 100, 0);
+                List<MpcaComment> comments = commentsController.findMpcaCommentByAdditionAndValue(MpcaIConstants.ADDITION_RANK,r, 100, 0);
+                //List<MpcaComment> comments = commentsController.findMpcaCommentByValueAndAddition(r, "rank", 100, 0);
                 for (MpcaComment c : comments) {
+                    
                     if(classifier.classify(c.getCommentText()).equals(p)) {
                         correct[pos]+=1.0;
                     }
@@ -98,6 +103,7 @@ public class Main {
             }
             
         }
+        
         System.out.println("------------------------------------------------------------------------------------------");
         System.out.println("----------------------------------- TRAINING ---------------------------------------------");
         System.out.println("------------------------------------------------------------------------------------------");
@@ -132,15 +138,15 @@ public class Main {
         
     }
     
-    public static void interactiveMain() {
+    public static void interactiveMain() throws Exception {
          System.out.println("...");
         MpcaCommentJpaController commentsController = new MpcaCommentJpaController();
 
         String[] polarities = {"POSITIVE", "NEGATIVE"};
-        IClassifier classifier = new LingPipeClassifier(polarities);
+        MpcaIClassifier classifier = new MpcaLingPipeClassifier(polarities);
         System.out.println("Classifying...");
         for (String p : polarities) {
-            List<MpcaComment> comments = commentsController.findMpcaCommentByAdditionAndValue("polarity", p, 500, 0);
+            List<MpcaComment> comments = commentsController.findMpcaCommentByAdditionAndValue(MpcaIConstants.ADDITION_POLARITY,p, 500, 0);
             List<String> reviews = new ArrayList<String>();
             for (MpcaComment c : comments) {
                 reviews.add(c.getCommentText());
