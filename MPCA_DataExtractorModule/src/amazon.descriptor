@@ -1,6 +1,0 @@
-brand div.attrG 1 tbody
-model div.attrG 1 tbody
-HD div.section.techD div.attrG tbody tr 6 td.value
-ram div.section.techD div.attrG tbody tr 4 td.value
-nextPage table>tbody div.a-pagination.a-text-center>ul.a-pagination>li.a-last>a
-comments table#productReviews td
