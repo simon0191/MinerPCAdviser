@@ -1,17 +1,11 @@
-package sentimentAnalysis;
+package dataProcessing.sentimentAnalysis;
 
 
 import com.aliasi.classify.Classification;
 import com.aliasi.classify.Classified;
 import com.aliasi.classify.DynamicLMClassifier;
-import com.aliasi.classify.JointClassifier;
 import com.aliasi.lm.NGramProcessLM;
-import com.aliasi.util.AbstractExternalizable;
-import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import sun.awt.geom.AreaOp;
 
 /**
  * @author simon

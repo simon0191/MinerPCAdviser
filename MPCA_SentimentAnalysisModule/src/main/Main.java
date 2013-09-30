@@ -5,8 +5,6 @@
 package main;
 
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
@@ -16,15 +14,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import model.controllers.JpaController;
 import model.controllers.MpcaCommentJpaController;
 import model.entities.MpcaComment;
 import model.utils.MpcaIConstants;
-import sentimentAnalysis.MpcaGooglePredictionAPIClassifier;
-import sentimentAnalysis.MpcaIClassifier;
-import sentimentAnalysis.MpcaLingPipeClassifier;
+import dataProcessing.sentimentAnalysis.MpcaGooglePredictionAPIClassifier;
+import dataProcessing.sentimentAnalysis.MpcaIClassifier;
+import dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier;
 
 /**
  *
@@ -39,7 +34,7 @@ public class Main {
         System.out.println("...");
         MpcaCommentJpaController commentsController = new MpcaCommentJpaController();
 
-        String[] polarities = {"POSITIVE", "NEGATIVE"};
+        String[] polarities = {"positive", "negative"};
         MpcaIClassifier classifier = new MpcaGooglePredictionAPIClassifier(polarities);
         
         int posTraining = 432;
