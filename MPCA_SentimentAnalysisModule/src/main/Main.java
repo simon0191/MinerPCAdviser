@@ -17,8 +17,7 @@ import java.util.Scanner;
 import model.controllers.MpcaCommentJpaController;
 import model.entities.MpcaComment;
 import model.utils.MpcaIConstants;
-import dataProcessing.sentimentAnalysis.MpcaGooglePredictionAPIClassifier;
-import dataProcessing.sentimentAnalysis.MpcaIClassifier;
+import dataProcessing.sentimentAnalysis.MpcaITrainableClassifier;
 import dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier;
 
 /**
@@ -34,31 +33,35 @@ public class Main {
         System.out.println("...");
         MpcaCommentJpaController commentsController = new MpcaCommentJpaController();
 
-        String[] polarities = {"positive", "negative"};
-        MpcaIClassifier classifier = new MpcaGooglePredictionAPIClassifier(polarities);
+        String[] polarities = {"POSITIVE", "NEGATIVE"};
+        MpcaITrainableClassifier classifier = new MpcaLingPipeClassifier(polarities);
         
-        int posTraining = 432;
-        int negTraining = 432;
-        /*
+        int posTraining = 0;
+        int negTraining = 0;
+        
         System.out.println("Classifying...");
         
-        StringBuilder sb = new StringBuilder();
+        //StringBuilder sb = new StringBuilder();
         for (String p : polarities) {
-            List<MpcaComment> comments = commentsController.findMpcaCommentByValueAndAddition(p, "polarity");
+            List<MpcaComment> comments = commentsController.findMpcaCommentByAdditionAndValue(MpcaIConstants.ADDITION_POLARITY,p);
             posTraining+=(p.equals("POSITIVE")?comments.size():0);
             negTraining+=(p.equals("NEGATIVE")?comments.size():0);
             
             List<String> reviews = new ArrayList<String>();
             for (MpcaComment c : comments) {
                 reviews.add(c.getCommentText());
+                /*
                 sb.append('"');
                 sb.append(p);
                 sb.append("\", \"");
                 sb.append(c.getCommentText().replaceAll("\"", "'"));
                 sb.append("\"\n");
+                * */
             }
             classifier.train(p, reviews);
         }
+        
+        /*
         File f;
         FileWriter fw = null;
         try {
@@ -89,8 +92,7 @@ public class Main {
         for (String p : polarities) {
             int pos = (p.equals("POSITIVE")?positivePos:negativePos);
             for(String r: ranks.get(p)) {
-                List<MpcaComment> comments = commentsController.findMpcaCommentByAdditionAndValue(MpcaIConstants.ADDITION_RANK,r, 100, 0);
-                //List<MpcaComment> comments = commentsController.findMpcaCommentByValueAndAddition(r, "rank", 100, 0);
+                List<MpcaComment> comments = commentsController.findMpcaCommentByAdditionAndValue(MpcaIConstants.ADDITION_RANK,r);
                 for (MpcaComment c : comments) {
                     
                     if(classifier.classify(c.getCommentText()).equals(p)) {
@@ -136,6 +138,7 @@ public class Main {
         
         
         
+        
     }
     
     public static void interactiveMain() throws Exception {
@@ -143,7 +146,7 @@ public class Main {
         MpcaCommentJpaController commentsController = new MpcaCommentJpaController();
 
         String[] polarities = {"POSITIVE", "NEGATIVE"};
-        MpcaIClassifier classifier = new MpcaLingPipeClassifier(polarities);
+        MpcaITrainableClassifier classifier = new MpcaLingPipeClassifier(polarities);
         System.out.println("Classifying...");
         for (String p : polarities) {
             List<MpcaComment> comments = commentsController.findMpcaCommentByAdditionAndValue(MpcaIConstants.ADDITION_POLARITY,p, 500, 0);

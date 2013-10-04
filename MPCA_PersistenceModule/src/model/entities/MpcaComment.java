@@ -39,7 +39,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "MpcaComment.findAll", query = "SELECT m FROM MpcaComment m"),
     @NamedQuery(name = "MpcaComment.findByCommentId", query = "SELECT m FROM MpcaComment m WHERE m.commentId = :commentId"),
     @NamedQuery(name = "MpcaComment.findByPublicationDate", query = "SELECT m FROM MpcaComment m WHERE m.publicationDate = :publicationDate"),
-    @NamedQuery(name = "MpcaComment.findByAdditionAndValue", query = "SELECT ca FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = :addType AND ca.value = :value")
+    @NamedQuery(name = "MpcaComment.findByAdditionAndValue", query = "SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = :addType AND ca.value = :value")
+        
 })
 public class MpcaComment implements Serializable {
     private static final long serialVersionUID = 1L;

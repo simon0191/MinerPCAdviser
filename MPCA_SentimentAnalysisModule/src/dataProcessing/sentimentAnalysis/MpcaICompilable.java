@@ -4,13 +4,11 @@
  */
 package dataProcessing.sentimentAnalysis;
 
-import java.io.Serializable;
-
 /**
  *
  * @author simon
  */
 //TODO 
-public interface MpcaICompilableClassifier extends MpcaIClassifier {
-    
+public interface MpcaICompilable {
+    byte[] compile() throws Exception;
 }

@@ -5,15 +5,15 @@
 package dataProcessing.sentimentAnalysis;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author simon
  */
 public interface MpcaIClassifier {
-    void train(String category,List<String> reviews);
+    
     String classify(String text) throws Exception;
     String[] getCategories();
-    boolean isTrained();
-    int trainingSize();
+    
 }
