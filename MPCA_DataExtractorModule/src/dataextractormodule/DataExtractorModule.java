@@ -75,4 +75,5 @@ public class DataExtractorModule {
         //neweggModel(doc);
         amazonModel(doc);
     }
+    
 }

@@ -4,9 +4,13 @@
  */
 package persistencemodule;
 
+import java.util.List;
 import model.controllers.MpcaAdditionCategoryJpaController;
+import model.controllers.MpcaCommentJpaController;
 import model.controllers.exceptions.PreexistingEntityException;
 import model.entities.MpcaAdditionCategory;
+import model.entities.MpcaComment;
+import model.utils.MpcaIConstants;
 
 /**
  *
@@ -46,7 +50,6 @@ public class PersistenceModule {
         for (int i = 0; i < 50; i++) {
             System.out.println(comms.get(i));
         }*/
-        
         
     }
     
