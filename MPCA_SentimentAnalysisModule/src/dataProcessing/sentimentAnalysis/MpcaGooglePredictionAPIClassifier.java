@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package dataProcessing.sentimentAnalysis;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -22,7 +18,6 @@ import com.google.api.services.prediction.model.Input.InputInput;
 import com.google.api.services.prediction.model.Output;
 import java.io.File;
 import java.io.FileInputStream;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
@@ -38,51 +33,6 @@ import java.util.Set;
 public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
 
     private String[] categories;
-
-    public MpcaGooglePredictionAPIClassifier(String[] categories) throws GeneralSecurityException, IOException, Exception {
-        this.categories = Arrays.copyOf(categories, categories.length);
-
-
-
-        // initialize the transport
-        httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-
-        // initialize the data store factory
-        dataStoreFactory = new FileDataStoreFactory(DATA_STORE_DIR);
-
-        // authorization
-        Credential credential = authorize();
-        // set up global Prediction instance
-        client = new Prediction.Builder(httpTransport, JSON_FACTORY, credential)
-                .setApplicationName(APPLICATION_NAME).build();
-
-    }
-
-    @Override
-    public void train(String category, List<String> reviews) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String classify(String text) throws IOException {
-        Input input = new Input();
-
-
-        InputInput inputInput = new InputInput();
-        List<Object> params = Arrays.asList(new Object[]{"I'm Very happy"});
-
-        inputInput.setCsvInstance(params);
-        input.setInput(inputInput);
-
-
-
-        Output output =
-                //client.hostedmodels().predict("414649711441", "sample.sentiment", input).execute();
-                client.trainedmodels().predict("109973074802", "sentiment", input).execute();
-        //System.out.println(output.toPrettyString());
-        //output.
-        return output.getOutputLabel();
-    }
     /**
      * Be sure to specify the name of your application. If the application name
      * is {@code null} or blank, the application will log a warning. Suggested
@@ -108,6 +58,46 @@ public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
      */
     private static HttpTransport httpTransport;
     private static Prediction client;
+
+    public MpcaGooglePredictionAPIClassifier(String[] categories) throws GeneralSecurityException, IOException, Exception {
+        this.categories = Arrays.copyOf(categories, categories.length);
+
+
+
+        // initialize the transport
+        httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+
+        // initialize the data store factory
+        dataStoreFactory = new FileDataStoreFactory(DATA_STORE_DIR);
+
+        // authorization
+        Credential credential = authorize();
+        // set up global Prediction instance
+        client = new Prediction.Builder(httpTransport, JSON_FACTORY, credential)
+                .setApplicationName(APPLICATION_NAME).build();
+
+    }
+
+    @Override
+    public String classify(String text) throws IOException {
+        Input input = new Input();
+
+
+        InputInput inputInput = new InputInput();
+        List<Object> params = Arrays.asList(new Object[]{"I'm Very happy"});
+
+        inputInput.setCsvInstance(params);
+        input.setInput(inputInput);
+
+
+
+        Output output =
+                //client.hostedmodels().predict("414649711441", "sample.sentiment", input).execute();
+                client.trainedmodels().predict("109973074802", "sentiment", input).execute();
+        //System.out.println(output.toPrettyString());
+        //output.
+        return output.getOutputLabel().toUpperCase();
+    }
 
     /**
      * Authorizes the installed application to access user's protected data.
@@ -149,10 +139,13 @@ public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
         return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
     }
 
+    @Override
+    public String[] getCategories() {
+        return this.categories;
+    }
+
     public static void main(String[] args) {
         try {
-
-
             // initialize the transport
             httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 
@@ -169,14 +162,11 @@ public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
 
             Input input = new Input();
 
-
             InputInput inputInput = new InputInput();
             List<Object> params = Arrays.asList(new Object[]{"I'm Very happy"});
 
             inputInput.setCsvInstance(params);
             input.setInput(inputInput);
-
-
 
             Output output =
                     //client.hostedmodels().predict("414649711441", "sample.sentiment", input).execute();
@@ -195,20 +185,5 @@ public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
             t.printStackTrace();
         }
         System.exit(1);
-    }
-
-    @Override
-    public String[] getCategories() {
-        return this.categories;
-    }
-    //TODO
-    @Override
-    public boolean isTrained() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    //TODO
-    @Override
-    public int trainingSize() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -7,7 +7,6 @@ package dataProcessing.dataextractor;
 import dataProcessing.model.MpcaPageModel;
 import dataProcessing.exceptions.MpcaFeatureNotFound;
 import dataProcessing.exceptions.MpcaPageNameNotFound;
-import model.controllers.JpaController;
 import model.controllers.MpcaAdditionCategoryJpaController;
 import model.controllers.MpcaAdditionTypeJpaController;
 import model.controllers.MpcaCommentAdditionJpaController;
