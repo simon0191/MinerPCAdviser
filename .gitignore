@@ -12,8 +12,8 @@ lib/*/docs
 */nbproject/private/
 
 # Sensitive files #
-MPCA_PersistenceModule/src/META-INF/persistence.xml
+MPCA_PersistenceModule/src/META-INF/persistence.xml 
 
 # Store and Data
 */store/
-*/data/
+MPCA_SentimentAnalysisModule/data/client_secrets.json

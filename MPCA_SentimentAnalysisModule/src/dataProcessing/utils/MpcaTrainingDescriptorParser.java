@@ -1,8 +1,6 @@
 package dataProcessing.utils;
 
-import dataProcessing.sentimentAnalysis.MpcaIClassifier;
 import dataProcessing.sentimentAnalysis.MpcaITrainableClassifier;
-import dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier;
 import dataProcessing.sentimentAnalysis.exceptions.MpcaClassifierNotTrainedException;
 import java.io.File;
 import java.io.FileNotFoundException;
