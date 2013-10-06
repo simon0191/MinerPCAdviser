@@ -3,6 +3,7 @@ package dataProcessing.utils;
 import dataProcessing.sentimentAnalysis.MpcaIClassifier;
 import dataProcessing.sentimentAnalysis.MpcaITrainableClassifier;
 import dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier;
+import dataProcessing.sentimentAnalysis.exceptions.MpcaClassifierNotTrainedException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
@@ -84,7 +85,7 @@ public class MpcaTrainingDescriptorParser {
     private static final MpcaLabelType POSITIVE_LABEL = new MpcaLabelTypeJpaController().findMpcaLabelType(POSITIVE_ID);
     private static final MpcaLabelType NEGATIVE_LABEL = new MpcaLabelTypeJpaController().findMpcaLabelType(NEGATIVE_ID);
     
-    public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException {
+    public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException, MpcaClassifierNotTrainedException {
         
         
         String[] polarities = {"POSITIVE", "NEGATIVE"};
@@ -95,15 +96,21 @@ public class MpcaTrainingDescriptorParser {
             comments.addAll(commentsController.findMpcaCommentByAdditionAndValue(MpcaIConstants.ADDITION_POLARITY,p));
         }
         
-        
         File fileDescriptor = new File(CLASSIFIERS_DESCRIPTOR_PATH,"files.descriptor" );
         Scanner in = new Scanner(fileDescriptor);
         while(in.hasNext()) {
             String fileName = in.next();
             MpcaITrainableClassifier classifier = getClassifier(fileDescriptor);
-            for(MpcaComment c:comments) {
-                MpcaCommentIndex index = new MpcaCommentIndex();
+            
+            
+            for(int i = 0;i<10;++i) {
+                String testComment = comments.get(i).getCommentText();
+                String category = classifier.classify(testComment);
+                System.out.println("Test comment: "+testComment);
+                System.out.println("Category:"+category);
                 /*
+                MpcaCommentIndex index = new MpcaCommentIndex();
+                
                 index.s
                 index.setMpcaComment(c);
                 classifier.classify(c);
