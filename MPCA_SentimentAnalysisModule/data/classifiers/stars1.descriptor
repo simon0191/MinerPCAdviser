@@ -3,9 +3,9 @@ dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier
 2
 POSITIVE 1
 1000
-0
-SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND ca.value = '5'
+1
+SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND ca.value = '5.0'
 NEGATIVE 1
 1000
-0
-SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND (ca.value = '1' OR ca.value = '2')
+1
+SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND (ca.value = '1.0' OR ca.value = '2.0')

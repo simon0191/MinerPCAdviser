@@ -27,6 +27,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import model.utils.MpcaIConstants;
 
 /**
  *
@@ -164,5 +165,18 @@ public class MpcaComment implements Serializable {
     public String toString() {
         return "entities.MpcaComment[ commentId=" + commentId + " ]";
     }
-    
+    public MpcaCommentAddition getAddition(String addType) {
+        List<MpcaCommentAddition> additions = this.mpcaCommentAdditionList;
+        MpcaCommentAddition addition = null;
+        for (MpcaCommentAddition add : additions) {
+            if(add.getMpcaAdditionType().getAddType().equals( addType )) {
+                addition = add;
+                break;
+            }
+        }
+        return addition;
+    }
+    public MpcaCommentAddition getPolarity() {
+        return getAddition(MpcaIConstants.ADDITION_POLARITY);
+    }
 }

@@ -24,6 +24,7 @@ import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -185,5 +186,10 @@ public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
             t.printStackTrace();
         }
         System.exit(1);
+    }
+
+    @Override
+    public MpcaClassifierTest createTest(Map<String, List<String>> testData) {
+        return new MpcaClassifierTest(testData, this);
     }
 }

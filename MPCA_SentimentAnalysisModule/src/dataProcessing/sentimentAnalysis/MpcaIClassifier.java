@@ -15,5 +15,5 @@ public interface MpcaIClassifier {
     
     String classify(String text) throws Exception;
     String[] getCategories();
-    
+    MpcaClassifierTest createTest(Map<String,List<String>> testData);
 }
