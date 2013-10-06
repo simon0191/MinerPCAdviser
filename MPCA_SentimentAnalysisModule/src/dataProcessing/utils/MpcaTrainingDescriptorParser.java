@@ -1,8 +1,6 @@
 package dataProcessing.utils;
 
-import dataProcessing.sentimentAnalysis.MpcaIClassifier;
 import dataProcessing.sentimentAnalysis.MpcaITrainableClassifier;
-import dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier;
 import dataProcessing.sentimentAnalysis.exceptions.MpcaClassifierNotTrainedException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,7 +16,6 @@ import model.controllers.JpaController;
 import model.controllers.MpcaCommentJpaController;
 import model.controllers.MpcaLabelTypeJpaController;
 import model.entities.MpcaComment;
-import model.entities.MpcaCommentIndex;
 import model.entities.MpcaLabelType;
 import model.utils.MpcaIConstants;
 
