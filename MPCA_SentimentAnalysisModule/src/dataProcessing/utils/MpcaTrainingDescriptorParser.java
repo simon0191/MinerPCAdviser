@@ -2,8 +2,12 @@ package dataProcessing.utils;
 
 import dataProcessing.sentimentAnalysis.MpcaITrainableClassifier;
 import dataProcessing.sentimentAnalysis.exceptions.MpcaClassifierNotTrainedException;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,34 +30,37 @@ import model.utils.MpcaIConstants;
 public class MpcaTrainingDescriptorParser {
 
     public static MpcaITrainableClassifier getClassifier(File file) throws
-            FileNotFoundException, ClassNotFoundException {
+            FileNotFoundException, ClassNotFoundException, IOException {
         MpcaITrainableClassifier classifier = parseAndTrain(file);
         return classifier;
     }
 
     private static MpcaITrainableClassifier parseAndTrain(File file) throws
-            FileNotFoundException, ClassNotFoundException {
-        Scanner scanner = new Scanner(file);
+            FileNotFoundException, ClassNotFoundException, IOException {
+        //Scanner scanner = new Scanner(file);
+        BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
         //TODO: usar el nombre en algo...
-        String name = scanner.nextLine();
-        String className = scanner.nextLine();
-        int numberOfCategories = scanner.nextInt();
+        String name = bf.readLine();
+        String className = bf.readLine();
+        int numberOfCategories = Integer.parseInt(bf.readLine());
 
         JpaController jpaController = new JpaController();
         EntityManager em = jpaController.getEntityManager();
         Map<String, List<String>> mapa = new HashMap<String, List<String>>();
         for (int i = 0; i < numberOfCategories; ++i) {
-            String label = scanner.next();
+            String []line = bf.readLine().split(" +");
+            String label = line[0];
+            int numberOfQueries = Integer.parseInt(line[1]);
             if (!mapa.containsKey(label)) {
                 mapa.put(label, new ArrayList<String>());
             }
-            int numberOfQueries = scanner.nextInt();
+            
             List<MpcaComment> comments = new ArrayList<MpcaComment>();
             for (int j = 0; j < numberOfQueries; ++j) {
-                int maxResults = scanner.nextInt();
-                int firstResult = scanner.nextInt();
+                int maxResults = Integer.parseInt(bf.readLine());
+                int firstResult = Integer.parseInt(bf.readLine());
 
-                String query = scanner.nextLine();
+                String query = bf.readLine();
                 Query q = em.createQuery(query);
                 if (maxResults > 0) {
                     q.setMaxResults(maxResults);
@@ -82,7 +89,7 @@ public class MpcaTrainingDescriptorParser {
     private static final MpcaLabelType POSITIVE_LABEL = new MpcaLabelTypeJpaController().findMpcaLabelType(POSITIVE_ID);
     private static final MpcaLabelType NEGATIVE_LABEL = new MpcaLabelTypeJpaController().findMpcaLabelType(NEGATIVE_ID);
     
-    public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException, MpcaClassifierNotTrainedException {
+    public static void main(String[] args) throws Exception {
         
         
         String[] polarities = {"POSITIVE", "NEGATIVE"};
@@ -97,7 +104,8 @@ public class MpcaTrainingDescriptorParser {
         Scanner in = new Scanner(fileDescriptor);
         while(in.hasNext()) {
             String fileName = in.next();
-            MpcaITrainableClassifier classifier = getClassifier(fileDescriptor);
+            //MpcaITrainableClassifier classifier = getClassifier(fileDescriptor);
+            MpcaITrainableClassifier classifier = getClassifier(new File(CLASSIFIERS_DESCRIPTOR_PATH, fileName));
             
             
             for(int i = 0;i<10;++i) {
