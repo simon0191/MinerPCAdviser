@@ -37,7 +37,9 @@ public class MpcaTrainingDescriptorParser {
         Scanner scanner = new Scanner(file);
         //TODO: usar el nombre en algo...
         String name = scanner.nextLine();
+        System.out.println(name);
         String className = scanner.nextLine();
+        
         int numberOfCategories = scanner.nextInt();
 
         JpaController jpaController = new JpaController();
@@ -55,6 +57,7 @@ public class MpcaTrainingDescriptorParser {
                 int firstResult = scanner.nextInt();
 
                 String query = scanner.nextLine();
+                System.out.println("Query: "+query);
                 Query q = em.createQuery(query);
                 if (maxResults > 0) {
                     q.setMaxResults(maxResults);
@@ -98,14 +101,16 @@ public class MpcaTrainingDescriptorParser {
         Scanner in = new Scanner(fileDescriptor);
         while(in.hasNext()) {
             String fileName = in.next();
-            MpcaITrainableClassifier classifier = getClassifier(fileDescriptor);
+            MpcaITrainableClassifier classifier = getClassifier(new File(CLASSIFIERS_DESCRIPTOR_PATH,fileName));
             
             
             for(int i = 0;i<10;++i) {
                 String testComment = comments.get(i).getCommentText();
                 String category = classifier.classify(testComment);
+                
                 System.out.println("Test comment: "+testComment);
                 System.out.println("Category:"+category);
+                System.out.println("-------------------------");
                 /*
                 MpcaCommentIndex index = new MpcaCommentIndex();
                 

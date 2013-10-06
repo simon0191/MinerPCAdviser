@@ -9,4 +9,3 @@ NEGATIVE 1
 1000
 0
 SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND (ca.value = '1' OR ca.value = '2')
-
