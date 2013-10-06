@@ -1,0 +1,15 @@
+Estrellas:negativo=[1,2],positivo=[5],todasLasPaginas
+dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier
+2
+POSITIVE 1
+-1
+-1
+SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND (ca.value = '4.0' OR ca.value = '5.0')
+NEGATIVE 1
+-1
+-1
+SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND (ca.value = '1.0' OR ca.value = '2.0')
+NEUTRAL 1
+-1
+-1
+SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND (ca.value = '3.0')

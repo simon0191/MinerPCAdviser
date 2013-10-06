@@ -1,0 +1,11 @@
+Test
+dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier
+2
+POSITIVE 1
+-1
+-1
+SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'polarity' AND ca.value = 'POSITIVE'
+NEGATIVE 1
+-1
+-1
+SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'polarity' AND ca.value = 'NEGATIVE'

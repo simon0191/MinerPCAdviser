@@ -12,7 +12,8 @@ lib/*/docs
 */nbproject/private/
 
 # Sensitive files #
-MPCA_PersistenceModule/src/META-INF/persistence.xml 
+MPCA_PersistenceModule/src/META-INF/persistence.xml
+MPCA_PersistenceModule/src/META-INF/*
 
 # Store and Data
 */store/

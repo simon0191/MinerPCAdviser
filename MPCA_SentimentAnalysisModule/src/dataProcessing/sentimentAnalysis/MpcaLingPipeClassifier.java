@@ -95,4 +95,9 @@ public class MpcaLingPipeClassifier implements MpcaITrainableClassifier, MpcaICo
             train(label, mapa.get(label));
         }
     }
+
+    @Override
+    public MpcaClassifierTest createTest(Map<String, List<String>> testData) {
+        return new MpcaClassifierTest(testData, this);
+    }
 }

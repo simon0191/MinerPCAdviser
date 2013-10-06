@@ -1,0 +1,17 @@
+Estrellas:negativo=[1,2],positivo=[5],todasLasPaginas.Positives and Negatives
+dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier
+2
+POSITIVE 2
+1000
+-1
+SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND ca.value = '5.0'
+-1
+-1
+SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'polarity' AND ca.value = 'POSITIVE'
+NEGATIVE 2
+1000
+-1
+SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND (ca.value = '1.0' OR ca.value = '2.0')
+-1
+-1
+SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'polarity' AND ca.value = 'NEGATIVE'
