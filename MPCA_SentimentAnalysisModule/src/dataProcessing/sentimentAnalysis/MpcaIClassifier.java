@@ -4,6 +4,7 @@
  */
 package dataProcessing.sentimentAnalysis;
 
+import dataProcessing.sentimentAnalysis.test.MpcaClassifierTest;
 import java.util.List;
 import java.util.Map;
 

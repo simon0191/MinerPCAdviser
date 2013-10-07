@@ -1,5 +1,6 @@
 package dataProcessing.sentimentAnalysis;
 
+import dataProcessing.sentimentAnalysis.test.MpcaClassifierTest;
 import com.aliasi.classify.Classification;
 import com.aliasi.classify.Classified;
 import com.aliasi.classify.DynamicLMClassifier;
