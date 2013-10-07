@@ -1,0 +1,26 @@
+<datasets>
+	<dataset>
+	</dataset>
+	<dataset>
+	</dataset>
+</datasets>
+<classifiers>
+	<classifier>
+		<dataset>
+		</dataset>	
+	</classifier>
+	<classifier>
+	</classifier>
+	<classifier>
+	</classifier>
+</classifiers>
+
+<tests>
+	<test>
+		<classifier>asdfsdaf</classifier>
+		<dataset>asdfsafd</dataset>
+		
+		<classifier>asdfsdaf</classifier>
+		<dataset>asdfsafd</dataset>
+	</test>
+</tests>
