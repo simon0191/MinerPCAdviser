@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--
+    TODO define vocabulary identification
+    PUBLIC ID: -//vendor//vocabulary//EN
+    SYSTEM ID: http://server/path/trainingAndTestFormat.dtd
+
+-->
+
+<!--
+    An example how to use this DTD from your XML document:
+
+    <?xml version="1.0"?>
+
+    <!DOCTYPE traningAndTest SYSTEM "trainingAndTestFormat.dtd">
+
+    <traningAndTest>
+    ...
+    </traningAndTest>
+-->
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT traningAndTest (tests|classifiers|datasets)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT datasets (dataset)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT dataset (query)*>
+<!ATTLIST dataset
+    ref CDATA #IMPLIED
+    details CDATA #IMPLIED
+    id CDATA #IMPLIED
+  >
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT query (#PCDATA)>
+<!ATTLIST query
+    offset CDATA #IMPLIED
+    maxResults CDATA #IMPLIED
+  >
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT classifiers (classifier)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT classifier (category)*>
+<!ATTLIST classifier
+    ref CDATA #IMPLIED
+    class (dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier) #IMPLIED
+    id CDATA #IMPLIED
+  >
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT category (dataset)+>
+<!ATTLIST category
+    name CDATA #IMPLIED
+  >
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT tests (test)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT test (classifier,expectedCategory+)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT expectedCategory (dataset)+>
+<!ATTLIST expectedCategory
+    name CDATA #IMPLIED
+  >

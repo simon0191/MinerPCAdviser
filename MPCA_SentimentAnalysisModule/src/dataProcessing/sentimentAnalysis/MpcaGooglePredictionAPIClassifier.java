@@ -17,6 +17,7 @@ import com.google.api.services.prediction.PredictionScopes;
 import com.google.api.services.prediction.model.Input;
 import com.google.api.services.prediction.model.Input.InputInput;
 import com.google.api.services.prediction.model.Output;
+import dataProcessing.sentimentAnalysis.utils.MpcaDataSet;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -190,7 +191,7 @@ public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
     }
 
     @Override
-    public MpcaClassifierTest createTest(Map<String, List<String>> testData) {
+    public MpcaClassifierTest createTest(MpcaDataSet testData) {
         return new MpcaClassifierTest(testData, this);
     }
 }

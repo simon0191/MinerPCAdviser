@@ -11,10 +11,9 @@ import dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier;
  *
  * @author simon
  */
-class MpcaTrainableClassifierFactory {
+public class MpcaTrainableClassifierFactory {
 
-    public static final String LING_PIPE =
-            "dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier";
+    public static final String LING_PIPE = "dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier";
 
     public static MpcaITrainableClassifier createClassifierByClassName(
             String className, String[] categories) throws ClassNotFoundException {

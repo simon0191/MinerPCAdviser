@@ -34,4 +34,8 @@ public interface MpcaIConstants {
     public static final MpcaPolarity ADDITION_NEGATIVE = MpcaPolarity.NEGATIVE;
     public static final MpcaPolarity ADDITION_NEUTRAL = MpcaPolarity.NEUTRAL;
     public static final GregorianCalendar GREGORIAN_BASE = new GregorianCalendar(1945, 5, 6);
+    public static final String SEPARATOR = "------------------------------------------------------------------------------------------";
+    public static final String CLASSIFIERS_DESCRIPTOR_PATH = "data/classifiers";
+    public static String MAX_RESULTS_TAG = "maxResults";
+    public static String OFFSET_TAG = "offset";
 }

@@ -6,6 +6,7 @@ import com.aliasi.classify.Classified;
 import com.aliasi.classify.DynamicLMClassifier;
 import com.aliasi.lm.NGramProcessLM;
 import dataProcessing.sentimentAnalysis.exceptions.MpcaClassifierNotTrainedException;
+import dataProcessing.sentimentAnalysis.utils.MpcaDataSet;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
@@ -90,7 +91,7 @@ public class MpcaLingPipeClassifier implements MpcaITrainableClassifier, MpcaICo
     }
 
     @Override
-    public synchronized void train(Map<String, List<String>> mapa) {
+    public synchronized void train(MpcaDataSet mapa) {
         Set<String> labels = mapa.keySet();
         for (String label : labels) {
             train(label, mapa.get(label));
@@ -98,7 +99,7 @@ public class MpcaLingPipeClassifier implements MpcaITrainableClassifier, MpcaICo
     }
 
     @Override
-    public MpcaClassifierTest createTest(Map<String, List<String>> testData) {
+    public MpcaClassifierTest createTest(MpcaDataSet testData) {
         return new MpcaClassifierTest(testData, this);
     }
 }

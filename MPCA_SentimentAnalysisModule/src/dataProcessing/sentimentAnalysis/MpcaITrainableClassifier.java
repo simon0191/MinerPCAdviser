@@ -5,8 +5,8 @@
 package dataProcessing.sentimentAnalysis;
 
 import dataProcessing.sentimentAnalysis.exceptions.MpcaClassifierNotTrainedException;
+import dataProcessing.sentimentAnalysis.utils.MpcaDataSet;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public interface MpcaITrainableClassifier extends MpcaIClassifier {
     void train(String category,List<String> reviews);
-    void train(Map<String,List<String>> reviews);
+    void train(MpcaDataSet reviews);
     boolean isTrained();
     int trainingSize();
     @Override

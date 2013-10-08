@@ -5,8 +5,7 @@
 package dataProcessing.sentimentAnalysis;
 
 import dataProcessing.sentimentAnalysis.test.MpcaClassifierTest;
-import java.util.List;
-import java.util.Map;
+import dataProcessing.sentimentAnalysis.utils.MpcaDataSet;
 
 /**
  *
@@ -16,5 +15,5 @@ public interface MpcaIClassifier {
     
     String classify(String text) throws Exception;
     String[] getCategories();
-    MpcaClassifierTest createTest(Map<String,List<String>> testData);
+    MpcaClassifierTest createTest(MpcaDataSet testData);
 }
