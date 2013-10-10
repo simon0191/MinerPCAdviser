@@ -13,7 +13,9 @@ import dataProcessing.sentimentAnalysis.utils.MpcaDataSet;
  */
 public interface MpcaIClassifier {
     
-    String classify(String text) throws Exception;
+    //double getIndexByCategory(String category,String text);
+    String bestMatch(String text) throws Exception;
+    MpcaClassification classify(String text) throws Exception;
     String[] getCategories();
     MpcaClassifierTest createTest(MpcaDataSet testData);
 }

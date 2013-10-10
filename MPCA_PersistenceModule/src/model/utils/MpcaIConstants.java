@@ -38,4 +38,5 @@ public interface MpcaIConstants {
     public static final String CLASSIFIERS_DESCRIPTOR_PATH = "data/classifiers";
     public static String MAX_RESULTS_TAG = "maxResults";
     public static String OFFSET_TAG = "offset";
+    public static String LING_PIPE = "LING_PIPE";
 }

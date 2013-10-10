@@ -95,7 +95,7 @@ public class Main {
                 List<MpcaComment> comments = commentsController.findMpcaCommentByAdditionAndValue(MpcaIConstants.ADDITION_RANK,r);
                 for (MpcaComment c : comments) {
                     
-                    if(classifier.classify(c.getCommentText()).equals(p)) {
+                    if(classifier.bestMatch(c.getCommentText()).equals(p)) {
                         correct[pos]+=1.0;
                     }
                     else {
@@ -167,7 +167,7 @@ public class Main {
             } else if (line.equals("++")) {
                 break;
             } else {
-                String c = classifier.classify(sb.toString());
+                String c = classifier.bestMatch(sb.toString());
                 System.out.println("---------------------------------");
                 System.out.println("Best category: " + c);
                 System.out.println("---------------------------------");

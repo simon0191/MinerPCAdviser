@@ -82,7 +82,7 @@ public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
     }
 
     @Override
-    public String classify(String text) throws IOException {
+    public String bestMatch(String text) throws IOException {
         Input input = new Input();
 
 

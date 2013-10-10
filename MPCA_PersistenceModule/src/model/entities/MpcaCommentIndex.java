@@ -63,6 +63,12 @@ public class MpcaCommentIndex implements Serializable {
     public MpcaCommentIndex(long mpcaIndexTypeIndexId, long mpcaCommentCommentId) {
         this.mpcaCommentIndexPK = new MpcaCommentIndexPK(mpcaIndexTypeIndexId, mpcaCommentCommentId);
     }
+    
+    public MpcaCommentIndex(MpcaIndexType indexType, MpcaComment comment, MpcaLabelType label, BigDecimal indexValue) {
+        this.mpcaCommentIndexPK = new MpcaCommentIndexPK(indexType.getIndexId(), comment.getCommentId());
+        this.labelId = label;
+        this.indexValue = indexValue;
+    }
 
     public MpcaCommentIndexPK getMpcaCommentIndexPK() {
         return mpcaCommentIndexPK;

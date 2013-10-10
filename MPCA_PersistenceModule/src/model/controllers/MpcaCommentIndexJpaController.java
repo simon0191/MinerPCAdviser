@@ -225,5 +225,19 @@ public class MpcaCommentIndexJpaController extends JpaController implements Seri
             em.close();
         }
     }
+
+    public int deleteByIndexType(MpcaIndexType indexType) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Query q = em.createQuery("DELETE FROM MpcaCommentIndex c WHERE c.mpcaCommentIndexPK.mpcaIndexTypeIndexId = :indexTypeId");
+            q.setParameter("indexTypeId", indexType.getIndexId());
+            int deletedItemsCount = q.executeUpdate();
+            em.getTransaction().commit();
+            return deletedItemsCount;
+        } finally {
+            em.close();
+        }
+    }
     
 }

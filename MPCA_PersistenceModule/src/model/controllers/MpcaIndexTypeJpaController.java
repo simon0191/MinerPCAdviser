@@ -249,5 +249,21 @@ public class MpcaIndexTypeJpaController extends JpaController implements Seriali
             em.close();
         }
     }
+
+    public MpcaIndexType findMpcaIndexTypeByName(String indexName) {
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createNamedQuery("MpcaIndexType.findByIndexName");
+            q.setParameter("indexName", indexName);
+            MpcaIndexType indexType = null;
+            List<MpcaIndexType> indexs = q.getResultList();
+            if(!indexs.isEmpty()) {
+                indexType = indexs.get(0);
+            }
+            return indexType;
+        } finally {
+            em.close();
+        }
+    }
     
 }

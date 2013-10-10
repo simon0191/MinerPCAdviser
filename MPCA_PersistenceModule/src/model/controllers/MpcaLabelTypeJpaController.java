@@ -250,5 +250,21 @@ public class MpcaLabelTypeJpaController extends JpaController implements Seriali
             em.close();
         }
     }
+
+    public MpcaLabelType findMpcaLabelTypeByName(String labelName) {
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createNamedQuery("MpcaLabelType.findByLabelName");
+            q.setParameter("labelName", labelName);
+            MpcaLabelType labelType = null;
+            List<MpcaLabelType> labels = q.getResultList();
+            if(!labels.isEmpty()) {
+                labelType = labels.get(0);
+            }
+            return labelType;
+        } finally {
+            em.close();
+        }
+    }
     
 }

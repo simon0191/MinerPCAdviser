@@ -45,7 +45,7 @@ public class MpcaLingPipeClassifier implements MpcaITrainableClassifier, MpcaICo
     }
 
     @Override
-    public String classify(String text) throws MpcaClassifierNotTrainedException {
+    public String bestMatch(String text) throws MpcaClassifierNotTrainedException {
         if(!isTrained()) {
             throw new MpcaClassifierNotTrainedException();
         }

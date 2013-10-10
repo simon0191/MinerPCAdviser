@@ -18,5 +18,5 @@ public interface MpcaITrainableClassifier extends MpcaIClassifier {
     boolean isTrained();
     int trainingSize();
     @Override
-    String classify(String text) throws MpcaClassifierNotTrainedException;
+    String bestMatch(String text) throws MpcaClassifierNotTrainedException;
 }

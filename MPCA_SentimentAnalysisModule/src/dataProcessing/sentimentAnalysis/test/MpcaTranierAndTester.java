@@ -26,23 +26,42 @@ public class MpcaTranierAndTester {
     private Map<String, MpcaIClassifier> classifiersDirectory;
     private MpcaDataSet dataSet;
     private File xml;
+    private Element xmlDoc;
+    private boolean trained;
 
-    public MpcaTranierAndTester(File xml) {
+    public MpcaTranierAndTester(File xml) throws IOException {
         this.xml = xml;
-        classifiersDirectory = new HashMap<String, MpcaIClassifier>();
-    }
-    
-    public List<MpcaTestResult> trainAndTest() throws IOException, ClassNotFoundException, Exception {
-        Element xmlDoc = Jsoup.parse(xml, "UTF-8").select("traningandtest").first();
+        xmlDoc = Jsoup.parse(xml, "UTF-8").select("traningandtest").first();
         Elements dataSets = xmlDoc.select("datasets");
         dataSet = MpcaDataSet.createDataSet(dataSets);
-        Elements classifiers = xmlDoc.select("classifiers");
-        trainClassifiers(classifiers);
-        Elements tests = xmlDoc.select("test");
-        return testClassifiers(tests);
+        classifiersDirectory = new HashMap<String, MpcaIClassifier>();
+        trained = false;
+    }
+    
+    public Map<String, MpcaIClassifier> train() throws ClassNotFoundException {
+        Map<String, MpcaIClassifier> classifiersTrained = null;
+        if(!trained) {
+            Elements classifiers = xmlDoc.select("classifiers");
+            classifiersTrained = trainClassifiers(classifiers);
+        }
+        return classifiersTrained;
+    }
+    
+    public List<MpcaTestResult> test() throws Exception {
+        List<MpcaTestResult> results = null;
+        if(trained) {
+            Elements tests = xmlDoc.select("test");
+            results = testClassifiers(tests);
+        }
+        return results;
+    }
+    
+    public List<MpcaTestResult> trainAndTest() throws ClassNotFoundException, Exception {
+        train();
+        return test();
     }
 
-    private void trainClassifiers(Elements classifiers) throws ClassNotFoundException {
+    private Map<String, MpcaIClassifier> trainClassifiers(Elements classifiers) throws ClassNotFoundException {
         Elements allClassifiers = classifiers.select("classifier");
         for (Element everyClassifier : allClassifiers) {
             String id = everyClassifier.id();
@@ -66,6 +85,8 @@ public class MpcaTranierAndTester {
             classifier.train(finalDataSet);
             classifiersDirectory.put(id, classifier);
         }
+        trained = true;
+        return classifiersDirectory;
     }
 
     private List<MpcaTestResult> testClassifiers(Elements tests) throws Exception {
