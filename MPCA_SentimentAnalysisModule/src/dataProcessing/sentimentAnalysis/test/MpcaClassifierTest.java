@@ -56,8 +56,6 @@ public class MpcaClassifierTest {
             String expectedCategory = entry.getKey();
             List<String> comments = entry.getValue();
             for (String comm : comments) {
-                
-                /* TODO: GUARDAR CLASIFICACIÓN POR COMENTARIOS */
                 String category = classifier.bestMatch(comm);
                 if (category.equalsIgnoreCase(expectedCategory)) {
                     correct.put(expectedCategory,

@@ -31,6 +31,6 @@ public class MpcaTrainingDescriptorParser {
             }
         }
         System.out.println(betterResult);
-        MpcaIndexPersistence.persistIndex(betterResult.getClassifier());
+        MpcaIndexPersistence.persistIndex(betterResult.getClassifier(),"test",true);
     }
 }

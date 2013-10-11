@@ -102,4 +102,17 @@ public class MpcaLingPipeClassifier implements MpcaITrainableClassifier, MpcaICo
     public MpcaClassifierTest createTest(MpcaDataSet testData) {
         return new MpcaClassifierTest(testData, this);
     }
+
+    @Override
+    public MpcaClassification classify(String text) throws Exception {
+        MpcaClassification mclass = new MpcaClassification();
+        String bestMatch = bestMatch(text);
+        mclass.put(bestMatch, 1.0);
+        for(String s:classifier.categories()) {
+            if(!bestMatch.equals(s)) {
+                mclass.put(s, 0.0);
+            }
+        }
+        return mclass;
+    }
 }

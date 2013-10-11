@@ -26,7 +26,6 @@ import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -35,7 +34,6 @@ import java.util.Set;
  */
 public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
 
-    private String[] categories;
     /**
      * Be sure to specify the name of your application. If the application name
      * is {@code null} or blank, the application will log a warning. Suggested
@@ -45,13 +43,19 @@ public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
     /**
      * Directory to store user credentials.
      */
-    private static final java.io.File DATA_STORE_DIR =
-            new java.io.File("store/prediction");
+    private static final java.io.File STORE_DIR =
+            new java.io.File("store");
+    /**
+     * Directory to locate credentials.
+     */
+    private static final java.io.File DATA_DIR =
+            new java.io.File("data");
     /**
      * Global instance of the {@link DataStoreFactory}. The best practice is to
      * make it a single globally shared instance across your application.
      */
-    private static FileDataStoreFactory dataStoreFactory;
+    private static FileDataStoreFactory dataDir;
+    private static FileDataStoreFactory storeDir;
     /**
      * Global instance of the JSON factory.
      */
@@ -62,16 +66,15 @@ public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
     private static HttpTransport httpTransport;
     private static Prediction client;
 
-    public MpcaGooglePredictionAPIClassifier(String[] categories) throws GeneralSecurityException, IOException, Exception {
-        this.categories = Arrays.copyOf(categories, categories.length);
-
-
+    public MpcaGooglePredictionAPIClassifier() throws GeneralSecurityException, IOException, Exception {
 
         // initialize the transport
         httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 
         // initialize the data store factory
-        dataStoreFactory = new FileDataStoreFactory(DATA_STORE_DIR);
+        dataDir = new FileDataStoreFactory(DATA_DIR);
+        storeDir = new FileDataStoreFactory(STORE_DIR);
+
 
         // authorization
         Credential credential = authorize();
@@ -83,20 +86,12 @@ public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
 
     @Override
     public String bestMatch(String text) throws IOException {
-        Input input = new Input();
-
-
-        InputInput inputInput = new InputInput();
-        List<Object> params = Arrays.asList(new Object[]{"I'm Very happy"});
-
-        inputInput.setCsvInstance(params);
-        input.setInput(inputInput);
 
 
 
         Output output =
-                //client.hostedmodels().predict("414649711441", "sample.sentiment", input).execute();
-                client.trainedmodels().predict("109973074802", "sentiment", input).execute();
+                getGoogleOutput(text);
+        //client.trainedmodels().predict("109973074802", "sentiment", input).execute();
         //System.out.println(output.toPrettyString());
         //output.
         return output.getOutputLabel().toUpperCase();
@@ -105,21 +100,11 @@ public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
     /**
      * Authorizes the installed application to access user's protected data.
      */
-    private static Credential authorize() throws Exception {
+    private Credential authorize() throws Exception {
         // load client secrets
 
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY,
-                new InputStreamReader(new FileInputStream(new File(dataStoreFactory.getDataDirectory(), "/client_secrets.json"))));
-
-        if (clientSecrets.getDetails().getClientId().startsWith("Enter")
-                || clientSecrets.getDetails().getClientSecret().startsWith("Enter ")) {
-            System.out.println(
-                    "Overwrite the src/main/resources/client_secrets.json file with the client secrets file "
-                    + "you downloaded from the Quickstart tool or manually enter your Client ID and Secret "
-                    + "from https://code.google.com/apis/console/?api=prediction#project:109973074802 "
-                    + "into src/main/resources/client_secrets.json");
-            System.exit(1);
-        }
+                new InputStreamReader(new FileInputStream(new File(dataDir.getDataDirectory(), "/client_secrets.json"))));
 
         // Set up authorization code flow.
         // Ask for only the permissions you need. Asking for more permissions will
@@ -136,15 +121,10 @@ public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
 
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                 httpTransport, JSON_FACTORY, clientSecrets, scopes)
-                .setDataStoreFactory(dataStoreFactory)
+                .setDataStoreFactory(storeDir)
                 .build();
         // authorize
         return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-    }
-
-    @Override
-    public String[] getCategories() {
-        return this.categories;
     }
 
     public static void main(String[] args) {
@@ -153,32 +133,23 @@ public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
             httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 
             // initialize the data store factory
-            dataStoreFactory = new FileDataStoreFactory(DATA_STORE_DIR);
+            //dataStoreFactory = new FileDataStoreFactory(DATA_STORE_DIR);
 
             // authorization
-            Credential credential = authorize();
+            MpcaGooglePredictionAPIClassifier bla = new MpcaGooglePredictionAPIClassifier();
+            Credential credential = bla.authorize();
             // set up global Prediction instance
             client = new Prediction.Builder(httpTransport, JSON_FACTORY, credential)
                     .setApplicationName(APPLICATION_NAME).build();
 
-            System.out.println("Success! Now add code here.");
-
-            Input input = new Input();
-
-            InputInput inputInput = new InputInput();
-            List<Object> params = Arrays.asList(new Object[]{"I'm Very happy"});
-
-            inputInput.setCsvInstance(params);
-            input.setInput(inputInput);
-
-            Output output =
-                    //client.hostedmodels().predict("414649711441", "sample.sentiment", input).execute();
-                    client.trainedmodels().predict("109973074802", "sentiment", input).execute();
+            Output output = bla.getGoogleOutput("I'm very happy");
+            //client.trainedmodels().predict("109973074802", "sentiment", input).execute();
             System.out.println(output.toPrettyString());
-
-            List<Output.OutputMulti> outs = output.getOutputMulti();
-            for (Output.OutputMulti o : outs) {
-                //o.
+            List<Output.OutputMulti> multi = output.getOutputMulti();
+            System.out.println("--------------------------");
+            for (Output.OutputMulti oo : multi) {
+                //System.out.println(oo.toPrettyString());
+                System.out.println(oo.getScore());
             }
 
 
@@ -187,11 +158,39 @@ public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
         } catch (Throwable t) {
             t.printStackTrace();
         }
-        System.exit(1);
     }
 
     @Override
     public MpcaClassifierTest createTest(MpcaDataSet testData) {
         return new MpcaClassifierTest(testData, this);
+    }
+
+    @Override
+    public MpcaClassification classify(String text) throws Exception {
+
+        Output output = getGoogleOutput(text);
+        List<Output.OutputMulti> multi = output.getOutputMulti();
+        MpcaClassification mclass = new MpcaClassification();
+        for (Output.OutputMulti oo : multi) {
+            mclass.put(oo.getLabel(), Double.parseDouble(oo.getScore()));
+        }
+        return mclass;
+    }
+
+    @Override
+    public String[] getCategories() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private Output getGoogleOutput(String text) throws IOException {
+        Input input = new Input();
+        InputInput inputInput = new InputInput();
+        List<Object> params = Arrays.asList(new Object[]{text});
+        inputInput.setCsvInstance(params);
+        input.setInput(inputInput);
+        Output output =
+                client.hostedmodels().predict("414649711441", "sample.sentiment", input).execute();
+        //client.trainedmodels().predict("109973074802", "sentiment", input).execute();
+        return output;
     }
 }

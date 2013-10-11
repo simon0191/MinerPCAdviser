@@ -20,7 +20,6 @@ import model.entities.MpcaComment;
 import model.entities.MpcaCommentIndex;
 import model.entities.MpcaIndexType;
 import model.entities.MpcaLabelType;
-import model.utils.MpcaIConstants;
 
 /**
  *
@@ -28,20 +27,20 @@ import model.utils.MpcaIConstants;
  */
 public class MpcaIndexPersistence {
     
-    /*TODO:
+    /*TODO: Persistencia de indices
      *  - Ponerle el nombre al Clasificador y ponerlo en la BD
      */
     
-    public static void persistIndex(MpcaIClassifier classifier) throws Exception {
-        
+    public static void persistIndex(MpcaIClassifier classifier, String classifierName, boolean override) throws Exception {
         MpcaCommentJpaController cc = new MpcaCommentJpaController();
         MpcaCommentIndexJpaController cic = new MpcaCommentIndexJpaController();
-
-        MpcaIndexType indexType = createOrGetIndexType(MpcaIConstants.LING_PIPE);
-        cic.deleteByIndexType(indexType);
+        MpcaIndexType indexType = createOrGetIndexType(classifierName);
+        if(override) {
+            cic.deleteByIndexType(indexType);    
+        }       
 
         Map<String, MpcaLabelType> labels = new HashMap<String, MpcaLabelType>();
-        System.out.println("Getting all comments");
+        System.out.println("Retrieving all comments");
         List<MpcaComment> comments = cc.findMpcaCommentEntities();
         System.out.println("Classifying comments");
         for (MpcaComment comment : comments) {
