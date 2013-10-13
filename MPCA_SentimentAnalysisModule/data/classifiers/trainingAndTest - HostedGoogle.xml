@@ -1,0 +1,86 @@
+<!DOCTYPE traningAndTest SYSTEM "trainingAndTestFormat.dtd">
+<traningAndTest>
+    <datasets>
+            <!--dataset id = "dataSet0" details = "Todos los comentarios">
+                <query>
+                    SELECT cc FROM MpcaComment cc
+                </query>
+            </dataset>
+            <dataset id = "dataSet1" details = "Rank de 5 estrellas (maxResults = 1000)">
+                <query maxResults = "1000">
+                    SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND ca.value = '5.0'
+                </query>
+            </dataset>
+            <dataset id = "dataSet2" details = "Rank de 1 y 2 estrellas (maxResults = 1000)">
+                <query maxResults = "1000">
+                    SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND (ca.value = '1.0' OR ca.value = '2.0')
+                </query>
+            </dataset>
+            <dataset id = "dataSet3" details = "Rank de 4 y 5 estrellas (maxResults = 100)">
+                <query offset = "100">
+                    SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND (ca.value = '4.0' OR ca.value = '5.0')
+                </query>
+            </dataset-->
+            <dataset id = "dataSet4" details = "Polaridad Positiva">
+                <query>
+                    SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'polarity' AND ca.value = 'POSITIVE'
+                </query>
+            </dataset>
+            <dataset id = "dataSet5" details = "Polaridad Negativa">
+                <query>
+                    SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'polarity' AND ca.value = 'NEGATIVE'
+                </query>
+            </dataset>
+            <!--dataset id = "dataSet6" details = "Rank de 4 y 5 estrellas">
+                <query>
+                    SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND (ca.value = '4.0' OR ca.value = '5.0')
+                </query>
+            </dataset>
+            <dataset id = "dataSet7" details = "Rank de 1 y 2 estrellas">
+                <query>
+                    SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND (ca.value = '1.0' OR ca.value = '2.0')
+                </query>
+            </dataset-->
+    </datasets>
+    <classifiers>
+        <!--classifier id = "classifier1" class = "dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier">
+            <category name = "POSITIVE">
+                <dataset ref="dataSet1"/>
+            </category>
+            <category name = "NEGATIVE">
+                <dataset ref="dataSet2"/>
+            </category>
+        </classifier-->
+        <classifier id = "googleClassifier" class = "dataProcessing.sentimentAnalysis.MpcaGoogleClassifier">
+        </classifier>
+    </classifiers>
+    <tests>
+        <!--test>
+            <classifier ref = "classifier1"/>
+            <expectedCategory name = "POSITIVE">
+                <dataset ref = "dataSet4"/>
+            </expectedCategory>
+            <expectedCategory name = "NEGATIVE">
+                <dataset ref = "dataSet5"/>
+            </expectedCategory>
+        </test-->
+        <test>
+            <classifier ref = "googleClassifier"/>
+            <expectedCategory name = "POSITIVE">
+                <dataset ref = "dataSet4"/>
+            </expectedCategory>
+            <expectedCategory name = "NEGATIVE">
+                <dataset ref = "dataSet5"/>
+            </expectedCategory>
+        </test>
+        <!--test>
+            <classifier ref = "classifier2"/>
+            <expectedCategory name = "POSITIVE">
+                <dataset ref = "dataSet6"/>
+            </expectedCategory>
+            <expectedCategory name = "NEGATIVE">
+                <dataset ref = "dataSet7"/>
+            </expectedCategory>
+        </test-->
+    </tests>
+</traningAndTest>
