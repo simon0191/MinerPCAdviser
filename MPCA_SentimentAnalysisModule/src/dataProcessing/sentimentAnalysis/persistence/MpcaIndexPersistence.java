@@ -4,9 +4,7 @@
  */
 package dataProcessing.sentimentAnalysis.persistence;
 
-import dataProcessing.sentimentAnalysis.MpcaClassification;
 import dataProcessing.sentimentAnalysis.MpcaIClassifier;
-import dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -45,8 +43,21 @@ public class MpcaIndexPersistence {
         System.out.println("Classifying comments");
         for (MpcaComment comment : comments) {
             System.out.println(comment.getCommentId());
-            //String polarity = classifier.bestMatch(comment.getCommentText());
-            MpcaClassification classifications = classifier.classify(comment.getCommentText());
+            String polarity = classifier.bestMatch(comment.getCommentText());
+            MpcaLabelType label;
+            if(!labels.containsKey(polarity)) {
+                label = createOrGetLabelType(polarity);
+                labels.put(polarity, label);
+            } else {
+                label = labels.get(polarity);
+            }
+            MpcaCommentIndex commentIndex = new MpcaCommentIndex();
+            commentIndex.setMpcaComment(comment);
+            commentIndex.setMpcaIndexType(indexType);
+            commentIndex.setLabelId(label);
+            commentIndex.setIndexValue(BigDecimal.ONE);
+            cic.create(commentIndex);
+            /*MpcaClassification classifications = classifier.classify(comment.getCommentText());
             for (Map.Entry<String, Double> entry : classifications.entrySet()) {
                 MpcaLabelType label;
                 if(!labels.containsKey(entry.getKey())) {
@@ -62,6 +73,7 @@ public class MpcaIndexPersistence {
                 commentIndex.setIndexValue(new BigDecimal(entry.getValue()));
                 cic.create(commentIndex);
             }
+            */
         }
     }
 
