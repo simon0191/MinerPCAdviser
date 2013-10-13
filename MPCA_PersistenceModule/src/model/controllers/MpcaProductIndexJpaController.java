@@ -15,7 +15,6 @@ import model.entities.MpcaProduct;
 import model.entities.MpcaLabelType;
 import model.entities.MpcaIndexType;
 import model.entities.MpcaProductIndex;
-import model.entities.MpcaProductIndexPK;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -27,46 +26,41 @@ import javax.persistence.EntityManagerFactory;
 public class MpcaProductIndexJpaController extends JpaController implements Serializable {
 
     public void create(MpcaProductIndex mpcaProductIndex) throws PreexistingEntityException, Exception {
-        if (mpcaProductIndex.getMpcaProductIndexPK() == null) {
-            mpcaProductIndex.setMpcaProductIndexPK(new MpcaProductIndexPK());
-        }
-        mpcaProductIndex.getMpcaProductIndexPK().setMpcaProductProductId(mpcaProductIndex.getMpcaProduct().getProductId());
-        mpcaProductIndex.getMpcaProductIndexPK().setMpcaIndexTypeIndexId(mpcaProductIndex.getMpcaIndexType().getIndexId());
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            MpcaProduct mpcaProduct = mpcaProductIndex.getMpcaProduct();
-            if (mpcaProduct != null) {
-                mpcaProduct = em.getReference(mpcaProduct.getClass(), mpcaProduct.getProductId());
-                mpcaProductIndex.setMpcaProduct(mpcaProduct);
+            MpcaProduct mpcaProductProductId = mpcaProductIndex.getMpcaProductProductId();
+            if (mpcaProductProductId != null) {
+                mpcaProductProductId = em.getReference(mpcaProductProductId.getClass(), mpcaProductProductId.getProductId());
+                mpcaProductIndex.setMpcaProductProductId(mpcaProductProductId);
             }
             MpcaLabelType labelId = mpcaProductIndex.getLabelId();
             if (labelId != null) {
                 labelId = em.getReference(labelId.getClass(), labelId.getLabelId());
                 mpcaProductIndex.setLabelId(labelId);
             }
-            MpcaIndexType mpcaIndexType = mpcaProductIndex.getMpcaIndexType();
-            if (mpcaIndexType != null) {
-                mpcaIndexType = em.getReference(mpcaIndexType.getClass(), mpcaIndexType.getIndexId());
-                mpcaProductIndex.setMpcaIndexType(mpcaIndexType);
+            MpcaIndexType mpcaIndexTypeIndexId = mpcaProductIndex.getMpcaIndexTypeIndexId();
+            if (mpcaIndexTypeIndexId != null) {
+                mpcaIndexTypeIndexId = em.getReference(mpcaIndexTypeIndexId.getClass(), mpcaIndexTypeIndexId.getIndexId());
+                mpcaProductIndex.setMpcaIndexTypeIndexId(mpcaIndexTypeIndexId);
             }
             em.persist(mpcaProductIndex);
-            if (mpcaProduct != null) {
-                mpcaProduct.getMpcaProductIndexList().add(mpcaProductIndex);
-                mpcaProduct = em.merge(mpcaProduct);
+            if (mpcaProductProductId != null) {
+                mpcaProductProductId.getMpcaProductIndexList().add(mpcaProductIndex);
+                mpcaProductProductId = em.merge(mpcaProductProductId);
             }
             if (labelId != null) {
                 labelId.getMpcaProductIndexList().add(mpcaProductIndex);
                 labelId = em.merge(labelId);
             }
-            if (mpcaIndexType != null) {
-                mpcaIndexType.getMpcaProductIndexList().add(mpcaProductIndex);
-                mpcaIndexType = em.merge(mpcaIndexType);
+            if (mpcaIndexTypeIndexId != null) {
+                mpcaIndexTypeIndexId.getMpcaProductIndexList().add(mpcaProductIndex);
+                mpcaIndexTypeIndexId = em.merge(mpcaIndexTypeIndexId);
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
-            if (findMpcaProductIndex(mpcaProductIndex.getMpcaProductIndexPK()) != null) {
+            if (findMpcaProductIndex(mpcaProductIndex.getProductIndexId()) != null) {
                 throw new PreexistingEntityException("MpcaProductIndex " + mpcaProductIndex + " already exists.", ex);
             }
             throw ex;
@@ -78,39 +72,37 @@ public class MpcaProductIndexJpaController extends JpaController implements Seri
     }
 
     public void edit(MpcaProductIndex mpcaProductIndex) throws NonexistentEntityException, Exception {
-        mpcaProductIndex.getMpcaProductIndexPK().setMpcaProductProductId(mpcaProductIndex.getMpcaProduct().getProductId());
-        mpcaProductIndex.getMpcaProductIndexPK().setMpcaIndexTypeIndexId(mpcaProductIndex.getMpcaIndexType().getIndexId());
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            MpcaProductIndex persistentMpcaProductIndex = em.find(MpcaProductIndex.class, mpcaProductIndex.getMpcaProductIndexPK());
-            MpcaProduct mpcaProductOld = persistentMpcaProductIndex.getMpcaProduct();
-            MpcaProduct mpcaProductNew = mpcaProductIndex.getMpcaProduct();
+            MpcaProductIndex persistentMpcaProductIndex = em.find(MpcaProductIndex.class, mpcaProductIndex.getProductIndexId());
+            MpcaProduct mpcaProductProductIdOld = persistentMpcaProductIndex.getMpcaProductProductId();
+            MpcaProduct mpcaProductProductIdNew = mpcaProductIndex.getMpcaProductProductId();
             MpcaLabelType labelIdOld = persistentMpcaProductIndex.getLabelId();
             MpcaLabelType labelIdNew = mpcaProductIndex.getLabelId();
-            MpcaIndexType mpcaIndexTypeOld = persistentMpcaProductIndex.getMpcaIndexType();
-            MpcaIndexType mpcaIndexTypeNew = mpcaProductIndex.getMpcaIndexType();
-            if (mpcaProductNew != null) {
-                mpcaProductNew = em.getReference(mpcaProductNew.getClass(), mpcaProductNew.getProductId());
-                mpcaProductIndex.setMpcaProduct(mpcaProductNew);
+            MpcaIndexType mpcaIndexTypeIndexIdOld = persistentMpcaProductIndex.getMpcaIndexTypeIndexId();
+            MpcaIndexType mpcaIndexTypeIndexIdNew = mpcaProductIndex.getMpcaIndexTypeIndexId();
+            if (mpcaProductProductIdNew != null) {
+                mpcaProductProductIdNew = em.getReference(mpcaProductProductIdNew.getClass(), mpcaProductProductIdNew.getProductId());
+                mpcaProductIndex.setMpcaProductProductId(mpcaProductProductIdNew);
             }
             if (labelIdNew != null) {
                 labelIdNew = em.getReference(labelIdNew.getClass(), labelIdNew.getLabelId());
                 mpcaProductIndex.setLabelId(labelIdNew);
             }
-            if (mpcaIndexTypeNew != null) {
-                mpcaIndexTypeNew = em.getReference(mpcaIndexTypeNew.getClass(), mpcaIndexTypeNew.getIndexId());
-                mpcaProductIndex.setMpcaIndexType(mpcaIndexTypeNew);
+            if (mpcaIndexTypeIndexIdNew != null) {
+                mpcaIndexTypeIndexIdNew = em.getReference(mpcaIndexTypeIndexIdNew.getClass(), mpcaIndexTypeIndexIdNew.getIndexId());
+                mpcaProductIndex.setMpcaIndexTypeIndexId(mpcaIndexTypeIndexIdNew);
             }
             mpcaProductIndex = em.merge(mpcaProductIndex);
-            if (mpcaProductOld != null && !mpcaProductOld.equals(mpcaProductNew)) {
-                mpcaProductOld.getMpcaProductIndexList().remove(mpcaProductIndex);
-                mpcaProductOld = em.merge(mpcaProductOld);
+            if (mpcaProductProductIdOld != null && !mpcaProductProductIdOld.equals(mpcaProductProductIdNew)) {
+                mpcaProductProductIdOld.getMpcaProductIndexList().remove(mpcaProductIndex);
+                mpcaProductProductIdOld = em.merge(mpcaProductProductIdOld);
             }
-            if (mpcaProductNew != null && !mpcaProductNew.equals(mpcaProductOld)) {
-                mpcaProductNew.getMpcaProductIndexList().add(mpcaProductIndex);
-                mpcaProductNew = em.merge(mpcaProductNew);
+            if (mpcaProductProductIdNew != null && !mpcaProductProductIdNew.equals(mpcaProductProductIdOld)) {
+                mpcaProductProductIdNew.getMpcaProductIndexList().add(mpcaProductIndex);
+                mpcaProductProductIdNew = em.merge(mpcaProductProductIdNew);
             }
             if (labelIdOld != null && !labelIdOld.equals(labelIdNew)) {
                 labelIdOld.getMpcaProductIndexList().remove(mpcaProductIndex);
@@ -120,19 +112,19 @@ public class MpcaProductIndexJpaController extends JpaController implements Seri
                 labelIdNew.getMpcaProductIndexList().add(mpcaProductIndex);
                 labelIdNew = em.merge(labelIdNew);
             }
-            if (mpcaIndexTypeOld != null && !mpcaIndexTypeOld.equals(mpcaIndexTypeNew)) {
-                mpcaIndexTypeOld.getMpcaProductIndexList().remove(mpcaProductIndex);
-                mpcaIndexTypeOld = em.merge(mpcaIndexTypeOld);
+            if (mpcaIndexTypeIndexIdOld != null && !mpcaIndexTypeIndexIdOld.equals(mpcaIndexTypeIndexIdNew)) {
+                mpcaIndexTypeIndexIdOld.getMpcaProductIndexList().remove(mpcaProductIndex);
+                mpcaIndexTypeIndexIdOld = em.merge(mpcaIndexTypeIndexIdOld);
             }
-            if (mpcaIndexTypeNew != null && !mpcaIndexTypeNew.equals(mpcaIndexTypeOld)) {
-                mpcaIndexTypeNew.getMpcaProductIndexList().add(mpcaProductIndex);
-                mpcaIndexTypeNew = em.merge(mpcaIndexTypeNew);
+            if (mpcaIndexTypeIndexIdNew != null && !mpcaIndexTypeIndexIdNew.equals(mpcaIndexTypeIndexIdOld)) {
+                mpcaIndexTypeIndexIdNew.getMpcaProductIndexList().add(mpcaProductIndex);
+                mpcaIndexTypeIndexIdNew = em.merge(mpcaIndexTypeIndexIdNew);
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                MpcaProductIndexPK id = mpcaProductIndex.getMpcaProductIndexPK();
+                Long id = mpcaProductIndex.getProductIndexId();
                 if (findMpcaProductIndex(id) == null) {
                     throw new NonexistentEntityException("The mpcaProductIndex with id " + id + " no longer exists.");
                 }
@@ -145,7 +137,7 @@ public class MpcaProductIndexJpaController extends JpaController implements Seri
         }
     }
 
-    public void destroy(MpcaProductIndexPK id) throws NonexistentEntityException {
+    public void destroy(Long id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -153,24 +145,24 @@ public class MpcaProductIndexJpaController extends JpaController implements Seri
             MpcaProductIndex mpcaProductIndex;
             try {
                 mpcaProductIndex = em.getReference(MpcaProductIndex.class, id);
-                mpcaProductIndex.getMpcaProductIndexPK();
+                mpcaProductIndex.getProductIndexId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The mpcaProductIndex with id " + id + " no longer exists.", enfe);
             }
-            MpcaProduct mpcaProduct = mpcaProductIndex.getMpcaProduct();
-            if (mpcaProduct != null) {
-                mpcaProduct.getMpcaProductIndexList().remove(mpcaProductIndex);
-                mpcaProduct = em.merge(mpcaProduct);
+            MpcaProduct mpcaProductProductId = mpcaProductIndex.getMpcaProductProductId();
+            if (mpcaProductProductId != null) {
+                mpcaProductProductId.getMpcaProductIndexList().remove(mpcaProductIndex);
+                mpcaProductProductId = em.merge(mpcaProductProductId);
             }
             MpcaLabelType labelId = mpcaProductIndex.getLabelId();
             if (labelId != null) {
                 labelId.getMpcaProductIndexList().remove(mpcaProductIndex);
                 labelId = em.merge(labelId);
             }
-            MpcaIndexType mpcaIndexType = mpcaProductIndex.getMpcaIndexType();
-            if (mpcaIndexType != null) {
-                mpcaIndexType.getMpcaProductIndexList().remove(mpcaProductIndex);
-                mpcaIndexType = em.merge(mpcaIndexType);
+            MpcaIndexType mpcaIndexTypeIndexId = mpcaProductIndex.getMpcaIndexTypeIndexId();
+            if (mpcaIndexTypeIndexId != null) {
+                mpcaIndexTypeIndexId.getMpcaProductIndexList().remove(mpcaProductIndex);
+                mpcaIndexTypeIndexId = em.merge(mpcaIndexTypeIndexId);
             }
             em.remove(mpcaProductIndex);
             em.getTransaction().commit();
@@ -205,7 +197,7 @@ public class MpcaProductIndexJpaController extends JpaController implements Seri
         }
     }
 
-    public MpcaProductIndex findMpcaProductIndex(MpcaProductIndexPK id) {
+    public MpcaProductIndex findMpcaProductIndex(Long id) {
         EntityManager em = getEntityManager();
         try {
             return em.find(MpcaProductIndex.class, id);

@@ -8,13 +8,16 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -27,49 +30,40 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "MpcaProductIndex.findAll", query = "SELECT m FROM MpcaProductIndex m"),
-    @NamedQuery(name = "MpcaProductIndex.findByMpcaProductProductId", query = "SELECT m FROM MpcaProductIndex m WHERE m.mpcaProductIndexPK.mpcaProductProductId = :mpcaProductProductId"),
-    @NamedQuery(name = "MpcaProductIndex.findByMpcaIndexTypeIndexId", query = "SELECT m FROM MpcaProductIndex m WHERE m.mpcaProductIndexPK.mpcaIndexTypeIndexId = :mpcaIndexTypeIndexId"),
-    @NamedQuery(name = "MpcaProductIndex.findByIndexValue", query = "SELECT m FROM MpcaProductIndex m WHERE m.indexValue = :indexValue")})
+    @NamedQuery(name = "MpcaProductIndex.findByIndexValue", query = "SELECT m FROM MpcaProductIndex m WHERE m.indexValue = :indexValue"),
+    @NamedQuery(name = "MpcaProductIndex.findByProductIndexId", query = "SELECT m FROM MpcaProductIndex m WHERE m.productIndexId = :productIndexId")})
 public class MpcaProductIndex implements Serializable {
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected MpcaProductIndexPK mpcaProductIndexPK;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @Column(name = "INDEX_VALUE")
     private BigDecimal indexValue;
-    @JoinColumn(name = "MPCA_PRODUCT_PRODUCT_ID", referencedColumnName = "PRODUCT_ID", insertable = false, updatable = false)
+    @Id
+    @Basic(optional = false)
+    @Column(name = "PRODUCT_INDEX_ID")
+    @SequenceGenerator(name="SEQ_PRODUCT_INDEX", sequenceName = "MPCA_PRODUCT_INDEX_ID_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SEQ_PRODUCT_INDEX")
+    private Long productIndexId;
+    @JoinColumn(name = "MPCA_PRODUCT_PRODUCT_ID", referencedColumnName = "PRODUCT_ID")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private MpcaProduct mpcaProduct;
+    private MpcaProduct mpcaProductProductId;
     @JoinColumn(name = "LABEL_ID", referencedColumnName = "LABEL_ID")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private MpcaLabelType labelId;
-    @JoinColumn(name = "MPCA_INDEX_TYPE_INDEX_ID", referencedColumnName = "INDEX_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "MPCA_INDEX_TYPE_INDEX_ID", referencedColumnName = "INDEX_ID")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private MpcaIndexType mpcaIndexType;
+    private MpcaIndexType mpcaIndexTypeIndexId;
 
     public MpcaProductIndex() {
     }
 
-    public MpcaProductIndex(MpcaProductIndexPK mpcaProductIndexPK) {
-        this.mpcaProductIndexPK = mpcaProductIndexPK;
+    public MpcaProductIndex(Long productIndexId) {
+        this.productIndexId = productIndexId;
     }
 
-    public MpcaProductIndex(MpcaProductIndexPK mpcaProductIndexPK, BigDecimal indexValue) {
-        this.mpcaProductIndexPK = mpcaProductIndexPK;
+    public MpcaProductIndex(Long productIndexId, BigDecimal indexValue) {
+        this.productIndexId = productIndexId;
         this.indexValue = indexValue;
-    }
-
-    public MpcaProductIndex(long mpcaProductProductId, long mpcaIndexTypeIndexId) {
-        this.mpcaProductIndexPK = new MpcaProductIndexPK(mpcaProductProductId, mpcaIndexTypeIndexId);
-    }
-
-    public MpcaProductIndexPK getMpcaProductIndexPK() {
-        return mpcaProductIndexPK;
-    }
-
-    public void setMpcaProductIndexPK(MpcaProductIndexPK mpcaProductIndexPK) {
-        this.mpcaProductIndexPK = mpcaProductIndexPK;
     }
 
     public BigDecimal getIndexValue() {
@@ -80,12 +74,20 @@ public class MpcaProductIndex implements Serializable {
         this.indexValue = indexValue;
     }
 
-    public MpcaProduct getMpcaProduct() {
-        return mpcaProduct;
+    public Long getProductIndexId() {
+        return productIndexId;
     }
 
-    public void setMpcaProduct(MpcaProduct mpcaProduct) {
-        this.mpcaProduct = mpcaProduct;
+    public void setProductIndexId(Long productIndexId) {
+        this.productIndexId = productIndexId;
+    }
+
+    public MpcaProduct getMpcaProductProductId() {
+        return mpcaProductProductId;
+    }
+
+    public void setMpcaProductProductId(MpcaProduct mpcaProductProductId) {
+        this.mpcaProductProductId = mpcaProductProductId;
     }
 
     public MpcaLabelType getLabelId() {
@@ -96,18 +98,18 @@ public class MpcaProductIndex implements Serializable {
         this.labelId = labelId;
     }
 
-    public MpcaIndexType getMpcaIndexType() {
-        return mpcaIndexType;
+    public MpcaIndexType getMpcaIndexTypeIndexId() {
+        return mpcaIndexTypeIndexId;
     }
 
-    public void setMpcaIndexType(MpcaIndexType mpcaIndexType) {
-        this.mpcaIndexType = mpcaIndexType;
+    public void setMpcaIndexTypeIndexId(MpcaIndexType mpcaIndexTypeIndexId) {
+        this.mpcaIndexTypeIndexId = mpcaIndexTypeIndexId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (mpcaProductIndexPK != null ? mpcaProductIndexPK.hashCode() : 0);
+        hash += (productIndexId != null ? productIndexId.hashCode() : 0);
         return hash;
     }
 
@@ -118,7 +120,7 @@ public class MpcaProductIndex implements Serializable {
             return false;
         }
         MpcaProductIndex other = (MpcaProductIndex) object;
-        if ((this.mpcaProductIndexPK == null && other.mpcaProductIndexPK != null) || (this.mpcaProductIndexPK != null && !this.mpcaProductIndexPK.equals(other.mpcaProductIndexPK))) {
+        if ((this.productIndexId == null && other.productIndexId != null) || (this.productIndexId != null && !this.productIndexId.equals(other.productIndexId))) {
             return false;
         }
         return true;
@@ -126,7 +128,7 @@ public class MpcaProductIndex implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.MpcaProductIndex[ mpcaProductIndexPK=" + mpcaProductIndexPK + " ]";
+        return "entities.MpcaProductIndex[ productIndexId=" + productIndexId + " ]";
     }
     
 }

@@ -10,11 +10,14 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -28,7 +31,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "MpcaCommentIndex.findAll", query = "SELECT m FROM MpcaCommentIndex m"),
     @NamedQuery(name = "MpcaCommentIndex.findByIndexValue", query = "SELECT m FROM MpcaCommentIndex m WHERE m.indexValue = :indexValue"),
-    @NamedQuery(name = "MpcaCommentIndex.findByCommentIndexId", query = "SELECT m FROM MpcaCommentIndex m WHERE m.commentIndexId = :commentIndexId")})
+    @NamedQuery(name = "MpcaCommentIndex.findByCommentIndexId", query = "SELECT m FROM MpcaCommentIndex m WHERE m.commentIndexId = :commentIndexId"),
+    @NamedQuery(name = "MpcaCommentIndex.DeleteByIndexTypeId", query = "DELETE FROM MpcaCommentIndex c WHERE c.mpcaIndexTypeIndexId.indexId = :indexTypeId")
+})
 public class MpcaCommentIndex implements Serializable {
     private static final long serialVersionUID = 1L;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
@@ -38,6 +43,8 @@ public class MpcaCommentIndex implements Serializable {
     @Id
     @Basic(optional = false)
     @Column(name = "COMMENT_INDEX_ID")
+    @SequenceGenerator(name="SEQ_COMMENT_INDEX", sequenceName = "MPCA_COMMENT_INDEX_ID_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SEQ_COMMENT_INDEX")
     private Long commentIndexId;
     @JoinColumn(name = "LABEL_ID", referencedColumnName = "LABEL_ID")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

@@ -24,16 +24,7 @@ import javax.persistence.EntityManagerFactory;
  *
  * @author SimonXPS
  */
-public class MpcaIndexTypeJpaController implements Serializable {
-
-    public MpcaIndexTypeJpaController(EntityManagerFactory emf) {
-        this.emf = emf;
-    }
-    private EntityManagerFactory emf = null;
-
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
-    }
+public class MpcaIndexTypeJpaController extends JpaController implements Serializable {
 
     public void create(MpcaIndexType mpcaIndexType) throws PreexistingEntityException, Exception {
         if (mpcaIndexType.getMpcaCommentIndexList() == null) {
@@ -258,5 +249,20 @@ public class MpcaIndexTypeJpaController implements Serializable {
             em.close();
         }
     }
-    
+
+    public MpcaIndexType findMpcaIndexTypeByName(String indexName) {
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createNamedQuery("MpcaIndexType.findByIndexName");
+            q.setParameter("indexName", indexName);
+            MpcaIndexType indexType = null;
+            List<MpcaIndexType> indexs = q.getResultList();
+            if (!indexs.isEmpty()) {
+                indexType = indexs.get(0);
+            }
+            return indexType;
+        } finally {
+            em.close();
+        }
+    }
 }

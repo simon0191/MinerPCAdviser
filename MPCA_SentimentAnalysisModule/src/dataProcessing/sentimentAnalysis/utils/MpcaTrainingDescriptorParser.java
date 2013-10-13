@@ -32,6 +32,7 @@ public class MpcaTrainingDescriptorParser {
             }
         }
         System.out.println(bestResult);
+        // TODO: Cambiar Test2 por el nombre del clasificador
         MpcaIndexPersistence.persistIndex(bestResult.getClassifier(), "test2", true);
     }
 }

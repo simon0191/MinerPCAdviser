@@ -26,17 +26,8 @@ import javax.persistence.EntityManagerFactory;
  *
  * @author SimonXPS
  */
-public class MpcaCommentJpaController implements Serializable {
-
-    public MpcaCommentJpaController(EntityManagerFactory emf) {
-        this.emf = emf;
-    }
-    private EntityManagerFactory emf = null;
-
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
-    }
-
+public class MpcaCommentJpaController extends JpaController implements Serializable {
+    
     public void create(MpcaComment mpcaComment) throws PreexistingEntityException, Exception {
         if (mpcaComment.getMpcaCommentIndexList() == null) {
             mpcaComment.setMpcaCommentIndexList(new ArrayList<MpcaCommentIndex>());

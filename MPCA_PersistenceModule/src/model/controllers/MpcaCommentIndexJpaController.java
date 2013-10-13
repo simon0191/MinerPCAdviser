@@ -23,16 +23,7 @@ import javax.persistence.EntityManagerFactory;
  *
  * @author SimonXPS
  */
-public class MpcaCommentIndexJpaController implements Serializable {
-
-    public MpcaCommentIndexJpaController(EntityManagerFactory emf) {
-        this.emf = emf;
-    }
-    private EntityManagerFactory emf = null;
-
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
-    }
+public class MpcaCommentIndexJpaController extends JpaController implements Serializable {
 
     public void create(MpcaCommentIndex mpcaCommentIndex) throws PreexistingEntityException, Exception {
         EntityManager em = null;
@@ -227,5 +218,18 @@ public class MpcaCommentIndexJpaController implements Serializable {
             em.close();
         }
     }
-    
+
+    public int deleteByIndexType(MpcaIndexType indexType) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Query q = em.createNamedQuery("MpcaCommentIndex.DeleteByIndexTypeId");
+            q.setParameter("indexTypeId", indexType.getIndexId());
+            int deletedItemsCount = q.executeUpdate();
+            em.getTransaction().commit();
+            return deletedItemsCount;
+        } finally {
+            em.close();
+        }
+    }
 }

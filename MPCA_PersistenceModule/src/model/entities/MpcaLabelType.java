@@ -12,10 +12,13 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -37,6 +40,8 @@ public class MpcaLabelType implements Serializable {
     @Id
     @Basic(optional = false)
     @Column(name = "LABEL_ID")
+    @SequenceGenerator(name="SEQ_LABEL_TYPE", sequenceName = "MPCA_LABEL_TYPE_LABEL_ID_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SEQ_LABEL_TYPE")
     private BigDecimal labelId;
     @Basic(optional = false)
     @Column(name = "LABEL_NAME")

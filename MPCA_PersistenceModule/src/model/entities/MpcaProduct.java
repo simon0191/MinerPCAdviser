@@ -48,7 +48,7 @@ public class MpcaProduct implements Serializable {
     private List<MpcaProductAddition> mpcaProductAdditionList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "productId", fetch = FetchType.LAZY)
     private List<MpcaComment> mpcaCommentList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mpcaProduct", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mpcaProductProductId", fetch = FetchType.LAZY)
     private List<MpcaProductIndex> mpcaProductIndexList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "mpcaProduct", fetch = FetchType.LAZY)
     private List<MpcaProductWebPage> mpcaProductWebPageList;

@@ -4,6 +4,7 @@
  */
 package dataProcessing.sentimentAnalysis.persistence;
 
+import dataProcessing.sentimentAnalysis.MpcaClassification;
 import dataProcessing.sentimentAnalysis.MpcaIClassifier;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public class MpcaIndexPersistence {
         System.out.println("Classifying comments");
         for (MpcaComment comment : comments) {
             System.out.println(comment.getCommentId());
-            String polarity = classifier.bestMatch(comment.getCommentText());
+            /*String polarity = classifier.bestMatch(comment.getCommentText());
             MpcaLabelType label;
             if(!labels.containsKey(polarity)) {
                 label = createOrGetLabelType(polarity);
@@ -52,12 +53,12 @@ public class MpcaIndexPersistence {
                 label = labels.get(polarity);
             }
             MpcaCommentIndex commentIndex = new MpcaCommentIndex();
-            commentIndex.setMpcaComment(comment);
-            commentIndex.setMpcaIndexType(indexType);
+            commentIndex.setMpcaCommentCommentId(comment);
+            commentIndex.setMpcaIndexTypeIndexId(indexType);
             commentIndex.setLabelId(label);
             commentIndex.setIndexValue(BigDecimal.ONE);
-            cic.create(commentIndex);
-            /*MpcaClassification classifications = classifier.classify(comment.getCommentText());
+            cic.create(commentIndex);*/
+            MpcaClassification classifications = classifier.classify(comment.getCommentText());
             for (Map.Entry<String, Double> entry : classifications.entrySet()) {
                 MpcaLabelType label;
                 if(!labels.containsKey(entry.getKey())) {
@@ -67,13 +68,13 @@ public class MpcaIndexPersistence {
                     label = labels.get(entry.getKey());
                 }
                 MpcaCommentIndex commentIndex = new MpcaCommentIndex();
-                commentIndex.setMpcaComment(comment);
-                commentIndex.setMpcaIndexType(indexType);
+                commentIndex.setMpcaCommentCommentId(comment);
+                commentIndex.setMpcaIndexTypeIndexId(indexType);
                 commentIndex.setLabelId(label);
                 commentIndex.setIndexValue(new BigDecimal(entry.getValue()));
                 cic.create(commentIndex);
             }
-            */
+            
         }
     }
 

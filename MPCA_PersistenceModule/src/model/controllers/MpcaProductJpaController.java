@@ -20,14 +20,13 @@ import model.entities.MpcaProduct;
 import model.entities.MpcaProductIndex;
 import model.entities.MpcaProductWebPage;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 /**
  *
  * @author Antonio
  */
 public class MpcaProductJpaController extends JpaController implements Serializable {
-
+    
     public void create(MpcaProduct mpcaProduct) throws PreexistingEntityException, Exception {
         if (mpcaProduct.getMpcaProductAdditionList() == null) {
             mpcaProduct.setMpcaProductAdditionList(new ArrayList<MpcaProductAddition>());
@@ -59,7 +58,7 @@ public class MpcaProductJpaController extends JpaController implements Serializa
             mpcaProduct.setMpcaCommentList(attachedMpcaCommentList);
             List<MpcaProductIndex> attachedMpcaProductIndexList = new ArrayList<MpcaProductIndex>();
             for (MpcaProductIndex mpcaProductIndexListMpcaProductIndexToAttach : mpcaProduct.getMpcaProductIndexList()) {
-                mpcaProductIndexListMpcaProductIndexToAttach = em.getReference(mpcaProductIndexListMpcaProductIndexToAttach.getClass(), mpcaProductIndexListMpcaProductIndexToAttach.getMpcaProductIndexPK());
+                mpcaProductIndexListMpcaProductIndexToAttach = em.getReference(mpcaProductIndexListMpcaProductIndexToAttach.getClass(), mpcaProductIndexListMpcaProductIndexToAttach.getProductIndexId());
                 attachedMpcaProductIndexList.add(mpcaProductIndexListMpcaProductIndexToAttach);
             }
             mpcaProduct.setMpcaProductIndexList(attachedMpcaProductIndexList);
@@ -89,12 +88,12 @@ public class MpcaProductJpaController extends JpaController implements Serializa
                 }
             }
             for (MpcaProductIndex mpcaProductIndexListMpcaProductIndex : mpcaProduct.getMpcaProductIndexList()) {
-                MpcaProduct oldMpcaProductOfMpcaProductIndexListMpcaProductIndex = mpcaProductIndexListMpcaProductIndex.getMpcaProduct();
-                mpcaProductIndexListMpcaProductIndex.setMpcaProduct(mpcaProduct);
+                MpcaProduct oldMpcaProductProductIdOfMpcaProductIndexListMpcaProductIndex = mpcaProductIndexListMpcaProductIndex.getMpcaProductProductId();
+                mpcaProductIndexListMpcaProductIndex.setMpcaProductProductId(mpcaProduct);
                 mpcaProductIndexListMpcaProductIndex = em.merge(mpcaProductIndexListMpcaProductIndex);
-                if (oldMpcaProductOfMpcaProductIndexListMpcaProductIndex != null) {
-                    oldMpcaProductOfMpcaProductIndexListMpcaProductIndex.getMpcaProductIndexList().remove(mpcaProductIndexListMpcaProductIndex);
-                    oldMpcaProductOfMpcaProductIndexListMpcaProductIndex = em.merge(oldMpcaProductOfMpcaProductIndexListMpcaProductIndex);
+                if (oldMpcaProductProductIdOfMpcaProductIndexListMpcaProductIndex != null) {
+                    oldMpcaProductProductIdOfMpcaProductIndexListMpcaProductIndex.getMpcaProductIndexList().remove(mpcaProductIndexListMpcaProductIndex);
+                    oldMpcaProductProductIdOfMpcaProductIndexListMpcaProductIndex = em.merge(oldMpcaProductProductIdOfMpcaProductIndexListMpcaProductIndex);
                 }
             }
             for (MpcaProductWebPage mpcaProductWebPageListMpcaProductWebPage : mpcaProduct.getMpcaProductWebPageList()) {
@@ -155,7 +154,7 @@ public class MpcaProductJpaController extends JpaController implements Serializa
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
-                    illegalOrphanMessages.add("You must retain MpcaProductIndex " + mpcaProductIndexListOldMpcaProductIndex + " since its mpcaProduct field is not nullable.");
+                    illegalOrphanMessages.add("You must retain MpcaProductIndex " + mpcaProductIndexListOldMpcaProductIndex + " since its mpcaProductProductId field is not nullable.");
                 }
             }
             for (MpcaProductWebPage mpcaProductWebPageListOldMpcaProductWebPage : mpcaProductWebPageListOld) {
@@ -185,7 +184,7 @@ public class MpcaProductJpaController extends JpaController implements Serializa
             mpcaProduct.setMpcaCommentList(mpcaCommentListNew);
             List<MpcaProductIndex> attachedMpcaProductIndexListNew = new ArrayList<MpcaProductIndex>();
             for (MpcaProductIndex mpcaProductIndexListNewMpcaProductIndexToAttach : mpcaProductIndexListNew) {
-                mpcaProductIndexListNewMpcaProductIndexToAttach = em.getReference(mpcaProductIndexListNewMpcaProductIndexToAttach.getClass(), mpcaProductIndexListNewMpcaProductIndexToAttach.getMpcaProductIndexPK());
+                mpcaProductIndexListNewMpcaProductIndexToAttach = em.getReference(mpcaProductIndexListNewMpcaProductIndexToAttach.getClass(), mpcaProductIndexListNewMpcaProductIndexToAttach.getProductIndexId());
                 attachedMpcaProductIndexListNew.add(mpcaProductIndexListNewMpcaProductIndexToAttach);
             }
             mpcaProductIndexListNew = attachedMpcaProductIndexListNew;
@@ -222,12 +221,12 @@ public class MpcaProductJpaController extends JpaController implements Serializa
             }
             for (MpcaProductIndex mpcaProductIndexListNewMpcaProductIndex : mpcaProductIndexListNew) {
                 if (!mpcaProductIndexListOld.contains(mpcaProductIndexListNewMpcaProductIndex)) {
-                    MpcaProduct oldMpcaProductOfMpcaProductIndexListNewMpcaProductIndex = mpcaProductIndexListNewMpcaProductIndex.getMpcaProduct();
-                    mpcaProductIndexListNewMpcaProductIndex.setMpcaProduct(mpcaProduct);
+                    MpcaProduct oldMpcaProductProductIdOfMpcaProductIndexListNewMpcaProductIndex = mpcaProductIndexListNewMpcaProductIndex.getMpcaProductProductId();
+                    mpcaProductIndexListNewMpcaProductIndex.setMpcaProductProductId(mpcaProduct);
                     mpcaProductIndexListNewMpcaProductIndex = em.merge(mpcaProductIndexListNewMpcaProductIndex);
-                    if (oldMpcaProductOfMpcaProductIndexListNewMpcaProductIndex != null && !oldMpcaProductOfMpcaProductIndexListNewMpcaProductIndex.equals(mpcaProduct)) {
-                        oldMpcaProductOfMpcaProductIndexListNewMpcaProductIndex.getMpcaProductIndexList().remove(mpcaProductIndexListNewMpcaProductIndex);
-                        oldMpcaProductOfMpcaProductIndexListNewMpcaProductIndex = em.merge(oldMpcaProductOfMpcaProductIndexListNewMpcaProductIndex);
+                    if (oldMpcaProductProductIdOfMpcaProductIndexListNewMpcaProductIndex != null && !oldMpcaProductProductIdOfMpcaProductIndexListNewMpcaProductIndex.equals(mpcaProduct)) {
+                        oldMpcaProductProductIdOfMpcaProductIndexListNewMpcaProductIndex.getMpcaProductIndexList().remove(mpcaProductIndexListNewMpcaProductIndex);
+                        oldMpcaProductProductIdOfMpcaProductIndexListNewMpcaProductIndex = em.merge(oldMpcaProductProductIdOfMpcaProductIndexListNewMpcaProductIndex);
                     }
                 }
             }
@@ -291,7 +290,7 @@ public class MpcaProductJpaController extends JpaController implements Serializa
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("This MpcaProduct (" + mpcaProduct + ") cannot be destroyed since the MpcaProductIndex " + mpcaProductIndexListOrphanCheckMpcaProductIndex + " in its mpcaProductIndexList field has a non-nullable mpcaProduct field.");
+                illegalOrphanMessages.add("This MpcaProduct (" + mpcaProduct + ") cannot be destroyed since the MpcaProductIndex " + mpcaProductIndexListOrphanCheckMpcaProductIndex + " in its mpcaProductIndexList field has a non-nullable mpcaProductProductId field.");
             }
             List<MpcaProductWebPage> mpcaProductWebPageListOrphanCheck = mpcaProduct.getMpcaProductWebPageList();
             for (MpcaProductWebPage mpcaProductWebPageListOrphanCheckMpcaProductWebPage : mpcaProductWebPageListOrphanCheck) {
@@ -357,7 +356,7 @@ public class MpcaProductJpaController extends JpaController implements Serializa
             em.close();
         }
     }
-
+    
     public MpcaProduct findProductByModel(String model) {
         EntityManager em = getEntityManager();
         try {
@@ -373,5 +372,4 @@ public class MpcaProductJpaController extends JpaController implements Serializa
             em.close();
         }
     }
-    
 }
