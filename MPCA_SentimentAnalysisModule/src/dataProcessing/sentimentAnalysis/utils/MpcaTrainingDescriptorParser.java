@@ -12,25 +12,26 @@ import model.utils.MpcaIConstants;
  * @author simon
  */
 public class MpcaTrainingDescriptorParser {
+
     public static void main(String[] args) throws Exception {
-        
+
         MpcaTranierAndTester trainerAndTester = new MpcaTranierAndTester(new File(MpcaIConstants.CLASSIFIERS_DESCRIPTOR_PATH, "trainingAndTest.xml"));
         //List<MpcaTestResult> trainAndTest = trainerAndTester.trainAndTest();
         System.out.println("Training...");
         trainerAndTester.train();
         System.out.println("Testing...");
         List<MpcaTestResult> trainAndTest = trainerAndTester.test();
-        MpcaTestResult betterResult = null;
+        MpcaTestResult bestResult = null;
         for (MpcaTestResult result : trainAndTest) {
             //System.out.println(result);
-            if(betterResult == null) {
-                betterResult = result;
+            if (bestResult == null) {
+                bestResult = result;
             }
-            if(betterResult.getTotalPrecision() < result.getTotalPrecision()) {
-                betterResult = result;
+            if (bestResult.getTotalPrecision() < result.getTotalPrecision()) {
+                bestResult = result;
             }
         }
-        System.out.println(betterResult);
-        MpcaIndexPersistence.persistIndex(betterResult.getClassifier(),"test",true);
+        System.out.println(bestResult);
+        MpcaIndexPersistence.persistIndex(bestResult.getClassifier(), "test2", true);
     }
 }
