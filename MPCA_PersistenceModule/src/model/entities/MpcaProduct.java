@@ -38,6 +38,8 @@ public class MpcaProduct implements Serializable {
     @Id
     @Basic(optional = false)
     @Column(name = "PRODUCT_ID")
+    @SequenceGenerator(name="SEQ_PRODUCT", sequenceName = "MPCA_PRODUCT_PRODUCT_ID_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SEQ_PRODUCT")
     private Long productId;
     @Basic(optional = false)
     @Column(name = "MODEL")
@@ -46,7 +48,7 @@ public class MpcaProduct implements Serializable {
     private List<MpcaProductAddition> mpcaProductAdditionList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "productId", fetch = FetchType.LAZY)
     private List<MpcaComment> mpcaCommentList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mpcaProductProductId", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mpcaProduct", fetch = FetchType.LAZY)
     private List<MpcaProductIndex> mpcaProductIndexList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "mpcaProduct", fetch = FetchType.LAZY)
     private List<MpcaProductWebPage> mpcaProductWebPageList;
