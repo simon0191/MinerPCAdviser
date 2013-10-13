@@ -8,9 +8,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -20,62 +20,45 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Antonio
+ * @author SimonXPS
  */
 @Entity
 @Table(name = "MPCA_COMMENT_INDEX")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "MpcaCommentIndex.findAll", query = "SELECT m FROM MpcaCommentIndex m"),
-    @NamedQuery(name = "MpcaCommentIndex.findByMpcaIndexTypeIndexId", query = "SELECT m FROM MpcaCommentIndex m WHERE m.mpcaCommentIndexPK.mpcaIndexTypeIndexId = :mpcaIndexTypeIndexId"),
-    @NamedQuery(name = "MpcaCommentIndex.findByMpcaCommentCommentId", query = "SELECT m FROM MpcaCommentIndex m WHERE m.mpcaCommentIndexPK.mpcaCommentCommentId = :mpcaCommentCommentId"),
-    @NamedQuery(name = "MpcaCommentIndex.findByIndexValue", query = "SELECT m FROM MpcaCommentIndex m WHERE m.indexValue = :indexValue")})
+    @NamedQuery(name = "MpcaCommentIndex.findByIndexValue", query = "SELECT m FROM MpcaCommentIndex m WHERE m.indexValue = :indexValue"),
+    @NamedQuery(name = "MpcaCommentIndex.findByCommentIndexId", query = "SELECT m FROM MpcaCommentIndex m WHERE m.commentIndexId = :commentIndexId")})
 public class MpcaCommentIndex implements Serializable {
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected MpcaCommentIndexPK mpcaCommentIndexPK;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @Column(name = "INDEX_VALUE")
     private BigDecimal indexValue;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "COMMENT_INDEX_ID")
+    private Long commentIndexId;
     @JoinColumn(name = "LABEL_ID", referencedColumnName = "LABEL_ID")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private MpcaLabelType labelId;
-    @JoinColumn(name = "MPCA_INDEX_TYPE_INDEX_ID", referencedColumnName = "INDEX_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "MPCA_INDEX_TYPE_INDEX_ID", referencedColumnName = "INDEX_ID")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private MpcaIndexType mpcaIndexType;
-    @JoinColumn(name = "MPCA_COMMENT_COMMENT_ID", referencedColumnName = "COMMENT_ID", insertable = false, updatable = false)
+    private MpcaIndexType mpcaIndexTypeIndexId;
+    @JoinColumn(name = "MPCA_COMMENT_COMMENT_ID", referencedColumnName = "COMMENT_ID")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private MpcaComment mpcaComment;
+    private MpcaComment mpcaCommentCommentId;
 
     public MpcaCommentIndex() {
     }
 
-    public MpcaCommentIndex(MpcaCommentIndexPK mpcaCommentIndexPK) {
-        this.mpcaCommentIndexPK = mpcaCommentIndexPK;
+    public MpcaCommentIndex(Long commentIndexId) {
+        this.commentIndexId = commentIndexId;
     }
 
-    public MpcaCommentIndex(MpcaCommentIndexPK mpcaCommentIndexPK, BigDecimal indexValue) {
-        this.mpcaCommentIndexPK = mpcaCommentIndexPK;
+    public MpcaCommentIndex(Long commentIndexId, BigDecimal indexValue) {
+        this.commentIndexId = commentIndexId;
         this.indexValue = indexValue;
-    }
-
-    public MpcaCommentIndex(long mpcaIndexTypeIndexId, long mpcaCommentCommentId) {
-        this.mpcaCommentIndexPK = new MpcaCommentIndexPK(mpcaIndexTypeIndexId, mpcaCommentCommentId);
-    }
-    
-    public MpcaCommentIndex(MpcaIndexType indexType, MpcaComment comment, MpcaLabelType label, BigDecimal indexValue) {
-        this.mpcaCommentIndexPK = new MpcaCommentIndexPK(indexType.getIndexId(), comment.getCommentId());
-        this.labelId = label;
-        this.indexValue = indexValue;
-    }
-
-    public MpcaCommentIndexPK getMpcaCommentIndexPK() {
-        return mpcaCommentIndexPK;
-    }
-
-    public void setMpcaCommentIndexPK(MpcaCommentIndexPK mpcaCommentIndexPK) {
-        this.mpcaCommentIndexPK = mpcaCommentIndexPK;
     }
 
     public BigDecimal getIndexValue() {
@@ -86,6 +69,14 @@ public class MpcaCommentIndex implements Serializable {
         this.indexValue = indexValue;
     }
 
+    public Long getCommentIndexId() {
+        return commentIndexId;
+    }
+
+    public void setCommentIndexId(Long commentIndexId) {
+        this.commentIndexId = commentIndexId;
+    }
+
     public MpcaLabelType getLabelId() {
         return labelId;
     }
@@ -94,26 +85,26 @@ public class MpcaCommentIndex implements Serializable {
         this.labelId = labelId;
     }
 
-    public MpcaIndexType getMpcaIndexType() {
-        return mpcaIndexType;
+    public MpcaIndexType getMpcaIndexTypeIndexId() {
+        return mpcaIndexTypeIndexId;
     }
 
-    public void setMpcaIndexType(MpcaIndexType mpcaIndexType) {
-        this.mpcaIndexType = mpcaIndexType;
+    public void setMpcaIndexTypeIndexId(MpcaIndexType mpcaIndexTypeIndexId) {
+        this.mpcaIndexTypeIndexId = mpcaIndexTypeIndexId;
     }
 
-    public MpcaComment getMpcaComment() {
-        return mpcaComment;
+    public MpcaComment getMpcaCommentCommentId() {
+        return mpcaCommentCommentId;
     }
 
-    public void setMpcaComment(MpcaComment mpcaComment) {
-        this.mpcaComment = mpcaComment;
+    public void setMpcaCommentCommentId(MpcaComment mpcaCommentCommentId) {
+        this.mpcaCommentCommentId = mpcaCommentCommentId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (mpcaCommentIndexPK != null ? mpcaCommentIndexPK.hashCode() : 0);
+        hash += (commentIndexId != null ? commentIndexId.hashCode() : 0);
         return hash;
     }
 
@@ -124,7 +115,7 @@ public class MpcaCommentIndex implements Serializable {
             return false;
         }
         MpcaCommentIndex other = (MpcaCommentIndex) object;
-        if ((this.mpcaCommentIndexPK == null && other.mpcaCommentIndexPK != null) || (this.mpcaCommentIndexPK != null && !this.mpcaCommentIndexPK.equals(other.mpcaCommentIndexPK))) {
+        if ((this.commentIndexId == null && other.commentIndexId != null) || (this.commentIndexId != null && !this.commentIndexId.equals(other.commentIndexId))) {
             return false;
         }
         return true;
@@ -132,7 +123,7 @@ public class MpcaCommentIndex implements Serializable {
 
     @Override
     public String toString() {
-        return "model.entities.MpcaCommentIndex[ mpcaCommentIndexPK=" + mpcaCommentIndexPK + " ]";
+        return "entities.MpcaCommentIndex[ commentIndexId=" + commentIndexId + " ]";
     }
     
 }

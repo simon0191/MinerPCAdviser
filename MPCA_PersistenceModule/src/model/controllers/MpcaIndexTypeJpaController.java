@@ -22,9 +22,18 @@ import javax.persistence.EntityManagerFactory;
 
 /**
  *
- * @author Antonio
+ * @author SimonXPS
  */
-public class MpcaIndexTypeJpaController extends JpaController implements Serializable {
+public class MpcaIndexTypeJpaController implements Serializable {
+
+    public MpcaIndexTypeJpaController(EntityManagerFactory emf) {
+        this.emf = emf;
+    }
+    private EntityManagerFactory emf = null;
+
+    public EntityManager getEntityManager() {
+        return emf.createEntityManager();
+    }
 
     public void create(MpcaIndexType mpcaIndexType) throws PreexistingEntityException, Exception {
         if (mpcaIndexType.getMpcaCommentIndexList() == null) {
@@ -39,33 +48,33 @@ public class MpcaIndexTypeJpaController extends JpaController implements Seriali
             em.getTransaction().begin();
             List<MpcaCommentIndex> attachedMpcaCommentIndexList = new ArrayList<MpcaCommentIndex>();
             for (MpcaCommentIndex mpcaCommentIndexListMpcaCommentIndexToAttach : mpcaIndexType.getMpcaCommentIndexList()) {
-                mpcaCommentIndexListMpcaCommentIndexToAttach = em.getReference(mpcaCommentIndexListMpcaCommentIndexToAttach.getClass(), mpcaCommentIndexListMpcaCommentIndexToAttach.getMpcaCommentIndexPK());
+                mpcaCommentIndexListMpcaCommentIndexToAttach = em.getReference(mpcaCommentIndexListMpcaCommentIndexToAttach.getClass(), mpcaCommentIndexListMpcaCommentIndexToAttach.getCommentIndexId());
                 attachedMpcaCommentIndexList.add(mpcaCommentIndexListMpcaCommentIndexToAttach);
             }
             mpcaIndexType.setMpcaCommentIndexList(attachedMpcaCommentIndexList);
             List<MpcaProductIndex> attachedMpcaProductIndexList = new ArrayList<MpcaProductIndex>();
             for (MpcaProductIndex mpcaProductIndexListMpcaProductIndexToAttach : mpcaIndexType.getMpcaProductIndexList()) {
-                mpcaProductIndexListMpcaProductIndexToAttach = em.getReference(mpcaProductIndexListMpcaProductIndexToAttach.getClass(), mpcaProductIndexListMpcaProductIndexToAttach.getMpcaProductIndexPK());
+                mpcaProductIndexListMpcaProductIndexToAttach = em.getReference(mpcaProductIndexListMpcaProductIndexToAttach.getClass(), mpcaProductIndexListMpcaProductIndexToAttach.getProductIndexId());
                 attachedMpcaProductIndexList.add(mpcaProductIndexListMpcaProductIndexToAttach);
             }
             mpcaIndexType.setMpcaProductIndexList(attachedMpcaProductIndexList);
             em.persist(mpcaIndexType);
             for (MpcaCommentIndex mpcaCommentIndexListMpcaCommentIndex : mpcaIndexType.getMpcaCommentIndexList()) {
-                MpcaIndexType oldMpcaIndexTypeOfMpcaCommentIndexListMpcaCommentIndex = mpcaCommentIndexListMpcaCommentIndex.getMpcaIndexType();
-                mpcaCommentIndexListMpcaCommentIndex.setMpcaIndexType(mpcaIndexType);
+                MpcaIndexType oldMpcaIndexTypeIndexIdOfMpcaCommentIndexListMpcaCommentIndex = mpcaCommentIndexListMpcaCommentIndex.getMpcaIndexTypeIndexId();
+                mpcaCommentIndexListMpcaCommentIndex.setMpcaIndexTypeIndexId(mpcaIndexType);
                 mpcaCommentIndexListMpcaCommentIndex = em.merge(mpcaCommentIndexListMpcaCommentIndex);
-                if (oldMpcaIndexTypeOfMpcaCommentIndexListMpcaCommentIndex != null) {
-                    oldMpcaIndexTypeOfMpcaCommentIndexListMpcaCommentIndex.getMpcaCommentIndexList().remove(mpcaCommentIndexListMpcaCommentIndex);
-                    oldMpcaIndexTypeOfMpcaCommentIndexListMpcaCommentIndex = em.merge(oldMpcaIndexTypeOfMpcaCommentIndexListMpcaCommentIndex);
+                if (oldMpcaIndexTypeIndexIdOfMpcaCommentIndexListMpcaCommentIndex != null) {
+                    oldMpcaIndexTypeIndexIdOfMpcaCommentIndexListMpcaCommentIndex.getMpcaCommentIndexList().remove(mpcaCommentIndexListMpcaCommentIndex);
+                    oldMpcaIndexTypeIndexIdOfMpcaCommentIndexListMpcaCommentIndex = em.merge(oldMpcaIndexTypeIndexIdOfMpcaCommentIndexListMpcaCommentIndex);
                 }
             }
             for (MpcaProductIndex mpcaProductIndexListMpcaProductIndex : mpcaIndexType.getMpcaProductIndexList()) {
-                MpcaIndexType oldMpcaIndexTypeOfMpcaProductIndexListMpcaProductIndex = mpcaProductIndexListMpcaProductIndex.getMpcaIndexType();
-                mpcaProductIndexListMpcaProductIndex.setMpcaIndexType(mpcaIndexType);
+                MpcaIndexType oldMpcaIndexTypeIndexIdOfMpcaProductIndexListMpcaProductIndex = mpcaProductIndexListMpcaProductIndex.getMpcaIndexTypeIndexId();
+                mpcaProductIndexListMpcaProductIndex.setMpcaIndexTypeIndexId(mpcaIndexType);
                 mpcaProductIndexListMpcaProductIndex = em.merge(mpcaProductIndexListMpcaProductIndex);
-                if (oldMpcaIndexTypeOfMpcaProductIndexListMpcaProductIndex != null) {
-                    oldMpcaIndexTypeOfMpcaProductIndexListMpcaProductIndex.getMpcaProductIndexList().remove(mpcaProductIndexListMpcaProductIndex);
-                    oldMpcaIndexTypeOfMpcaProductIndexListMpcaProductIndex = em.merge(oldMpcaIndexTypeOfMpcaProductIndexListMpcaProductIndex);
+                if (oldMpcaIndexTypeIndexIdOfMpcaProductIndexListMpcaProductIndex != null) {
+                    oldMpcaIndexTypeIndexIdOfMpcaProductIndexListMpcaProductIndex.getMpcaProductIndexList().remove(mpcaProductIndexListMpcaProductIndex);
+                    oldMpcaIndexTypeIndexIdOfMpcaProductIndexListMpcaProductIndex = em.merge(oldMpcaIndexTypeIndexIdOfMpcaProductIndexListMpcaProductIndex);
                 }
             }
             em.getTransaction().commit();
@@ -97,7 +106,7 @@ public class MpcaIndexTypeJpaController extends JpaController implements Seriali
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
-                    illegalOrphanMessages.add("You must retain MpcaCommentIndex " + mpcaCommentIndexListOldMpcaCommentIndex + " since its mpcaIndexType field is not nullable.");
+                    illegalOrphanMessages.add("You must retain MpcaCommentIndex " + mpcaCommentIndexListOldMpcaCommentIndex + " since its mpcaIndexTypeIndexId field is not nullable.");
                 }
             }
             for (MpcaProductIndex mpcaProductIndexListOldMpcaProductIndex : mpcaProductIndexListOld) {
@@ -105,7 +114,7 @@ public class MpcaIndexTypeJpaController extends JpaController implements Seriali
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
-                    illegalOrphanMessages.add("You must retain MpcaProductIndex " + mpcaProductIndexListOldMpcaProductIndex + " since its mpcaIndexType field is not nullable.");
+                    illegalOrphanMessages.add("You must retain MpcaProductIndex " + mpcaProductIndexListOldMpcaProductIndex + " since its mpcaIndexTypeIndexId field is not nullable.");
                 }
             }
             if (illegalOrphanMessages != null) {
@@ -113,14 +122,14 @@ public class MpcaIndexTypeJpaController extends JpaController implements Seriali
             }
             List<MpcaCommentIndex> attachedMpcaCommentIndexListNew = new ArrayList<MpcaCommentIndex>();
             for (MpcaCommentIndex mpcaCommentIndexListNewMpcaCommentIndexToAttach : mpcaCommentIndexListNew) {
-                mpcaCommentIndexListNewMpcaCommentIndexToAttach = em.getReference(mpcaCommentIndexListNewMpcaCommentIndexToAttach.getClass(), mpcaCommentIndexListNewMpcaCommentIndexToAttach.getMpcaCommentIndexPK());
+                mpcaCommentIndexListNewMpcaCommentIndexToAttach = em.getReference(mpcaCommentIndexListNewMpcaCommentIndexToAttach.getClass(), mpcaCommentIndexListNewMpcaCommentIndexToAttach.getCommentIndexId());
                 attachedMpcaCommentIndexListNew.add(mpcaCommentIndexListNewMpcaCommentIndexToAttach);
             }
             mpcaCommentIndexListNew = attachedMpcaCommentIndexListNew;
             mpcaIndexType.setMpcaCommentIndexList(mpcaCommentIndexListNew);
             List<MpcaProductIndex> attachedMpcaProductIndexListNew = new ArrayList<MpcaProductIndex>();
             for (MpcaProductIndex mpcaProductIndexListNewMpcaProductIndexToAttach : mpcaProductIndexListNew) {
-                mpcaProductIndexListNewMpcaProductIndexToAttach = em.getReference(mpcaProductIndexListNewMpcaProductIndexToAttach.getClass(), mpcaProductIndexListNewMpcaProductIndexToAttach.getMpcaProductIndexPK());
+                mpcaProductIndexListNewMpcaProductIndexToAttach = em.getReference(mpcaProductIndexListNewMpcaProductIndexToAttach.getClass(), mpcaProductIndexListNewMpcaProductIndexToAttach.getProductIndexId());
                 attachedMpcaProductIndexListNew.add(mpcaProductIndexListNewMpcaProductIndexToAttach);
             }
             mpcaProductIndexListNew = attachedMpcaProductIndexListNew;
@@ -128,23 +137,23 @@ public class MpcaIndexTypeJpaController extends JpaController implements Seriali
             mpcaIndexType = em.merge(mpcaIndexType);
             for (MpcaCommentIndex mpcaCommentIndexListNewMpcaCommentIndex : mpcaCommentIndexListNew) {
                 if (!mpcaCommentIndexListOld.contains(mpcaCommentIndexListNewMpcaCommentIndex)) {
-                    MpcaIndexType oldMpcaIndexTypeOfMpcaCommentIndexListNewMpcaCommentIndex = mpcaCommentIndexListNewMpcaCommentIndex.getMpcaIndexType();
-                    mpcaCommentIndexListNewMpcaCommentIndex.setMpcaIndexType(mpcaIndexType);
+                    MpcaIndexType oldMpcaIndexTypeIndexIdOfMpcaCommentIndexListNewMpcaCommentIndex = mpcaCommentIndexListNewMpcaCommentIndex.getMpcaIndexTypeIndexId();
+                    mpcaCommentIndexListNewMpcaCommentIndex.setMpcaIndexTypeIndexId(mpcaIndexType);
                     mpcaCommentIndexListNewMpcaCommentIndex = em.merge(mpcaCommentIndexListNewMpcaCommentIndex);
-                    if (oldMpcaIndexTypeOfMpcaCommentIndexListNewMpcaCommentIndex != null && !oldMpcaIndexTypeOfMpcaCommentIndexListNewMpcaCommentIndex.equals(mpcaIndexType)) {
-                        oldMpcaIndexTypeOfMpcaCommentIndexListNewMpcaCommentIndex.getMpcaCommentIndexList().remove(mpcaCommentIndexListNewMpcaCommentIndex);
-                        oldMpcaIndexTypeOfMpcaCommentIndexListNewMpcaCommentIndex = em.merge(oldMpcaIndexTypeOfMpcaCommentIndexListNewMpcaCommentIndex);
+                    if (oldMpcaIndexTypeIndexIdOfMpcaCommentIndexListNewMpcaCommentIndex != null && !oldMpcaIndexTypeIndexIdOfMpcaCommentIndexListNewMpcaCommentIndex.equals(mpcaIndexType)) {
+                        oldMpcaIndexTypeIndexIdOfMpcaCommentIndexListNewMpcaCommentIndex.getMpcaCommentIndexList().remove(mpcaCommentIndexListNewMpcaCommentIndex);
+                        oldMpcaIndexTypeIndexIdOfMpcaCommentIndexListNewMpcaCommentIndex = em.merge(oldMpcaIndexTypeIndexIdOfMpcaCommentIndexListNewMpcaCommentIndex);
                     }
                 }
             }
             for (MpcaProductIndex mpcaProductIndexListNewMpcaProductIndex : mpcaProductIndexListNew) {
                 if (!mpcaProductIndexListOld.contains(mpcaProductIndexListNewMpcaProductIndex)) {
-                    MpcaIndexType oldMpcaIndexTypeOfMpcaProductIndexListNewMpcaProductIndex = mpcaProductIndexListNewMpcaProductIndex.getMpcaIndexType();
-                    mpcaProductIndexListNewMpcaProductIndex.setMpcaIndexType(mpcaIndexType);
+                    MpcaIndexType oldMpcaIndexTypeIndexIdOfMpcaProductIndexListNewMpcaProductIndex = mpcaProductIndexListNewMpcaProductIndex.getMpcaIndexTypeIndexId();
+                    mpcaProductIndexListNewMpcaProductIndex.setMpcaIndexTypeIndexId(mpcaIndexType);
                     mpcaProductIndexListNewMpcaProductIndex = em.merge(mpcaProductIndexListNewMpcaProductIndex);
-                    if (oldMpcaIndexTypeOfMpcaProductIndexListNewMpcaProductIndex != null && !oldMpcaIndexTypeOfMpcaProductIndexListNewMpcaProductIndex.equals(mpcaIndexType)) {
-                        oldMpcaIndexTypeOfMpcaProductIndexListNewMpcaProductIndex.getMpcaProductIndexList().remove(mpcaProductIndexListNewMpcaProductIndex);
-                        oldMpcaIndexTypeOfMpcaProductIndexListNewMpcaProductIndex = em.merge(oldMpcaIndexTypeOfMpcaProductIndexListNewMpcaProductIndex);
+                    if (oldMpcaIndexTypeIndexIdOfMpcaProductIndexListNewMpcaProductIndex != null && !oldMpcaIndexTypeIndexIdOfMpcaProductIndexListNewMpcaProductIndex.equals(mpcaIndexType)) {
+                        oldMpcaIndexTypeIndexIdOfMpcaProductIndexListNewMpcaProductIndex.getMpcaProductIndexList().remove(mpcaProductIndexListNewMpcaProductIndex);
+                        oldMpcaIndexTypeIndexIdOfMpcaProductIndexListNewMpcaProductIndex = em.merge(oldMpcaIndexTypeIndexIdOfMpcaProductIndexListNewMpcaProductIndex);
                     }
                 }
             }
@@ -183,14 +192,14 @@ public class MpcaIndexTypeJpaController extends JpaController implements Seriali
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("This MpcaIndexType (" + mpcaIndexType + ") cannot be destroyed since the MpcaCommentIndex " + mpcaCommentIndexListOrphanCheckMpcaCommentIndex + " in its mpcaCommentIndexList field has a non-nullable mpcaIndexType field.");
+                illegalOrphanMessages.add("This MpcaIndexType (" + mpcaIndexType + ") cannot be destroyed since the MpcaCommentIndex " + mpcaCommentIndexListOrphanCheckMpcaCommentIndex + " in its mpcaCommentIndexList field has a non-nullable mpcaIndexTypeIndexId field.");
             }
             List<MpcaProductIndex> mpcaProductIndexListOrphanCheck = mpcaIndexType.getMpcaProductIndexList();
             for (MpcaProductIndex mpcaProductIndexListOrphanCheckMpcaProductIndex : mpcaProductIndexListOrphanCheck) {
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("This MpcaIndexType (" + mpcaIndexType + ") cannot be destroyed since the MpcaProductIndex " + mpcaProductIndexListOrphanCheckMpcaProductIndex + " in its mpcaProductIndexList field has a non-nullable mpcaIndexType field.");
+                illegalOrphanMessages.add("This MpcaIndexType (" + mpcaIndexType + ") cannot be destroyed since the MpcaProductIndex " + mpcaProductIndexListOrphanCheckMpcaProductIndex + " in its mpcaProductIndexList field has a non-nullable mpcaIndexTypeIndexId field.");
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
@@ -245,22 +254,6 @@ public class MpcaIndexTypeJpaController extends JpaController implements Seriali
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();
-        } finally {
-            em.close();
-        }
-    }
-
-    public MpcaIndexType findMpcaIndexTypeByName(String indexName) {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createNamedQuery("MpcaIndexType.findByIndexName");
-            q.setParameter("indexName", indexName);
-            MpcaIndexType indexType = null;
-            List<MpcaIndexType> indexs = q.getResultList();
-            if(!indexs.isEmpty()) {
-                indexType = indexs.get(0);
-            }
-            return indexType;
         } finally {
             em.close();
         }

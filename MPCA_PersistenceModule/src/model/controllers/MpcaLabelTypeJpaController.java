@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package model.controllers;
 
 import model.controllers.exceptions.IllegalOrphanException;
@@ -23,10 +20,19 @@ import javax.persistence.EntityManagerFactory;
 
 /**
  *
- * @author Antonio
+ * @author SimonXPS
  */
-public class MpcaLabelTypeJpaController extends JpaController implements Serializable {
-    
+public class MpcaLabelTypeJpaController implements Serializable {
+
+    public MpcaLabelTypeJpaController(EntityManagerFactory emf) {
+        this.emf = emf;
+    }
+    private EntityManagerFactory emf = null;
+
+    public EntityManager getEntityManager() {
+        return emf.createEntityManager();
+    }
+
     public void create(MpcaLabelType mpcaLabelType) throws PreexistingEntityException, Exception {
         if (mpcaLabelType.getMpcaCommentIndexList() == null) {
             mpcaLabelType.setMpcaCommentIndexList(new ArrayList<MpcaCommentIndex>());
@@ -40,13 +46,13 @@ public class MpcaLabelTypeJpaController extends JpaController implements Seriali
             em.getTransaction().begin();
             List<MpcaCommentIndex> attachedMpcaCommentIndexList = new ArrayList<MpcaCommentIndex>();
             for (MpcaCommentIndex mpcaCommentIndexListMpcaCommentIndexToAttach : mpcaLabelType.getMpcaCommentIndexList()) {
-                mpcaCommentIndexListMpcaCommentIndexToAttach = em.getReference(mpcaCommentIndexListMpcaCommentIndexToAttach.getClass(), mpcaCommentIndexListMpcaCommentIndexToAttach.getMpcaCommentIndexPK());
+                mpcaCommentIndexListMpcaCommentIndexToAttach = em.getReference(mpcaCommentIndexListMpcaCommentIndexToAttach.getClass(), mpcaCommentIndexListMpcaCommentIndexToAttach.getCommentIndexId());
                 attachedMpcaCommentIndexList.add(mpcaCommentIndexListMpcaCommentIndexToAttach);
             }
             mpcaLabelType.setMpcaCommentIndexList(attachedMpcaCommentIndexList);
             List<MpcaProductIndex> attachedMpcaProductIndexList = new ArrayList<MpcaProductIndex>();
             for (MpcaProductIndex mpcaProductIndexListMpcaProductIndexToAttach : mpcaLabelType.getMpcaProductIndexList()) {
-                mpcaProductIndexListMpcaProductIndexToAttach = em.getReference(mpcaProductIndexListMpcaProductIndexToAttach.getClass(), mpcaProductIndexListMpcaProductIndexToAttach.getMpcaProductIndexPK());
+                mpcaProductIndexListMpcaProductIndexToAttach = em.getReference(mpcaProductIndexListMpcaProductIndexToAttach.getClass(), mpcaProductIndexListMpcaProductIndexToAttach.getProductIndexId());
                 attachedMpcaProductIndexList.add(mpcaProductIndexListMpcaProductIndexToAttach);
             }
             mpcaLabelType.setMpcaProductIndexList(attachedMpcaProductIndexList);
@@ -114,14 +120,14 @@ public class MpcaLabelTypeJpaController extends JpaController implements Seriali
             }
             List<MpcaCommentIndex> attachedMpcaCommentIndexListNew = new ArrayList<MpcaCommentIndex>();
             for (MpcaCommentIndex mpcaCommentIndexListNewMpcaCommentIndexToAttach : mpcaCommentIndexListNew) {
-                mpcaCommentIndexListNewMpcaCommentIndexToAttach = em.getReference(mpcaCommentIndexListNewMpcaCommentIndexToAttach.getClass(), mpcaCommentIndexListNewMpcaCommentIndexToAttach.getMpcaCommentIndexPK());
+                mpcaCommentIndexListNewMpcaCommentIndexToAttach = em.getReference(mpcaCommentIndexListNewMpcaCommentIndexToAttach.getClass(), mpcaCommentIndexListNewMpcaCommentIndexToAttach.getCommentIndexId());
                 attachedMpcaCommentIndexListNew.add(mpcaCommentIndexListNewMpcaCommentIndexToAttach);
             }
             mpcaCommentIndexListNew = attachedMpcaCommentIndexListNew;
             mpcaLabelType.setMpcaCommentIndexList(mpcaCommentIndexListNew);
             List<MpcaProductIndex> attachedMpcaProductIndexListNew = new ArrayList<MpcaProductIndex>();
             for (MpcaProductIndex mpcaProductIndexListNewMpcaProductIndexToAttach : mpcaProductIndexListNew) {
-                mpcaProductIndexListNewMpcaProductIndexToAttach = em.getReference(mpcaProductIndexListNewMpcaProductIndexToAttach.getClass(), mpcaProductIndexListNewMpcaProductIndexToAttach.getMpcaProductIndexPK());
+                mpcaProductIndexListNewMpcaProductIndexToAttach = em.getReference(mpcaProductIndexListNewMpcaProductIndexToAttach.getClass(), mpcaProductIndexListNewMpcaProductIndexToAttach.getProductIndexId());
                 attachedMpcaProductIndexListNew.add(mpcaProductIndexListNewMpcaProductIndexToAttach);
             }
             mpcaProductIndexListNew = attachedMpcaProductIndexListNew;
@@ -246,22 +252,6 @@ public class MpcaLabelTypeJpaController extends JpaController implements Seriali
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();
-        } finally {
-            em.close();
-        }
-    }
-
-    public MpcaLabelType findMpcaLabelTypeByName(String labelName) {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createNamedQuery("MpcaLabelType.findByLabelName");
-            q.setParameter("labelName", labelName);
-            MpcaLabelType labelType = null;
-            List<MpcaLabelType> labels = q.getResultList();
-            if(!labels.isEmpty()) {
-                labelType = labels.get(0);
-            }
-            return labelType;
         } finally {
             em.close();
         }

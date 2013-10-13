@@ -12,8 +12,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
@@ -21,13 +19,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import model.utils.MpcaIConstants;
 
 /**
  *
@@ -48,8 +44,6 @@ public class MpcaComment implements Serializable {
     @Id
     @Basic(optional = false)
     @Column(name = "COMMENT_ID")
-    @SequenceGenerator(name="SEQ_COMMENT", sequenceName = "MPCA_COMMENT_COMMENT_ID_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SEQ_COMMENT")
     private Long commentId;
     @Basic(optional = false)
     @Lob
@@ -59,7 +53,7 @@ public class MpcaComment implements Serializable {
     @Column(name = "PUBLICATION_DATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date publicationDate;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mpcaComment", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mpcaCommentCommentId", fetch = FetchType.LAZY)
     private List<MpcaCommentIndex> mpcaCommentIndexList;
     @JoinColumn(name = "PAGE_ID", referencedColumnName = "PAGE_ID")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -165,18 +159,5 @@ public class MpcaComment implements Serializable {
     public String toString() {
         return "entities.MpcaComment[ commentId=" + commentId + " ]";
     }
-    public MpcaCommentAddition getAddition(String addType) {
-        List<MpcaCommentAddition> additions = this.mpcaCommentAdditionList;
-        MpcaCommentAddition addition = null;
-        for (MpcaCommentAddition add : additions) {
-            if(add.getMpcaAdditionType().getAddType().equals( addType )) {
-                addition = add;
-                break;
-            }
-        }
-        return addition;
-    }
-    public MpcaCommentAddition getPolarity() {
-        return getAddition(MpcaIConstants.ADDITION_POLARITY);
-    }
+    
 }

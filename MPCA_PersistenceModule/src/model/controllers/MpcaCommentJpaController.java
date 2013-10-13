@@ -24,9 +24,18 @@ import javax.persistence.EntityManagerFactory;
 
 /**
  *
- * @author Antonio
+ * @author SimonXPS
  */
-public class MpcaCommentJpaController extends JpaController implements Serializable {
+public class MpcaCommentJpaController implements Serializable {
+
+    public MpcaCommentJpaController(EntityManagerFactory emf) {
+        this.emf = emf;
+    }
+    private EntityManagerFactory emf = null;
+
+    public EntityManager getEntityManager() {
+        return emf.createEntityManager();
+    }
 
     public void create(MpcaComment mpcaComment) throws PreexistingEntityException, Exception {
         if (mpcaComment.getMpcaCommentIndexList() == null) {
@@ -51,7 +60,7 @@ public class MpcaCommentJpaController extends JpaController implements Serializa
             }
             List<MpcaCommentIndex> attachedMpcaCommentIndexList = new ArrayList<MpcaCommentIndex>();
             for (MpcaCommentIndex mpcaCommentIndexListMpcaCommentIndexToAttach : mpcaComment.getMpcaCommentIndexList()) {
-                mpcaCommentIndexListMpcaCommentIndexToAttach = em.getReference(mpcaCommentIndexListMpcaCommentIndexToAttach.getClass(), mpcaCommentIndexListMpcaCommentIndexToAttach.getMpcaCommentIndexPK());
+                mpcaCommentIndexListMpcaCommentIndexToAttach = em.getReference(mpcaCommentIndexListMpcaCommentIndexToAttach.getClass(), mpcaCommentIndexListMpcaCommentIndexToAttach.getCommentIndexId());
                 attachedMpcaCommentIndexList.add(mpcaCommentIndexListMpcaCommentIndexToAttach);
             }
             mpcaComment.setMpcaCommentIndexList(attachedMpcaCommentIndexList);
@@ -71,12 +80,12 @@ public class MpcaCommentJpaController extends JpaController implements Serializa
                 productId = em.merge(productId);
             }
             for (MpcaCommentIndex mpcaCommentIndexListMpcaCommentIndex : mpcaComment.getMpcaCommentIndexList()) {
-                MpcaComment oldMpcaCommentOfMpcaCommentIndexListMpcaCommentIndex = mpcaCommentIndexListMpcaCommentIndex.getMpcaComment();
-                mpcaCommentIndexListMpcaCommentIndex.setMpcaComment(mpcaComment);
+                MpcaComment oldMpcaCommentCommentIdOfMpcaCommentIndexListMpcaCommentIndex = mpcaCommentIndexListMpcaCommentIndex.getMpcaCommentCommentId();
+                mpcaCommentIndexListMpcaCommentIndex.setMpcaCommentCommentId(mpcaComment);
                 mpcaCommentIndexListMpcaCommentIndex = em.merge(mpcaCommentIndexListMpcaCommentIndex);
-                if (oldMpcaCommentOfMpcaCommentIndexListMpcaCommentIndex != null) {
-                    oldMpcaCommentOfMpcaCommentIndexListMpcaCommentIndex.getMpcaCommentIndexList().remove(mpcaCommentIndexListMpcaCommentIndex);
-                    oldMpcaCommentOfMpcaCommentIndexListMpcaCommentIndex = em.merge(oldMpcaCommentOfMpcaCommentIndexListMpcaCommentIndex);
+                if (oldMpcaCommentCommentIdOfMpcaCommentIndexListMpcaCommentIndex != null) {
+                    oldMpcaCommentCommentIdOfMpcaCommentIndexListMpcaCommentIndex.getMpcaCommentIndexList().remove(mpcaCommentIndexListMpcaCommentIndex);
+                    oldMpcaCommentCommentIdOfMpcaCommentIndexListMpcaCommentIndex = em.merge(oldMpcaCommentCommentIdOfMpcaCommentIndexListMpcaCommentIndex);
                 }
             }
             for (MpcaCommentAddition mpcaCommentAdditionListMpcaCommentAddition : mpcaComment.getMpcaCommentAdditionList()) {
@@ -121,7 +130,7 @@ public class MpcaCommentJpaController extends JpaController implements Serializa
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
-                    illegalOrphanMessages.add("You must retain MpcaCommentIndex " + mpcaCommentIndexListOldMpcaCommentIndex + " since its mpcaComment field is not nullable.");
+                    illegalOrphanMessages.add("You must retain MpcaCommentIndex " + mpcaCommentIndexListOldMpcaCommentIndex + " since its mpcaCommentCommentId field is not nullable.");
                 }
             }
             for (MpcaCommentAddition mpcaCommentAdditionListOldMpcaCommentAddition : mpcaCommentAdditionListOld) {
@@ -145,7 +154,7 @@ public class MpcaCommentJpaController extends JpaController implements Serializa
             }
             List<MpcaCommentIndex> attachedMpcaCommentIndexListNew = new ArrayList<MpcaCommentIndex>();
             for (MpcaCommentIndex mpcaCommentIndexListNewMpcaCommentIndexToAttach : mpcaCommentIndexListNew) {
-                mpcaCommentIndexListNewMpcaCommentIndexToAttach = em.getReference(mpcaCommentIndexListNewMpcaCommentIndexToAttach.getClass(), mpcaCommentIndexListNewMpcaCommentIndexToAttach.getMpcaCommentIndexPK());
+                mpcaCommentIndexListNewMpcaCommentIndexToAttach = em.getReference(mpcaCommentIndexListNewMpcaCommentIndexToAttach.getClass(), mpcaCommentIndexListNewMpcaCommentIndexToAttach.getCommentIndexId());
                 attachedMpcaCommentIndexListNew.add(mpcaCommentIndexListNewMpcaCommentIndexToAttach);
             }
             mpcaCommentIndexListNew = attachedMpcaCommentIndexListNew;
@@ -176,12 +185,12 @@ public class MpcaCommentJpaController extends JpaController implements Serializa
             }
             for (MpcaCommentIndex mpcaCommentIndexListNewMpcaCommentIndex : mpcaCommentIndexListNew) {
                 if (!mpcaCommentIndexListOld.contains(mpcaCommentIndexListNewMpcaCommentIndex)) {
-                    MpcaComment oldMpcaCommentOfMpcaCommentIndexListNewMpcaCommentIndex = mpcaCommentIndexListNewMpcaCommentIndex.getMpcaComment();
-                    mpcaCommentIndexListNewMpcaCommentIndex.setMpcaComment(mpcaComment);
+                    MpcaComment oldMpcaCommentCommentIdOfMpcaCommentIndexListNewMpcaCommentIndex = mpcaCommentIndexListNewMpcaCommentIndex.getMpcaCommentCommentId();
+                    mpcaCommentIndexListNewMpcaCommentIndex.setMpcaCommentCommentId(mpcaComment);
                     mpcaCommentIndexListNewMpcaCommentIndex = em.merge(mpcaCommentIndexListNewMpcaCommentIndex);
-                    if (oldMpcaCommentOfMpcaCommentIndexListNewMpcaCommentIndex != null && !oldMpcaCommentOfMpcaCommentIndexListNewMpcaCommentIndex.equals(mpcaComment)) {
-                        oldMpcaCommentOfMpcaCommentIndexListNewMpcaCommentIndex.getMpcaCommentIndexList().remove(mpcaCommentIndexListNewMpcaCommentIndex);
-                        oldMpcaCommentOfMpcaCommentIndexListNewMpcaCommentIndex = em.merge(oldMpcaCommentOfMpcaCommentIndexListNewMpcaCommentIndex);
+                    if (oldMpcaCommentCommentIdOfMpcaCommentIndexListNewMpcaCommentIndex != null && !oldMpcaCommentCommentIdOfMpcaCommentIndexListNewMpcaCommentIndex.equals(mpcaComment)) {
+                        oldMpcaCommentCommentIdOfMpcaCommentIndexListNewMpcaCommentIndex.getMpcaCommentIndexList().remove(mpcaCommentIndexListNewMpcaCommentIndex);
+                        oldMpcaCommentCommentIdOfMpcaCommentIndexListNewMpcaCommentIndex = em.merge(oldMpcaCommentCommentIdOfMpcaCommentIndexListNewMpcaCommentIndex);
                     }
                 }
             }
@@ -231,7 +240,7 @@ public class MpcaCommentJpaController extends JpaController implements Serializa
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("This MpcaComment (" + mpcaComment + ") cannot be destroyed since the MpcaCommentIndex " + mpcaCommentIndexListOrphanCheckMpcaCommentIndex + " in its mpcaCommentIndexList field has a non-nullable mpcaComment field.");
+                illegalOrphanMessages.add("This MpcaComment (" + mpcaComment + ") cannot be destroyed since the MpcaCommentIndex " + mpcaCommentIndexListOrphanCheckMpcaCommentIndex + " in its mpcaCommentIndexList field has a non-nullable mpcaCommentCommentId field.");
             }
             List<MpcaCommentAddition> mpcaCommentAdditionListOrphanCheck = mpcaComment.getMpcaCommentAdditionList();
             for (MpcaCommentAddition mpcaCommentAdditionListOrphanCheckMpcaCommentAddition : mpcaCommentAdditionListOrphanCheck) {
@@ -307,8 +316,8 @@ public class MpcaCommentJpaController extends JpaController implements Serializa
             em.close();
         }
     }
-
-    public List<MpcaComment> findMpcaCommentByAdditionAndValue(String addType, String value) {
+    
+     public List<MpcaComment> findMpcaCommentByAdditionAndValue(String addType, String value) {
         return findMpcaCommentByAdditionAndValue(addType, value, true, -1, -1);
     }
 
