@@ -176,7 +176,8 @@ public class MpcaGooglePredictionAPIClassifier implements MpcaIClassifier {
         }
         return mclass;
     }
-
+    
+    //TODO GoogleClassifier.getCategories()
     @Override
     public String[] getCategories() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

@@ -14,7 +14,7 @@ import model.utils.MpcaIConstants;
  * @author Antonio
  */
 public class MpcaTestResult {
-    
+
     private MpcaDataSet data;
     private MpcaIClassifier classifier;
     private Map<String, Integer> correct;
@@ -36,7 +36,7 @@ public class MpcaTestResult {
         this.totalPrecision = totalPrecision;
         this.testSize = testSize;
     }
-    
+
     public MpcaIClassifier getClassifier() {
         return classifier;
     }
@@ -68,22 +68,22 @@ public class MpcaTestResult {
     public int getTestSize() {
         return testSize;
     }
-    
+
     private static String createSeparator(String str) {
         StringBuilder sb = new StringBuilder();
-        int dashes = MpcaIConstants.SEPARATOR.length()-str.length()-2;
-        for(int i = 0;i<dashes/2;++i) {
-            sb.append('-');    
+        int dashes = MpcaIConstants.SEPARATOR.length() - str.length() - 2;
+        for (int i = 0; i < dashes / 2; ++i) {
+            sb.append('-');
         }
         sb.append(' ');
         sb.append(str);
         sb.append(' ');
-        for(int i = 0;i<dashes/2;++i) {
-            sb.append('-');    
+        for (int i = 0; i < dashes / 2; ++i) {
+            sb.append('-');
         }
         return sb.toString();
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -97,16 +97,15 @@ public class MpcaTestResult {
         sb.append(testSize);
         sb.append("\n");
         for (String category : data.keySet()) {
-            sb.append(String.format("Total %s comments: %d\n",category,data.get(category).size()));
-            sb.append(String.format("%s correctly classified: %d\n",category,correct.get(category)));
-            sb.append(String.format("%s incorrectly classified: %d\n",category,incorrect.get(category)));
-            sb.append(String.format("Precision of %s comments: %.2f%c\n",category,precision.get(category)*100.0,'%'));
+            sb.append(String.format("Total %s comments: %d\n", category, data.get(category).size()));
+            sb.append(String.format("%s correctly classified: %d\n", category, correct.get(category)));
+            sb.append(String.format("%s incorrectly classified: %d\n", category, incorrect.get(category)));
+            sb.append(String.format("Precision of %s comments: %.2f%c\n", category, precision.get(category) * 100.0, '%'));
         }
-        sb.append(MpcaIConstants.SEPARATOR);    
+        sb.append(MpcaIConstants.SEPARATOR);
         sb.append("\n");
-        sb.append(String.format("Total precision: %.2f%c\n",totalPrecision*100.0,'%'));
+        sb.append(String.format("Total precision: %.2f%c\n", totalPrecision * 100.0, '%'));
         sb.append(MpcaIConstants.SEPARATOR);
         return sb.toString();
     }
-    
 }

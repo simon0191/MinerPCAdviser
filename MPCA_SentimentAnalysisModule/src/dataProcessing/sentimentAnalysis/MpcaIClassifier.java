@@ -18,4 +18,5 @@ public interface MpcaIClassifier {
     MpcaClassification classify(String text) throws Exception;
     String[] getCategories();
     MpcaClassifierTest createTest(MpcaDataSet testData);
+    //TODO: agregar set y get Name
 }
