@@ -18,6 +18,7 @@ import model.entities.MpcaCommentIndex;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import model.entities.MpcaProduct;
 
 /**
  *
@@ -228,6 +229,18 @@ public class MpcaCommentIndexJpaController extends JpaController implements Seri
             int deletedItemsCount = q.executeUpdate();
             em.getTransaction().commit();
             return deletedItemsCount;
+        } finally {
+            em.close();
+        }
+    }
+    
+    public List<MpcaCommentIndex> findMpcaCommentIndexByProductAndIndexType(MpcaProduct product, MpcaIndexType indexType) {
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createNamedQuery("MpcaCommentIndex.DeleteByProductAndIndexType");
+            q.setParameter("productId", product.getProductId());
+            q.setParameter("indexId", indexType.getIndexId());
+            return q.getResultList();
         } finally {
             em.close();
         }

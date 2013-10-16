@@ -32,7 +32,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "MpcaCommentIndex.findAll", query = "SELECT m FROM MpcaCommentIndex m"),
     @NamedQuery(name = "MpcaCommentIndex.findByIndexValue", query = "SELECT m FROM MpcaCommentIndex m WHERE m.indexValue = :indexValue"),
     @NamedQuery(name = "MpcaCommentIndex.findByCommentIndexId", query = "SELECT m FROM MpcaCommentIndex m WHERE m.commentIndexId = :commentIndexId"),
-    @NamedQuery(name = "MpcaCommentIndex.DeleteByIndexTypeId", query = "DELETE FROM MpcaCommentIndex c WHERE c.mpcaIndexTypeIndexId.indexId = :indexTypeId")
+    @NamedQuery(name = "MpcaCommentIndex.DeleteByIndexTypeId", query = "DELETE FROM MpcaCommentIndex c WHERE c.mpcaIndexTypeIndexId.indexId = :indexTypeId"),
+    @NamedQuery(name = "MpcaCommentIndex.DeleteByProductAndIndexType", query = "SELECT m FROM MpcaCommentIndex m WHERE m.mpcaCommentCommentId.productId.productId = :productId AND m.mpcaIndexTypeIndexId.indexId = :indexId")
 })
 public class MpcaCommentIndex implements Serializable {
     private static final long serialVersionUID = 1L;
