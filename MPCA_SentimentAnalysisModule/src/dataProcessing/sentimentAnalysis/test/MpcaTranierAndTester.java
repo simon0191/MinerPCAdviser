@@ -10,6 +10,7 @@ import dataProcessing.sentimentAnalysis.utils.MpcaDataSet;
 import dataProcessing.sentimentAnalysis.utils.MpcaTrainableClassifierFactory;
 import java.io.File;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +39,7 @@ public class MpcaTranierAndTester {
         trained = false;
     }
     
-    public Map<String, MpcaIClassifier> train() throws ClassNotFoundException {
+    public Map<String, MpcaIClassifier> train() throws ClassNotFoundException, GeneralSecurityException, IOException, Exception {
         Map<String, MpcaIClassifier> classifiersTrained = null;
         if(!trained) {
             Elements classifiers = xmlDoc.select("classifiers");
@@ -61,11 +62,12 @@ public class MpcaTranierAndTester {
         return test();
     }
 
-    private Map<String, MpcaIClassifier> trainClassifiers(Elements classifiers) throws ClassNotFoundException {
+    private Map<String, MpcaIClassifier> trainClassifiers(Elements classifiers) throws ClassNotFoundException, GeneralSecurityException, IOException, Exception {
         Elements allClassifiers = classifiers.select("classifier");
         for (Element everyClassifier : allClassifiers) {
             String id = everyClassifier.id();
             String className = everyClassifier.className();
+            
             Elements categoriesEles = everyClassifier.select("category");
             String []categories = new String[categoriesEles.size()];
             MpcaDataSet finalDataSet = new MpcaDataSet();
@@ -81,8 +83,10 @@ public class MpcaTranierAndTester {
                 }
                 finalDataSet.put(category, finalComms);
             }
-            MpcaITrainableClassifier classifier = MpcaTrainableClassifierFactory.createClassifierByClassName(className, categories);
-            classifier.train(finalDataSet);
+            MpcaIClassifier classifier = MpcaTrainableClassifierFactory.createClassifierByClassName(className, categories);
+            if(classifier instanceof MpcaITrainableClassifier) {
+                ((MpcaITrainableClassifier)classifier).train(finalDataSet);    
+            }
             classifiersDirectory.put(id, classifier);
         }
         trained = true;
