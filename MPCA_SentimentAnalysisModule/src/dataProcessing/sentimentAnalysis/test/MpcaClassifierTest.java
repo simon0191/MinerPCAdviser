@@ -70,9 +70,7 @@ public class MpcaClassifierTest {
             }
         }
         for (Map.Entry<String, Integer> entry : correct.entrySet()) {
-            precision.put(entry.getKey(),
-                    ((double) entry.getValue())
-                    / ((double) data.get(entry.getKey()).size()));
+            precision.put(entry.getKey(),((double) entry.getValue()) / ((double) data.get(entry.getKey()).size()));
         }
         tested = true;
         totalPrecision = ((double)totalCorrect)/((double)testSize);
