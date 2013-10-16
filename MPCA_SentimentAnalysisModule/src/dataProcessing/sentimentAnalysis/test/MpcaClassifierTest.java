@@ -62,7 +62,7 @@ public class MpcaClassifierTest {
                             correct.get(expectedCategory) + 1);
                     totalCorrect++;
                 } else {
-                    System.out.println(comm);
+                    //System.out.println(comm);
                     incorrect.put(expectedCategory,
                             incorrect.get(expectedCategory) + 1);
                     totalIncorrect++;

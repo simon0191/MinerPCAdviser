@@ -51,7 +51,13 @@
                 <dataset ref="dataSet2"/>
             </category>
         </classifier-->
-        <classifier id = "googleClassifier" class = "dataProcessing.sentimentAnalysis.MpcaGoogleClassifier">
+        <classifier id = "classifier2" class = "dataProcessing.sentimentAnalysis.MpcaLingPipeClassifier">
+            <category name = "POSITIVE">
+                <dataset ref="dataSet4"/>
+            </category>
+            <category name = "NEGATIVE">
+                <dataset ref="dataSet5"/>
+            </category>
         </classifier>
     </classifiers>
     <tests>
@@ -65,7 +71,7 @@
             </expectedCategory>
         </test-->
         <test>
-            <classifier ref = "googleClassifier"/>
+            <classifier ref = "classifier2"/>
             <expectedCategory name = "POSITIVE">
                 <dataset ref = "dataSet4"/>
             </expectedCategory>

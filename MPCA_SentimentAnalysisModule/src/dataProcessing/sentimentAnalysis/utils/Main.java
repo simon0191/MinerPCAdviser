@@ -11,7 +11,7 @@ import model.utils.MpcaIConstants;
  *
  * @author simon
  */
-public class MpcaTrainingDescriptorParser {
+public class Main {
 
     public static void main(String[] args) throws Exception {
 
@@ -33,6 +33,6 @@ public class MpcaTrainingDescriptorParser {
         }
         System.out.println(bestResult);
         // TODO: Cambiar Test2 por el nombre del clasificador
-        MpcaIndexPersistence.persistIndex(bestResult.getClassifier(), "test2", true);
+        MpcaIndexPersistence.persistIndex(bestResult.getClassifier(), "LingPipe2", true);
     }
 }
