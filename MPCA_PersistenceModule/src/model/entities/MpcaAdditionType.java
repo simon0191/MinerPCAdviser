@@ -34,7 +34,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "MpcaAdditionType.findAll", query = "SELECT m FROM MpcaAdditionType m"),
     @NamedQuery(name = "MpcaAdditionType.findByAddId", query = "SELECT m FROM MpcaAdditionType m WHERE m.addId = :addId"),
-    @NamedQuery(name = "MpcaAdditionType.findByAddType", query = "SELECT m FROM MpcaAdditionType m WHERE m.addType = :addType")})
+    @NamedQuery(name = "MpcaAdditionType.findByAddType", query = "SELECT m FROM MpcaAdditionType m WHERE m.addType = :addType"),
+    @NamedQuery(name = "MpcaAdditionType.findByAddCategory", query = "SELECT m FROM MpcaAdditionType m WHERE m.categoryId.name = :category")
+})
 public class MpcaAdditionType implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
