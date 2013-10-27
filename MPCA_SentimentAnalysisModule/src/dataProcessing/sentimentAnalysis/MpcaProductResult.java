@@ -6,6 +6,7 @@ package dataProcessing.sentimentAnalysis;
 
 import java.util.Map;
 import java.util.Set;
+import model.entities.MpcaIndexType;
 import model.entities.MpcaProduct;
 
 /**
@@ -14,15 +15,21 @@ import model.entities.MpcaProduct;
  */
 public class MpcaProductResult {
     private MpcaProduct product;
+    private MpcaIndexType index;
     private Map<String, Double> classificationsIndex;
 
-    public MpcaProductResult(MpcaProduct product, Map<String, Double> classificationsIndex) {
+    public MpcaProductResult(MpcaProduct product, MpcaIndexType index, Map<String, Double> classificationsIndex) {
         this.product = product;
+        this.index = index;
         this.classificationsIndex = classificationsIndex;
     }
 
     public MpcaProduct getProduct() {
         return product;
+    }
+
+    public MpcaIndexType getIndex() {
+        return index;
     }
     
     public Set<String> getClassifications() {
@@ -35,7 +42,7 @@ public class MpcaProductResult {
 
     @Override
     public String toString() {
-        String text = "Product: " + product.getModel() + "\n";
+        String text = "Product: " + product.getModel() + ", Index: " + index.getIndexName() + "\n";
         for (Map.Entry<String, Double> entry : classificationsIndex.entrySet()) {
             text += "Classification: " + entry.getKey() + ", Probability: " + entry.getValue();
         }

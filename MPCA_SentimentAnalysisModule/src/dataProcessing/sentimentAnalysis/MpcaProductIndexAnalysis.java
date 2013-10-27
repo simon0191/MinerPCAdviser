@@ -52,6 +52,6 @@ public class MpcaProductIndexAnalysis {
             double count = classCount.get(finalClass);
             classifications.put(finalClass, tot / count);
         }
-        return new MpcaProductResult(product, classifications);
+        return new MpcaProductResult(product, index, classifications);
     }
 }
