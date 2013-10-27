@@ -27,7 +27,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "MpcaProductAddition.findAll", query = "SELECT m FROM MpcaProductAddition m"),
     @NamedQuery(name = "MpcaProductAddition.findByMpcaProductProductId", query = "SELECT m FROM MpcaProductAddition m WHERE m.mpcaProductAdditionPK.mpcaProductProductId = :mpcaProductProductId"),
     @NamedQuery(name = "MpcaProductAddition.findByMpcaAdditionTypeAddId", query = "SELECT m FROM MpcaProductAddition m WHERE m.mpcaProductAdditionPK.mpcaAdditionTypeAddId = :mpcaAdditionTypeAddId"),
-    @NamedQuery(name = "MpcaProductAddition.findByValue", query = "SELECT m FROM MpcaProductAddition m WHERE m.value = :value")})
+    @NamedQuery(name = "MpcaProductAddition.findByValue", query = "SELECT m FROM MpcaProductAddition m WHERE m.value = :value"),
+    @NamedQuery(name = "MpcaProductAddition.findByType", query = "SELECT m FROM MpcaProductAddition m WHERE m.mpcaAdditionType.addType = :type")
+})
 public class MpcaProductAddition implements Serializable {
     private static final long serialVersionUID = 1L;
     @EmbeddedId

@@ -197,5 +197,16 @@ public class MpcaProductAdditionJpaController extends JpaController implements S
             em.close();
         }
     }
+
+    public List<MpcaProductAddition> findByType(String type) {
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createNamedQuery("MpcaProductAddition.findByType");
+            q.setParameter("type", type);
+            return q.getResultList();
+        } finally {
+            em.close();
+        }
+    }
     
 }
