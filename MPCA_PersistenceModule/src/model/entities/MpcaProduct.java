@@ -32,7 +32,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "MpcaProduct.findAll", query = "SELECT m FROM MpcaProduct m"),
     @NamedQuery(name = "MpcaProduct.findByProductId", query = "SELECT m FROM MpcaProduct m WHERE m.productId = :productId"),
-    @NamedQuery(name = "MpcaProduct.findByModel", query = "SELECT m FROM MpcaProduct m WHERE m.model = :model")})
+    @NamedQuery(name = "MpcaProduct.findByModel", query = "SELECT m FROM MpcaProduct m WHERE m.model = :model"),
+    @NamedQuery(name = "MpcaProduct.findByAdditionAndValue", query = "SELECT ca.mpcaProduct FROM MpcaProductAddition ca WHERE ca.mpcaAdditionType.addType = :addType AND ca.value = :value")
+})
 public class MpcaProduct implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

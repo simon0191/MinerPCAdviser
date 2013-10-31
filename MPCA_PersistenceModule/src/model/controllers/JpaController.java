@@ -4,9 +4,12 @@
  */
 package model.controllers;
 
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
+import model.entities.MpcaComment;
 
 /**
  *
@@ -33,6 +36,19 @@ public class JpaController {
     
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
+    }
+    
+    public static List doQuery(String query, int maxResults, int firstResult) {  
+        JpaController jpaController = new JpaController();
+        EntityManager em = jpaController.getEntityManager();
+        Query q = em.createQuery(query);
+        if (maxResults > 0) {
+            q.setMaxResults(maxResults);
+        }
+        if (firstResult > 0) {
+            q.setFirstResult(firstResult);
+        }
+        return q.getResultList();
     }
     
 }

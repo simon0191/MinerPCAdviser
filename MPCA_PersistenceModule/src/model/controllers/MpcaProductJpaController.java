@@ -372,4 +372,20 @@ public class MpcaProductJpaController extends JpaController implements Serializa
             em.close();
         }
     }
+
+    public List<MpcaProduct> findMpcaProductByAddition(String addType, String value) {
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createNamedQuery("MpcaProduct.findByAdditionAndValue");
+            q.setParameter("addType", addType);
+            q.setParameter("value", value);
+            /*if (!all) {
+                q.setMaxResults(maxResults);
+                q.setFirstResult(firstResult);
+            }*/
+            return q.getResultList();
+        } finally {
+            em.close();
+        }
+    }
 }
