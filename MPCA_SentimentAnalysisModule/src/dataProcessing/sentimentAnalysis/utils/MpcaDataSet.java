@@ -44,7 +44,7 @@ public class MpcaDataSet extends HashMap<String, List<String>> {
             offset = Integer.parseInt(element.attr(MpcaIConstants.OFFSET_TAG));
         }
         String query = element.text();
-        List<MpcaComment> comments = doQuery(query, maxResults, offset);
+        List<MpcaComment> comments = JpaController.doQuery(query, maxResults, offset);
         List<String> commentsS = new ArrayList<String>();
         for (MpcaComment comm : comments) {
             commentsS.add(comm.getCommentText());
@@ -52,16 +52,4 @@ public class MpcaDataSet extends HashMap<String, List<String>> {
         return commentsS;
     }
     
-    private static List<MpcaComment> doQuery(String query, int maxResults, int firstResult) {  
-        JpaController jpaController = new JpaController();
-        EntityManager em = jpaController.getEntityManager();
-        Query q = em.createQuery(query);
-        if (maxResults > 0) {
-            q.setMaxResults(maxResults);
-        }
-        if (firstResult > 0) {
-            q.setFirstResult(firstResult);
-        }
-        return q.getResultList();
-    }
 }

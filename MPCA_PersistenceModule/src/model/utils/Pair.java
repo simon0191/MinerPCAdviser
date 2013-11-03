@@ -4,6 +4,8 @@
  */
 package model.utils;
 
+import java.util.Set;
+
 /**
  *
  * @author Antonio

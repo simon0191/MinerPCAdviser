@@ -22,5 +22,6 @@ public class ProductIndexMain {
             System.out.println(result);
             System.out.println("================================");
         }
+        
     }
 }

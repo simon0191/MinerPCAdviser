@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "MpcaProduct.findByModel", query = "SELECT m FROM MpcaProduct m WHERE m.model = :model"),
     @NamedQuery(name = "MpcaProduct.findByAdditionAndValue", query = "SELECT ca.mpcaProduct FROM MpcaProductAddition ca WHERE ca.mpcaAdditionType.addType = :addType AND ca.value = :value")
 })
-public class MpcaProduct implements Serializable {
+public class MpcaProduct implements Serializable, Comparable<MpcaProduct> {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -142,6 +142,11 @@ public class MpcaProduct implements Serializable {
     @Override
     public String toString() {
         return "entities.MpcaProduct[ productId=" + productId + " ]";
+    }
+
+    @Override
+    public int compareTo(MpcaProduct t) {
+        return productId.compareTo(t.getProductId());
     }
     
 }
