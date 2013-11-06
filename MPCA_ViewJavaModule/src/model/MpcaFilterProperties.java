@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import model.entities.MpcaProduct;
-import model.utils.Pair;
 
 /**
  *
@@ -24,10 +23,6 @@ public class MpcaFilterProperties implements MpcaIFilterProperties {
         this.properties = new HashMap<String, MpcaProperty>();
         this.products = new TreeSet<MpcaProduct>();
     }
-    
-    /*public void addProperty(String key, Pair<String, Set<String> > values) {
-        properties.put(key, values);
-    }*/    
     
     public void addProperty(MpcaProperty property) {
         properties.put(property.getPropertyKey(), property);

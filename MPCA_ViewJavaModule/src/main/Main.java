@@ -5,19 +5,14 @@
 package main;
 
 import controllers.MpcaFilterFeature;
-import java.util.List;
 import java.util.Set;
 import model.MpcaFilterProperties;
 import interfaces.MpcaIFilterProperties;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Scanner;
 import java.util.TreeSet;
-import java.util.zip.InflaterInputStream;
 import model.MpcaProperty;
-import model.controllers.MpcaProductJpaController;
 import model.entities.MpcaProduct;
-import model.utils.Pair;
 
 /**
  *
@@ -29,28 +24,14 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
-        MpcaIFilterProperties filterPropeties = MpcaFilterFeature.getFilterProperties(true);
+        MpcaIFilterProperties filterProperties = MpcaFilterFeature.getFilterProperties(true);
         MpcaProperty filterSelected;
         MpcaFilterProperties filteredProperties = new MpcaFilterProperties();
-        while((filterSelected = printFilter(filterPropeties)) != null) {
+        while((filterSelected = printFilter(filterProperties)) != null) {
             filteredProperties.addProperty(filterSelected);
-            filterPropeties = MpcaFilterFeature.getFilterProperties(filteredProperties, true);
+            filterProperties = MpcaFilterFeature.getFilterProperties(filteredProperties, true);
         }
-        /*Set<String> properties = filterPropeties.getProperties();
-        MpcaProductJpaController pc = new MpcaProductJpaController();
-        MpcaIFilterProperties ff = null;
-        for (String property : properties) {
-        //List<MpcaProduct> products = pc.findMpcaProductByAddition(property, "500 GB");
-        MpcaFilterProperties filteredProperties = new MpcaFilterProperties();
-        String name = filterPropeties.getProperty(property).first();
-        Set<String> vs = new TreeSet<String>();
-        //vs.add("500 GB");
-        //filteredProperties.addProperty(property, name, vs);
-        ff = MpcaFilterFeature.getFilterProperties(filteredProperties, true);
-        break;
-        }
-        System.out.println("---------------------------------------------------------------");
-        //printFilter(ff);*/
+        
     }
 
     private static MpcaProperty printFilter(MpcaIFilterProperties filterPropeties) throws Exception {
@@ -72,6 +53,8 @@ public class Main {
         }
         System.out.println("----------------------------------------------------------------");
         System.out.println("Choose your property X and value Y: \"X Y\"");
+        
+        
         BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
         String []numbers = bf.readLine().split(" +");
         int property = Integer.parseInt(numbers[0]);

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package controllers;
 
 import java.io.File;
@@ -23,14 +19,13 @@ import org.jsoup.nodes.Element;
 
 /**
  *
- * @author Antonio
+ * @author MinerPCAdviser
  */
 public class MpcaFilterFeature {
 
     public static MpcaIFilterProperties getFilterProperties(boolean technicalFilter) throws IOException {
         MpcaFilterProperties filterProperties;
         if(technicalFilter) {
-            //filterProperties = getPhysicalFilterProperties();
             filterProperties = getPhysicalFilterProperties(null);
         } else { // Subjective Filter
             filterProperties = null;
@@ -56,7 +51,6 @@ public class MpcaFilterFeature {
         // Extrae los demás filtros establecidos en el XML
         // y crea los filtros que faltaban a partir de la lista de productos
         // filtrados
-        //List< Pair<String, String> > keysNames = extractPhysicalFilters();
         List<MpcaProperty> keysNames = extractPhysicalFilters();
         for (MpcaProperty keyName : keysNames) {
             String property = keyName.getPropertyKey();
@@ -107,16 +101,13 @@ public class MpcaFilterFeature {
         return productsFiltered;
     }
 
-    //private static List<Pair<String, String>> extractPhysicalFilters() throws IOException {
     private static List<MpcaProperty> extractPhysicalFilters() throws IOException {
         Document doc = Jsoup.parse(new File(MpcaIConstants.FILTERS_DESCRIPTOR_PATH, MpcaIConstants.FILTER_DESCRIPTOR_FILE), "UTF-8");
         Element filters = doc.select("technicalFilters").first();
-        //List<Pair<String, String>> keysNames = new ArrayList<Pair<String, String>>();
         List<MpcaProperty> keysNames = new ArrayList<MpcaProperty>();
         for (Element filter : filters.select("filter")) {
             String key = filter.id();
             String name = filter.attr("name");
-            //keysNames.add(new Pair<String, String>(key, name));
             keysNames.add(new MpcaProperty(key, name, null));
         }
         return keysNames;
