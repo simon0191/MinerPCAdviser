@@ -78,11 +78,11 @@ public class MainActivity extends Activity {
 			if(isIntegerFilter) {
 				final RangeSeekBar<Integer> seekBar = new RangeSeekBar<Integer>(0,(Integer)map.lastKey() , this);
 				final TextView min = new TextView(this);
-				min.setText("Min: "+0);
+				min.setText("Min: " + 0 + " GB");
 				mMainLinear.addView(min);
 				
 				final TextView max = new TextView(this);
-				max.setText("Max: "+(Integer)map.lastKey());
+				max.setText("Max: " + (Integer)map.lastKey() + " GB");
 				mMainLinear.addView(max);
 				
 				seekBar.setOnRangeSeekBarChangeListener(new OnRangeSeekBarChangeListener<Integer>() {
@@ -95,8 +95,8 @@ public class MainActivity extends Activity {
 						setMapRange(map.subMap(minValue, maxValue), true);
 						setMapRange(map.tailMap(maxValue), false);
 						
-						min.setText("Min: "+minValue);
-						max.setText("Max: "+maxValue);
+						min.setText("Min: " + minValue + " GB");
+						max.setText("Max: " + maxValue + " GB");
 					}
 
 					private void setMapRange(
@@ -110,11 +110,11 @@ public class MainActivity extends Activity {
 				
 				mMainLinear.addView(seekBar);
 			}
-			
 		}
 		
 		//https://code.google.com/p/range-seek-bar/
 		// create RangeSeekBar as Integer range between 20 and 75
+		
 		
 	}
 
