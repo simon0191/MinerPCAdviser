@@ -8,11 +8,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
 
+import com.mpca.ui.RangeSeekBar;
+import com.mpca.ui.RangeSeekBar.OnRangeSeekBarChangeListener;
 import com.mpca.utils.MpcaFilter;
 import com.mpca.utils.MpcaProduct;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.pm.LabeledIntent;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -50,25 +54,68 @@ public class MainActivity extends Activity {
 			mMainLinear.addView(nameTv);
 			
 			final SortedMap<Comparable, Boolean> map = f.getValues();
-			
+			boolean isIntegerFilter = false; 
 			for (final Comparable value : map.keySet()) {
-				String v = value.toString();
-				final CheckBox cb = new CheckBox(this);
-				cb.setText(v);
-				cb.setChecked(true);
-				cb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-					
-					@Override
-					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-						map.put(value, !map.get(value));
-					}
-				});
-				mMainLinear.addView(cb);
+				if(value instanceof String) {
+					String v = value.toString();
+					final CheckBox cb = new CheckBox(this);
+					cb.setText(v);
+					cb.setChecked(true);
+					cb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+						
+						@Override
+						public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+							map.put(value, !map.get(value));
+						}
+					});
+					mMainLinear.addView(cb);
+				}
+				else if(value instanceof Integer) {
+					isIntegerFilter = true;
+					break;
+				}
 			}
-			//https://code.google.com/p/range-seek-bar/
-			final SeekBar sb = new SeekBar(this);
-		
+			if(isIntegerFilter) {
+				final RangeSeekBar<Integer> seekBar = new RangeSeekBar<Integer>(0,(Integer)map.lastKey() , this);
+				final TextView min = new TextView(this);
+				min.setText("Min: "+0);
+				mMainLinear.addView(min);
+				
+				final TextView max = new TextView(this);
+				max.setText("Max: "+(Integer)map.lastKey());
+				mMainLinear.addView(max);
+				
+				seekBar.setOnRangeSeekBarChangeListener(new OnRangeSeekBarChangeListener<Integer>() {
+
+					@Override
+					public void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar,
+							Integer minValue, Integer maxValue) {
+						// TODO Auto-generated method stub
+						setMapRange(map.headMap(minValue), false);
+						setMapRange(map.subMap(minValue, maxValue), true);
+						setMapRange(map.tailMap(maxValue), false);
+						
+						min.setText("Min: "+minValue);
+						max.setText("Max: "+maxValue);
+					}
+
+					private void setMapRange(
+							SortedMap<Comparable, Boolean> headMap, boolean val) {
+						for(Comparable c:headMap.keySet()) {
+							headMap.put(c, val);
+						}
+					}
+					
+				});
+				
+				mMainLinear.addView(seekBar);
+			}
+			
 		}
+		
+		//https://code.google.com/p/range-seek-bar/
+		// create RangeSeekBar as Integer range between 20 and 75
+		
 	}
 
 	private List<MpcaFilter> createFilters(List<MpcaProduct> ps) {
