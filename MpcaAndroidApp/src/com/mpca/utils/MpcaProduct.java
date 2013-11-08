@@ -2,10 +2,11 @@ package com.mpca.utils;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MpcaProduct {
+public class MpcaProduct implements Comparable<MpcaProduct> {
 	
 	private int id;
 	private String model;
@@ -13,7 +14,7 @@ public class MpcaProduct {
 	private int ram; // Valores en GBs
 	private int hardDisk; // Valores en GBs
 	private String recommendation;
-	private int priority;
+	private Integer priority;
 	private String imageName;
 	
 	
@@ -78,5 +79,28 @@ public class MpcaProduct {
 	}
 	public void setImageName(String imageName) {
 		this.imageName = imageName;
+	}
+
+	@Override
+	public int compareTo(MpcaProduct that) {
+		if(this.priority.compareTo(that.priority) == 0) {
+			return this.model.compareTo(that.model);
+		}
+		return this.priority.compareTo(that.priority);
+	}
+
+	public Comparable getProperty(String name) {
+		
+		if(name.equals("Brand")) {
+			return this.brand;
+		}
+		if(name.equals("RAM")) {
+			return this.ram;
+		}
+		if(name.equals("Hard Drive")) {
+			return this.hardDisk;
+		}
+		
+		return null;
 	}
 }

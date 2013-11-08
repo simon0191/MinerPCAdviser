@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="150dip"
     android:padding="6dip"
-    android:background="#04B4AE">
+    android:background="#A9A9F5">
 
     <ImageView
         android:id="@+id/itemIcon"
@@ -16,7 +16,7 @@
         android:src="@drawable/ic_launcher" />
 
     <TextView
-        android:id="@+id/itemPrice"
+        android:id="@+id/itemRecommendation"
         android:layout_width="fill_parent"
         android:layout_height="26dip"
         android:layout_alignParentBottom="true"
@@ -25,21 +25,9 @@
         android:ellipsize="marquee"
         android:singleLine="true"
         android:text="Description"
-        android:textSize="12sp" />
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/itemTitle"
-        android:layout_width="fill_parent"
-        android:layout_height="95dp"
-        android:layout_above="@id/itemPrice"
-        android:layout_alignParentRight="true"
-        android:layout_alignWithParentIfMissing="true"
-        android:layout_below="@id/itemBrand"
-        android:layout_toRightOf="@id/itemIcon"
-        android:gravity="center_vertical"
-        android:text="Example application"
-        android:textSize="16sp" />
-    
     <TextView
         android:id="@+id/itemBrand"
         android:layout_width="fill_parent"
@@ -50,5 +38,19 @@
         android:gravity="center_vertical"
         android:text="Item Brand"
         android:textSize="16sp" />
+    
+    <TextView
+        android:id="@+id/itemModel"
+        android:layout_width="fill_parent"
+        android:layout_height="95dp"
+        android:layout_above="@id/itemRecommendation"
+        android:layout_alignParentRight="true"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_below="@id/itemBrand"
+        android:layout_toRightOf="@id/itemIcon"
+        android:gravity="center_vertical"
+        android:text="Example application"
+        android:textSize="16sp" />
+    
 
 </RelativeLayout>
