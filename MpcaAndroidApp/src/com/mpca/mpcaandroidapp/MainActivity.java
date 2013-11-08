@@ -6,7 +6,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import com.mpca.ui.RangeSeekBar;
 import com.mpca.ui.RangeSeekBar.OnRangeSeekBarChangeListener;
@@ -20,6 +23,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
@@ -29,10 +33,12 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity {
 	
-	private List<MpcaProduct> products;
+	private SortedMap<MpcaProduct,Boolean> products;
 	private List<MpcaFilter> filters;
 	
 	private LinearLayout mMainLinear;
+	
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -111,19 +117,54 @@ public class MainActivity extends Activity {
 				mMainLinear.addView(seekBar);
 			}
 			
+			
 		}
 		
-		//https://code.google.com/p/range-seek-bar/
-		// create RangeSeekBar as Integer range between 20 and 75
+		final Button debugButton = new Button(this);
+		debugButton.setText("Debug");
+		debugButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				filter(products,filters);
+				for(Map.Entry<MpcaProduct, Boolean> entry:products.entrySet()) {
+					System.out.println(entry.getKey().getModel()+": "+entry.getValue());
+				}
+			}
+		});
+		mMainLinear.addView(debugButton);
 		
 	}
+	
+	private SortedMap<MpcaProduct,Boolean> filter(SortedMap<MpcaProduct,Boolean> ps,List<MpcaFilter> fs) {
+		Set<MpcaProduct> keys = ps.keySet();
+		
+		for(MpcaProduct p:keys) {
+			ps.put(p, false);
+			int nPassedFilters = 0;
+			for(MpcaFilter f:fs) {
+				Set<Map.Entry<Comparable,Boolean>> entrySet = f.getValues().entrySet();
+				for (Map.Entry<Comparable, Boolean> entry : entrySet) {
+					if(entry.getValue() && p.getProperty(f.getName()).equals(entry.getKey())) {
+						nPassedFilters++;
+						break;
+					}
+				}
+			}
+			if(nPassedFilters == fs.size()) {
+				ps.put(p, true);
+			}
+		}
+		
+		return ps;
+	}
 
-	private List<MpcaFilter> createFilters(List<MpcaProduct> ps) {
+	private List<MpcaFilter> createFilters(Map<MpcaProduct,Boolean> ps) {
 		MpcaFilter<String> fBrand = new MpcaFilter<String>("Brand");
 		MpcaFilter<Integer> fRAM = new MpcaFilter<Integer>("RAM");
 		MpcaFilter<Integer> fHardDrive = new MpcaFilter<Integer>("Hard Drive");
 		
-		for (MpcaProduct p : ps) {
+		for (MpcaProduct p : ps.keySet()) {
 			fBrand.addValue(p.getBrand());
 			fRAM.addValue(p.getRam());
 			fHardDrive.addValue(p.getHardDisk());
@@ -143,8 +184,8 @@ public class MainActivity extends Activity {
 		return true;
 	}
 	
-	public List<MpcaProduct> readProducts() throws IOException {
-		List<MpcaProduct> products = new ArrayList<MpcaProduct>();
+	public SortedMap<MpcaProduct,Boolean> readProducts() throws IOException {
+		SortedMap<MpcaProduct,Boolean> products = new TreeMap<MpcaProduct,Boolean>();
 		BufferedReader bf = new BufferedReader(new InputStreamReader(
 				getAssets().open("all_products.txt")));
 		int size = Integer.parseInt(bf.readLine());
@@ -160,7 +201,7 @@ public class MainActivity extends Activity {
 				image = "ic_launcher";
 			}
 			MpcaProduct p = new MpcaProduct(i, model, brand, ram, hd, recommendation, priority, image);
-			products.add(p);
+			products.put(p,true);
 		}
 		return products;
 	}
