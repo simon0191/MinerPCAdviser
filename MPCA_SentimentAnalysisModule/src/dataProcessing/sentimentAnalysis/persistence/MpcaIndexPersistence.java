@@ -6,19 +6,24 @@ package dataProcessing.sentimentAnalysis.persistence;
 
 import dataProcessing.sentimentAnalysis.MpcaClassification;
 import dataProcessing.sentimentAnalysis.MpcaIClassifier;
+import dataProcessing.sentimentAnalysis.MpcaProductResult;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import model.controllers.MpcaCommentIndexJpaController;
 import model.controllers.MpcaCommentJpaController;
 import model.controllers.MpcaIndexTypeJpaController;
 import model.controllers.MpcaLabelTypeJpaController;
+import model.controllers.MpcaProductIndexJpaController;
 import model.controllers.exceptions.PreexistingEntityException;
 import model.entities.MpcaComment;
 import model.entities.MpcaCommentIndex;
 import model.entities.MpcaIndexType;
 import model.entities.MpcaLabelType;
+import model.entities.MpcaProduct;
+import model.entities.MpcaProductIndex;
 
 /**
  *
@@ -44,20 +49,6 @@ public class MpcaIndexPersistence {
         System.out.println("Classifying comments");
         for (MpcaComment comment : comments) {
             System.out.println(comment.getCommentId());
-            /*String polarity = classifier.bestMatch(comment.getCommentText());
-            MpcaLabelType label;
-            if(!labels.containsKey(polarity)) {
-                label = createOrGetLabelType(polarity);
-                labels.put(polarity, label);
-            } else {
-                label = labels.get(polarity);
-            }
-            MpcaCommentIndex commentIndex = new MpcaCommentIndex();
-            commentIndex.setMpcaCommentCommentId(comment);
-            commentIndex.setMpcaIndexTypeIndexId(indexType);
-            commentIndex.setLabelId(label);
-            commentIndex.setIndexValue(BigDecimal.ONE);
-            cic.create(commentIndex);*/
             MpcaClassification classifications = classifier.classify(comment.getCommentText());
             for (Map.Entry<String, Double> entry : classifications.entrySet()) {
                 MpcaLabelType label;
@@ -98,5 +89,28 @@ public class MpcaIndexPersistence {
             ltc.create(labelType);
         }
         return labelType;
+    }
+    
+    public static void persistMpcaProductIndex(MpcaProductResult result) throws PreexistingEntityException, Exception {
+        MpcaProductIndexJpaController pic = new MpcaProductIndexJpaController();
+        MpcaProduct product = result.getProduct();
+        MpcaIndexType index = result.getIndex();
+        Set<String> classifications = result.getClassifications();
+        for (String c : classifications) {
+            double r = result.getClassificationValue(c);
+            MpcaLabelTypeJpaController lc = new MpcaLabelTypeJpaController();
+            
+            MpcaLabelType label = lc.findMpcaLabelTypeByName(c);
+            MpcaProductIndex pi = pic.findProductIndexByProductIndexAndLabel(product, index, label);
+            if(pi == null) {
+                pi = new MpcaProductIndex();
+                pi.setMpcaProductProductId(product);
+                pi.setMpcaIndexTypeIndexId(index);
+                pi.setLabelId(label);
+                pi.setIndexValue(new BigDecimal(r));
+
+                pic.create(pi);
+            }
+        }
     }
 }

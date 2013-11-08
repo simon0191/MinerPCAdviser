@@ -17,7 +17,6 @@ import model.entities.MpcaIndexType;
 import model.entities.MpcaProductIndex;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 /**
  *
@@ -214,6 +213,36 @@ public class MpcaProductIndexJpaController extends JpaController implements Seri
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();
+        } finally {
+            em.close();
+        }
+    }
+
+    public MpcaProductIndex findProductIndexByProductIndexAndLabel(MpcaProduct product, MpcaIndexType index, MpcaLabelType label) {
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createNamedQuery("MpcaProductIndex.findByProductAndIndexTpeAndLabel");
+            q.setParameter("productId", product.getProductId());
+            q.setParameter("indexId", index.getIndexId());
+            q.setParameter("labelId", label.getLabelId());
+            List<MpcaProductIndex> pis = q.getResultList();
+            MpcaProductIndex pi = null;
+            if(!pis.isEmpty()) {
+                pi = pis.get(0);
+            }
+            return pi;
+        } finally {
+            em.close();
+        }
+    }
+    
+    public List<MpcaProductIndex> findProductIndexByProductAndIndex(MpcaProduct product, MpcaIndexType index) {
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createNamedQuery("MpcaProductIndex.findByProductAndIndexTpe");
+            q.setParameter("productId", product.getProductId());
+            q.setParameter("indexId", index.getIndexId());
+            return q.getResultList();
         } finally {
             em.close();
         }

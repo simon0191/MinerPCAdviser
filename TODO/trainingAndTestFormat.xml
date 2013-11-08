@@ -1,9 +1,21 @@
+<!DOCTYPE datasets SYSTEM ""
 <datasets>
-	<dataset>
+	<dataset id = "dataSet1">
+            <label name = "POSITIVE">
+                <query maxResults = "1000" offset = "-1">
+                    SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND ca.value = '5.0'
+                </query>
+            </label>
 	</dataset>
-	<dataset>
+	<dataset id = "dataSet2">
+            <label name = "NEGATIVE">
+                <query maxResults = "1000" offset = "-1">
+                    SELECT ca.mpcaComment FROM MpcaCommentAddition ca WHERE ca.mpcaAdditionType.addType = 'rank' AND (ca.value = '1.0' OR ca.value = '2.0')
+                </query>
+            </label>
 	</dataset>
 </datasets>
+<!--
 <classifiers>
 	<classifier>
 		<dataset>
@@ -24,3 +36,4 @@
 		<dataset>asdfsafd</dataset>
 	</test>
 </tests>
+-->

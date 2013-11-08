@@ -31,10 +31,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "MpcaProductIndex.findAll", query = "SELECT m FROM MpcaProductIndex m"),
     @NamedQuery(name = "MpcaProductIndex.findByIndexValue", query = "SELECT m FROM MpcaProductIndex m WHERE m.indexValue = :indexValue"),
-    @NamedQuery(name = "MpcaProductIndex.findByProductIndexId", query = "SELECT m FROM MpcaProductIndex m WHERE m.productIndexId = :productIndexId")})
+    @NamedQuery(name = "MpcaProductIndex.findByProductIndexId", query = "SELECT m FROM MpcaProductIndex m WHERE m.productIndexId = :productIndexId"),
+    @NamedQuery(name = "MpcaProductIndex.findByProductAndIndexTpeAndLabel", query = "SELECT m FROM MpcaProductIndex m WHERE m.mpcaProductProductId.productId = :productId AND m.mpcaIndexTypeIndexId.indexId = :indexId AND m.labelId.labelId = :labelId"),
+    @NamedQuery(name = "MpcaProductIndex.findByProductAndIndexTpe", query = "SELECT m FROM MpcaProductIndex m WHERE m.mpcaProductProductId.productId = :productId AND m.mpcaIndexTypeIndexId.indexId = :indexId")
+})
 public class MpcaProductIndex implements Serializable {
     private static final long serialVersionUID = 1L;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @Column(name = "INDEX_VALUE")
     private BigDecimal indexValue;

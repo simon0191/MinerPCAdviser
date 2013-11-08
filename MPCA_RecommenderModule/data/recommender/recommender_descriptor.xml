@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE recommender SYSTEM "recommender_descriptor_format.dtd">
+<recommender>
+    <recommendation decision = "WOW!" priority = "1">
+        <polarity polarity = "POSITIVE" min = "0.9"/>
+    </recommendation>
+    <recommendation decision = "BUY IT!" priority = "2">
+        <polarity polarity = "POSITIVE" min = "0.8" max = "0.899999"/>
+    </recommendation>
+    <recommendation decision = "IT'S A GOOD OPTION" priority = "3">
+        <polarity polarity = "POSITIVE" min = "0.7" max = "0.799999"/>
+    </recommendation>
+    <recommendation decision = "THINK IT TWICE!" priority = "4">
+        <polarity polarity = "POSITIVE" min = "0.5" max = "0.699999"/>
+    </recommendation>
+    <recommendation decision = "NEVER MIND!" priority = "4">
+        <polarity polarity = "POSITIVE" min = "0" max = "0.499999"/>
+    </recommendation>
+    <!--recommendation decision = "YEAH" priority = "1">
+        <polarity polarity = "POSITIVE" min = "0.5"/>
+    </recommendation>
+    <recommendation decision = "YEAH2" priority = "1">
+        <polarity polarity = "POSITIVE" max = "0.5"/>
+    </recommendation>
+    <recommendation decision = "IT'S A GOOD OPTION" priority = "3">
+        <polarity polarity = "POSITIVE" min = "0.7"/>
+        <polarity polarity = "NEGATIVE" max = "0.15"/>
+    </recommendation>
+    <recommendation decision = "BUY IT!" priority = "2">
+        <polarity polarity = "POSITIVE" min = "0.8"/>
+    </recommendation>
+    <recommendation decision = "WOW!" priority = "1">
+        <polarity polarity = "POSITIVE" min = "0.9"/>
+    </recommendation>
+    <recommendation decision = "IT'S A GOOD OPTION" priority = "3">
+        <polarity polarity = "POSITIVE" min = "0.6"/>
+        <polarity polarity = "NEGATIVE" max = "0.1"/>
+    </recommendation>
+    <recommendation decision = "THINK IT TWICE!" priority = "5">
+        <polarity polarity = "POSITIVE" max = "0.3"/>
+        <polarity polarity = "NEGATIVE" min = "0.4"/>
+    </recommendation>
+    <recommendation decision = "THINK IT TWICE!" priority = "4">
+        <polarity polarity = "POSITIVE" max = "0.4"/>
+    </recommendation>
+    <recommendation decision = "NEVER MIND!" priority = "6">
+        <polarity polarity = "NEGATIVE" min = "0.5"/>
+    </recommendation-->
+    <recommendation decision = "NOT CLASSIFIED" priority = "10000000"/>
+</recommender>

@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--
+    TODO define vocabulary identification
+    PUBLIC ID: -//vendor//vocabulary//EN
+    SYSTEM ID: http://server/path/recommender_descriptor_format.dtd
+
+-->
+
+<!--
+    An example how to use this DTD from your XML document:
+
+    <?xml version="1.0"?>
+
+    <!DOCTYPE recommender SYSTEM "recommender_descriptor_format.dtd">
+
+    <recommender>
+    ...
+    </recommender>
+-->
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT recommender (recommendation)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT recommendation (polarity)*>
+<!ATTLIST recommendation
+    decision CDATA #IMPLIED
+  >
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT polarity EMPTY>
+<!ATTLIST polarity
+    max CDATA #IMPLIED
+    min CDATA #IMPLIED
+    polarity CDATA #IMPLIED
+  >

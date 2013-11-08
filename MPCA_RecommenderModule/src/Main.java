@@ -1,12 +1,15 @@
 
-import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Scanner;
-import model.controllers.MpcaAdditionTypeJpaController;
-import model.controllers.MpcaProductAdditionJpaController;
-import model.entities.MpcaAdditionType;
-import model.entities.MpcaProductAddition;
-import model.utils.MpcaIConstants;
+import model.controllers.MpcaProductJpaController;
+import model.entities.MpcaProduct;
+import model.utils.MpcaPolarity;
+import model.utils.Range;
+import recommender.MpcaRecommendation;
+import recommender.MpcaRecommender;
+
+
+
+
 
 /*
  * To change this template, choose Tools | Templates
@@ -18,27 +21,25 @@ import model.utils.MpcaIConstants;
  * @author SimonXPS
  */
 public class Main {
-    public static void main(String[] args) {
-        MpcaAdditionTypeJpaController patc = new MpcaAdditionTypeJpaController();
-        List<MpcaAdditionType> types = patc.findByAddCategory(MpcaIConstants.PRODUCT_TAG);
-        int i = 0;
-        for (MpcaAdditionType add : types) {
-            System.out.println((i++)+": "+add.getAddType());
+    public static void main(String[] args) throws Exception {
+        List<MpcaProduct> products = new MpcaProductJpaController().findMpcaProductEntities();
+        MpcaRecommender recommender = MpcaRecommender.getInstance();
+        System.out.println("============================================");
+        for (MpcaProduct p : products) {
+            MpcaRecommendation recommendation = recommender.doRecommendation(p, 4l);
+            System.out.println("Id: " + p.getProductId());
+            System.out.println("Model: " + p.getModel());
+            System.out.println("- Recommendation:");
+            String prefix = "\t";
+            System.out.println(prefix + recommendation.getDecision());
+            prefix += "\t";
+            for (MpcaPolarity polarity : recommendation.getPolarities()) {
+                System.out.println("\t" + "Polarity: " + polarity);
+                Range range = recommendation.getRange(polarity);
+                System.out.println(prefix + "Min: " + range.getMin() + ", Max: " + range.getMax());
+            }
+            System.out.println("========================================");
         }
-        Scanner s = new Scanner(new InputStreamReader(System.in));
-        int addTypePos = s.nextInt();
-        System.out.println(addTypePos+": "+types.get(addTypePos).getAddType());
-        MpcaProductAdditionJpaController pac = new MpcaProductAdditionJpaController();
-        
-        List<MpcaProductAddition> adds = pac.findByType(types.get(addTypePos).getAddType());
-        int j = 0;
-        for (MpcaProductAddition add : adds) {
-            System.out.println((j++)+": "+add.getValue());
-        }
-        int addId = s.nextInt();
-        
-            
-        
     }
     
 }

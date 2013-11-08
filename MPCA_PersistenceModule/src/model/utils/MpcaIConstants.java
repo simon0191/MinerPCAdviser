@@ -37,8 +37,10 @@ public interface MpcaIConstants {
     public static final String SEPARATOR = "------------------------------------------------------------------------------------------";
     public static final String CLASSIFIERS_DESCRIPTOR_PATH = "data/classifiers";
     public static final String FILTERS_DESCRIPTOR_PATH = "data/filters";
+    public static final String RECOMMENDER_DESCRIPTOR_PATH = "data/recommender";
     public static final String MAX_RESULTS_TAG = "maxResults";
     public static final String OFFSET_TAG = "offset";
     public static final String LING_PIPE = "LING_PIPE";
     public static final String FILTER_DESCRIPTOR_FILE = "filters_descriptor.xml";
+    public static final String RECOMMENDER_DESCRIPTOR_FILE = "recommender_descriptor.xml";
 }

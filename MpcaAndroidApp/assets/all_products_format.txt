@@ -1,0 +1,9 @@
+NPCs
+model
+brand
+ram
+HD
+recommendation
+priority
+image
+.... per every pc
