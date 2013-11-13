@@ -15,7 +15,6 @@ import com.mpca.ui.RangeSeekBar;
 import com.mpca.ui.RangeSeekBar.OnRangeSeekBarChangeListener;
 import com.mpca.utils.MpcaFilter;
 import com.mpca.utils.MpcaProduct;
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
