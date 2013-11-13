@@ -4,5 +4,10 @@
     <string name="app_name">MpcaAndroidApp</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_products_list">ProductsListActivity</string>
+    <string name="title_activity_item_fragment">ItemFragment</string>
+    <string name="ok_text">Ok</string>
+    <string name="no_products_text">No products were found</string>
+    <string name="no_products_title">No Products Found</string>
 
 </resources>

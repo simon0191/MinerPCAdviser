@@ -18,7 +18,9 @@ import com.mpca.utils.MpcaProduct;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.LabeledIntent;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -33,12 +35,10 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity {
 	
-	private SortedMap<MpcaProduct,Boolean> products;
+	private static SortedMap<MpcaProduct,Boolean> products;
 	private List<MpcaFilter> filters;
 	
 	private LinearLayout mMainLinear;
-	
-	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +57,8 @@ public class MainActivity extends Activity {
 			String name = f.getName();
 			TextView nameTv = new TextView(this);
 			nameTv.setText(name);
+			nameTv.setTextSize(18);
+			nameTv.setTypeface(Typeface.DEFAULT_BOLD);
 			mMainLinear.addView(nameTv);
 			
 			final SortedMap<Comparable, Boolean> map = f.getValues();
@@ -84,11 +86,11 @@ public class MainActivity extends Activity {
 			if(isIntegerFilter) {
 				final RangeSeekBar<Integer> seekBar = new RangeSeekBar<Integer>(0,(Integer)map.lastKey() , this);
 				final TextView min = new TextView(this);
-				min.setText("Min: "+0);
+				min.setText("Min: " + 0 + " GB");
 				mMainLinear.addView(min);
 				
 				final TextView max = new TextView(this);
-				max.setText("Max: "+(Integer)map.lastKey());
+				max.setText("Max: " + (Integer)map.lastKey() + " GB");
 				mMainLinear.addView(max);
 				
 				seekBar.setOnRangeSeekBarChangeListener(new OnRangeSeekBarChangeListener<Integer>() {
@@ -101,8 +103,8 @@ public class MainActivity extends Activity {
 						setMapRange(map.subMap(minValue, maxValue), true);
 						setMapRange(map.tailMap(maxValue), false);
 						
-						min.setText("Min: "+minValue);
-						max.setText("Max: "+maxValue);
+						min.setText("Min: " + minValue + " GB");
+						max.setText("Max: " + maxValue + " GB");
 					}
 
 					private void setMapRange(
@@ -116,24 +118,27 @@ public class MainActivity extends Activity {
 				
 				mMainLinear.addView(seekBar);
 			}
-			
-			
 		}
 		
-		final Button debugButton = new Button(this);
-		debugButton.setText("Debug");
-		debugButton.setOnClickListener(new OnClickListener() {
-			
+		final Button filterButton = new Button(this);
+		filterButton.setText("Filter");
+		filterButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				filter(products,filters);
-				for(Map.Entry<MpcaProduct, Boolean> entry:products.entrySet()) {
+				Intent i = new Intent(MainActivity.this, ProductsListActivity.class);
+				startActivity(i);
+				/*for(Map.Entry<MpcaProduct, Boolean> entry:products.entrySet()) {
 					System.out.println(entry.getKey().getModel()+": "+entry.getValue());
-				}
+				}*/
 			}
 		});
-		mMainLinear.addView(debugButton);
+		mMainLinear.addView(filterButton);
 		
+	}
+	
+	public static SortedMap<MpcaProduct, Boolean> getProducts() {
+		return products;
 	}
 	
 	private SortedMap<MpcaProduct,Boolean> filter(SortedMap<MpcaProduct,Boolean> ps,List<MpcaFilter> fs) {
@@ -155,7 +160,6 @@ public class MainActivity extends Activity {
 				ps.put(p, true);
 			}
 		}
-		
 		return ps;
 	}
 

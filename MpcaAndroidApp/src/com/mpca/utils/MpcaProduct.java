@@ -2,10 +2,11 @@ package com.mpca.utils;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MpcaProduct implements Comparable<MpcaProduct>{
+public class MpcaProduct implements Comparable<MpcaProduct> {
 	
 	private int id;
 	private String model;
