@@ -65,7 +65,7 @@ public class ItemDetailActivity extends Activity {
 				Bundle b = new Bundle();
 				String recommendation = p.getRecommendation();
 				if(!recommendation.equals(THINK_TWICE_RECOMMENDATION) &&
-						!recommendation.equals(BAD_WORD_CLOUD)) {
+						!recommendation.equals(NEVER_MIND_RECOMMENDATION)) {
 					b.putString(WORD_CLOUD, PERFECT_WORD_CLOUD);
 				} else {
 					b.putString(WORD_CLOUD, BAD_WORD_CLOUD);
