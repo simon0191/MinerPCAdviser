@@ -1,12 +1,13 @@
 package com.mpca.utils;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-public class MpcaProduct implements Comparable<MpcaProduct> {
+
+public class MpcaProduct implements Comparable<MpcaProduct>, Serializable {
 	
 	private int id;
 	private String model;
@@ -16,6 +17,7 @@ public class MpcaProduct implements Comparable<MpcaProduct> {
 	private String recommendation;
 	private Integer priority;
 	private String imageName;
+	private Map<String, Double> polaritiesIndex;
 	
 	
 	public MpcaProduct(int id, String model, String brand, int ram, int hardDisk,
@@ -28,6 +30,33 @@ public class MpcaProduct implements Comparable<MpcaProduct> {
 		this.recommendation = recommendation;
 		this.priority = priority;
 		this.imageName = imageName;
+		this.polaritiesIndex = new HashMap<String, Double>();
+	}
+	
+	public MpcaProduct(int id, String model, String brand, int ram,
+			int hardDisk, String recommendation, int priority,
+			String imageName, Map<String, Double> polaritiesIndex) {
+		this.id = id;
+		this.model = model;
+		this.brand = brand;
+		this.ram = ram;
+		this.hardDisk = hardDisk;
+		this.recommendation = recommendation;
+		this.priority = priority;
+		this.imageName = imageName;
+		this.polaritiesIndex = polaritiesIndex;
+	}
+	
+	public Set<String> getPolarities() {
+		return polaritiesIndex.keySet();
+	}
+	
+	public void addPolarityIndex(String polarity, Double index) {
+		this.polaritiesIndex.put(polarity, index);
+	}
+	
+	public Double getPolarityIndex(String polarity) {
+		return polaritiesIndex.get(polarity);
 	}
 	
 	public int getId() {

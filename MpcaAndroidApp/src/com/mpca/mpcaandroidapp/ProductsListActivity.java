@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.support.v4.app.DialogFragment;
 import android.view.Menu;
 import android.view.View;
@@ -26,14 +27,16 @@ public class ProductsListActivity extends Activity {
 	private ListView mProductsLv;
 	private List<MpcaProduct> finalProducts;
 	
+	public static final String PRODUCT_TAG = "PRODUCT_TAG";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_products_list);
 		
-		mProductsLv = (ListView)findViewById(R.id.productsLV);
+		setTitle(getResources().getString(R.string.items_list_title));
 		
-		Bundle b = getIntent().getExtras();
+		mProductsLv = (ListView)findViewById(R.id.productsLV);
 		
 		finalProducts = new ArrayList<MpcaProduct>();
 		SortedMap<MpcaProduct, Boolean> products = MainActivity.getProducts();
@@ -49,7 +52,12 @@ public class ProductsListActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int pos, long id) {
-				Toast.makeText(ProductsListActivity.this, "Product " + pos + " was selected", Toast.LENGTH_SHORT).show();
+				//Toast.makeText(ProductsListActivity.this, "Product " + pos + " was selected", Toast.LENGTH_SHORT).show();
+				Bundle b = new Bundle();
+				b.putSerializable(PRODUCT_TAG, finalProducts.get(pos));
+				Intent i = new Intent(ProductsListActivity.this, ItemDetailActivity.class);
+				i.putExtras(b);
+				startActivity(i);
 			}
 		});
 		

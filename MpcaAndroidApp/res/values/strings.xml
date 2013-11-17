@@ -9,5 +9,13 @@
     <string name="ok_text">Ok</string>
     <string name="no_products_text">No products were found</string>
     <string name="no_products_title">No Products Found</string>
+    <string name="title_activity_item_detail">ItemDetailActivity</string>
+    <string name="word_cloud_text">Word Cloud</string>
+    <string name="title_activity_word_cloud">WordCloudActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="item_detail_text">Computer Detail</string>
+    <string name="main_activity_title">Miner PC Adviser</string>
+    <string name="items_list_title">Computers List</string>
 
 </resources>
