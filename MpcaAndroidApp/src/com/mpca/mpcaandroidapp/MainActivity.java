@@ -194,7 +194,7 @@ public class MainActivity extends Activity {
 	public SortedMap<MpcaProduct,Boolean> readProducts() throws IOException {
 		SortedMap<MpcaProduct,Boolean> products = new TreeMap<MpcaProduct,Boolean>();
 		BufferedReader bf = new BufferedReader(new InputStreamReader(
-				getAssets().open("all_products2.txt")));
+				getAssets().open("all_products.txt")));
 		int size = Integer.parseInt(bf.readLine());
 		for (int i = 0; i < size; i++) {
 			String model = bf.readLine();

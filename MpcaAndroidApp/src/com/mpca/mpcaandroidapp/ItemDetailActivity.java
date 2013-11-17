@@ -82,7 +82,7 @@ public class ItemDetailActivity extends Activity {
 		mPolaritiesTable.setShrinkAllColumns(true);
 		
 		mProductIcon.setImageResource(imageId);
-		mRecommendationTv.setText(p.getRecommendation());
+		mRecommendationTv.setText("Advise:\n" + p.getRecommendation());
 		mBrandTv.setText(p.getBrand());
 		mModelTv.setText(p.getModel());
 		
