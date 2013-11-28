@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -43,6 +45,8 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		setTitle(getResources().getString(R.string.main_activity_title));
 		
 		mMainLinear = (LinearLayout) findViewById(R.id.mainLinearLayout);
 		
@@ -199,11 +203,20 @@ public class MainActivity extends Activity {
 			int hd = Integer.parseInt(bf.readLine());
 			String recommendation = bf.readLine();
 			int priority = Integer.parseInt(bf.readLine());
+			int polaritiesQ = Integer.parseInt(bf.readLine());
+			Map<String, Double> polaritiesIndex = new HashMap<String, Double>();
+			for (int j = 0; j < polaritiesQ; j++) {
+				String []polarityLine = bf.readLine().split(" +");
+				polaritiesIndex.put(polarityLine[0],
+						Double.parseDouble(polarityLine[1]));
+			}
 			String image = bf.readLine();
 			if(image.equals("null")) {
 				image = "ic_launcher";
 			}
-			MpcaProduct p = new MpcaProduct(i, model, brand, ram, hd, recommendation, priority, image);
+			
+			MpcaProduct p = new MpcaProduct(i, model, brand, 
+					ram, hd, recommendation, priority, image, polaritiesIndex);
 			products.put(p,true);
 		}
 		return products;

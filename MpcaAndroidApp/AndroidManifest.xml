@@ -30,6 +30,16 @@
             android:name="com.mpca.mpcaandroidapp.ItemFragment"
             android:label="@string/title_activity_item_fragment" >
         </activity>
+        <activity
+            android:name="com.mpca.mpcaandroidapp.ItemDetailActivity"
+            android:label="@string/title_activity_item_detail" >
+        </activity>
+        <activity
+            android:name="com.mpca.mpcaandroidapp.WordCloudActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_word_cloud"
+            android:theme="@style/FullscreenTheme" >
+        </activity>
     </application>
 
 </manifest>

@@ -5,5 +5,10 @@ ram
 HD
 recommendation
 priority
+Polarities quantity
+polarity1 index1
+polarity2 index2
+...
+polarityn indexn
 image
 .... per every pc

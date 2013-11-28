@@ -13,7 +13,7 @@
     <recommendation decision = "THINK IT TWICE!" priority = "4">
         <polarity polarity = "POSITIVE" min = "0.5" max = "0.699999"/>
     </recommendation>
-    <recommendation decision = "NEVER MIND!" priority = "4">
+    <recommendation decision = "NEVER MIND!" priority = "5">
         <polarity polarity = "POSITIVE" min = "0" max = "0.499999"/>
     </recommendation>
     <!--recommendation decision = "YEAH" priority = "1">

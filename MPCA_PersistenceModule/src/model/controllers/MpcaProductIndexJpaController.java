@@ -248,4 +248,9 @@ public class MpcaProductIndexJpaController extends JpaController implements Seri
         }
     }
     
+    public List<MpcaProductIndex> findProductIndexByProductAndIndex(MpcaProduct product, long indexId) {
+        MpcaIndexType index = new MpcaIndexTypeJpaController().findMpcaIndexType(indexId);
+        return findProductIndexByProductAndIndex(product, index);
+    }
+    
 }

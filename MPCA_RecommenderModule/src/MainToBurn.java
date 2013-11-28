@@ -5,9 +5,11 @@
 
 
 import java.util.List;
+import model.controllers.MpcaProductIndexJpaController;
 import model.controllers.MpcaProductJpaController;
 import model.entities.MpcaProduct;
 import model.entities.MpcaProductAddition;
+import model.entities.MpcaProductIndex;
 import model.utils.MpcaIConstants;
 import recommender.MpcaRecommendation;
 import recommender.MpcaRecommender;
@@ -21,6 +23,7 @@ public class MainToBurn {
         MpcaProductJpaController pc = new MpcaProductJpaController();
         List<MpcaProduct> products = pc.findMpcaProductEntities();
         System.out.println(products.size());
+        int i = 0;
         for (MpcaProduct p : products) {
             System.out.println(p.getModel());
             String brand = null;
@@ -52,7 +55,14 @@ public class MainToBurn {
             MpcaRecommendation recom = MpcaRecommender.getInstance().doRecommendation(p, 4l);
             System.out.println(recom.getDecision());
             System.out.println(recom.getPriority());
-            System.out.println("null");
+            List<MpcaProductIndex> indexResults = new MpcaProductIndexJpaController().findProductIndexByProductAndIndex(p, 4l);
+            // Cantidad de Polaridades
+            System.out.println(indexResults.size());
+            for (MpcaProductIndex pi : indexResults) {
+                // Polaridad con su probabilidad
+                System.out.println(pi.getLabelId().getLabelName() + " " + pi.getIndexValue());
+            }
+            System.out.println("pc_" + ((i++)%10+1));
         }
     }
 }
