@@ -11,28 +11,32 @@ var getFilters = function(req, res) {
 	res.send(200,filters);
 }
 
+var getProducts = function(req, res) {
+	res.send(200,products);
+}
+
 var loadData = function() {
 	fs.readFile('data/db.csv','utf-8',function(err,data){
 		if(err) {
 			return console.log(err);
 		}
+		products = [];
+
 		var lines = data.toString().split('\n');
+		var header = lines[0].split('\t');
+		lines = lines.splice(1);
 
         lines.forEach(function(line){
             var t = line.split('\t');
-            if(t.length == 4) {
-                var coord = {};
-                coord.ciudad = t[0];
-                coord.lat = parseFloat(t[1]);
-                coord.long = parseFloat(t[2]);
-                coord.depto = t[3];
-                coords.push(coord);
+            if(t.length == 10) {
+                var p = {};
+                header.forEach(function(h,i) {
+                	p[h] = t[i];
+                });
+                products.push(p);
             }
         });
-        console.log('Size: '+coords.length);
-        buildTree();
-        main();
-
+        console.log('Size: '+products.length);
 	});
 
 }
@@ -43,18 +47,18 @@ var launchWebApp = function() {
 	});
 
 	app.get('/filters',getFilters);
-	app.get('/products')
+	app.get('/products',getProducts);
 
 	var port = 8080;
 	app.listen(port,function() {
 		console.log('Listening on port: '+port);
 	});
+
 }
 
 var main = function() {
 	loadData();
 	launchWebApp();
-	
 }
 
 main();
