@@ -1,4 +1,5 @@
 var express = require('express');
+var rest = require('restler');
 var fs = require('fs');
 var products;
 
@@ -16,10 +17,9 @@ var getProducts = function(req, res) {
 }
 
 var loadData = function() {
-	fs.readFile('data/db.csv','utf-8',function(err,data){
-		if(err) {
-			return console.log(err);
-		}
+
+	var request = rest.get('https://dl.dropboxusercontent.com/u/20243104/db.csv');
+	request.on('complete', function(data) { 
 		products = [];
 
 		var lines = data.toString().split('\n');
@@ -38,7 +38,25 @@ var loadData = function() {
         });
         console.log('Size: '+products.length);
 	});
+/*
+	fs.readFile('data/db.csv','utf-8',function(err,data){
+		if(err) {
+			return console.log(err);
+		}
+		
+	});
+*/
+}
+var fileSystemTest = function(req, res) {
+	var request = rest.get('https://dl.dropboxusercontent.com/u/20243104/db.csv');
 
+		
+	request.on('complete', function(result) { 
+		res.send(200,result);
+	});
+	/*var data = fs.readFileSync('https://dl.dropboxusercontent.com/u/20243104/db.csv','utf-8');
+*/
+	
 }
 var launchWebApp = function() {
 	var app = express();
@@ -48,8 +66,9 @@ var launchWebApp = function() {
 
 	app.get('/filters',getFilters);
 	app.get('/products',getProducts);
+	app.get('/test',fileSystemTest);
 
-	var port = 8080;
+	var port = process.env.PORT || 8080;
 	app.listen(port,function() {
 		console.log('Listening on port: '+port);
 	});

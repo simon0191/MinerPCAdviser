@@ -1,0 +1,101 @@
+2013-11-28T04:48:49.553203+00:00 app[web.1]:     at Object.expressInit [as handle] (/app/node_modules/express/lib/middleware.js:31:5)
+2013-11-28T04:48:49.553203+00:00 app[web.1]:     at next (/app/node_modules/express/node_modules/connect/lib/proto.js:190:15)
+2013-11-28T04:48:49.553414+00:00 app[web.1]:     at Object.query [as handle] (/app/node_modules/express/node_modules/connect/lib/middleware/query.js:44:5)
+2013-11-28T04:48:49.555343+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=2ms service=3ms status=500 bytes=800
+2013-11-28T04:48:42.756541+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.84.180.152" dyno=web.1 connect=2ms service=7ms status=500 bytes=800
+2013-11-28T04:47:58.369190+00:00 heroku[router]: at=info method=GET path=/favicon.ico host=mpca-api.herokuapp.com fwd="190.84.180.152" dyno=web.1 connect=3ms service=6ms status=404 bytes=34
+2013-11-28T04:47:57.998616+00:00 heroku[router]: at=info method=GET path=/ host=mpca-api.herokuapp.com fwd="190.84.180.152" dyno=web.1 connect=3ms service=11ms status=200 bytes=25
+2013-11-28T04:48:34.570496+00:00 heroku[router]: at=info method=GET path=/ host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=2ms service=3ms status=200 bytes=25
+2013-11-28T04:47:43.181150+00:00 heroku[api]: Scale to web=1 by simon0191@gmail.com
+2013-11-28T04:47:43.204060+00:00 heroku[api]: Add PATH config by simon0191@gmail.com
+2013-11-28T04:47:43.229304+00:00 heroku[api]: Release v3 created by simon0191@gmail.com
+2013-11-28T04:47:43.312525+00:00 heroku[api]: Deploy 2dcb3ca by simon0191@gmail.com
+2013-11-28T04:47:43.342578+00:00 heroku[api]: Release v4 created by simon0191@gmail.com
+2013-11-28T04:50:13+00:00 heroku[slug-compiler]: Slug compilation started
+2013-11-28T04:50:30.033010+00:00 heroku[api]: Deploy fabbbb5 by simon0191@gmail.com
+2013-11-28T04:50:30.044695+00:00 heroku[api]: Release v5 created by simon0191@gmail.com
+2013-11-28T04:50:30+00:00 heroku[slug-compiler]: Slug compilation finished
+2013-11-28T04:50:30.680927+00:00 heroku[web.1]: State changed from up to starting
+2013-11-28T04:50:32.882417+00:00 heroku[web.1]: Stopping all processes with SIGTERM
+2013-11-28T04:50:33.246643+00:00 heroku[web.1]: Starting process with command `node app.js`
+2013-11-28T04:50:34.410173+00:00 heroku[web.1]: Process exited with status 143
+2013-11-28T04:50:34.664709+00:00 app[web.1]: Listening on port: 7601
+2013-11-28T04:50:34.673913+00:00 app[web.1]: { [Error: ENOENT, open 'data/db.csv'] errno: 34, code: 'ENOENT', path: 'data/db.csv' }
+2013-11-28T04:50:35.224496+00:00 heroku[web.1]: State changed from starting to up
+2013-11-28T04:50:36.066501+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.84.180.152" dyno=web.1 connect=1ms service=11ms status=200 bytes=5
+2013-11-28T04:48:34.934941+00:00 heroku[router]: at=info method=GET path=/favicon.ico host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=4ms service=4ms status=404 bytes=34
+2013-11-28T04:50:41.178154+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.84.180.152" dyno=web.1 connect=50ms service=93ms status=200 bytes=5
+2013-11-28T04:50:52.163456+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.84.180.152" dyno=web.1 connect=9ms service=9ms status=200 bytes=5
+2013-11-28T04:50:53.130747+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.84.180.152" dyno=web.1 connect=2ms service=7ms status=200 bytes=5
+2013-11-28T04:51:12.497062+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=1ms service=4ms status=200 bytes=5
+2013-11-28T04:51:13.245408+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=2ms service=3ms status=200 bytes=5
+2013-11-28T04:51:14.273771+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=2ms service=3ms status=200 bytes=5
+2013-11-28T04:51:15.305282+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=5ms service=9ms status=200 bytes=5
+2013-11-28T04:51:15.677299+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=2ms service=3ms status=200 bytes=5
+2013-11-28T04:51:16.026421+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=1ms service=4ms status=200 bytes=5
+2013-11-28T04:51:16.819337+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=3ms service=5ms status=200 bytes=5
+2013-11-28T04:51:17.573083+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=1ms service=6ms status=200 bytes=5
+2013-11-28T04:51:18.311447+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=3ms service=2ms status=200 bytes=5
+2013-11-28T04:51:18.652105+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=3ms service=4ms status=200 bytes=5
+2013-11-28T04:51:42.006909+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=1ms service=3ms status=200 bytes=5
+2013-11-28T04:51:14.972549+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=1ms service=3ms status=200 bytes=5
+2013-11-28T04:51:56.874812+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=3ms service=10ms status=200 bytes=5
+2013-11-28T04:51:57.564117+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=1ms service=5ms status=200 bytes=5
+2013-11-28T04:51:58.172704+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=2ms service=3ms status=200 bytes=5
+2013-11-28T04:51:58.461043+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=2ms service=6ms status=200 bytes=5
+2013-11-28T04:51:59.296682+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=1ms service=2ms status=200 bytes=5
+2013-11-28T04:52:00.890047+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=1ms service=3ms status=200 bytes=5
+2013-11-28T04:52:01.463736+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=3ms service=3ms status=200 bytes=5
+2013-11-28T04:52:01.515306+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=49ms service=34ms status=200 bytes=5
+2013-11-28T04:52:03.066730+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=3ms service=9ms status=200 bytes=5
+2013-11-28T04:51:17.239040+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=12ms service=15ms status=200 bytes=5
+2013-11-28T04:52:40.459663+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=2ms service=4ms status=200 bytes=5
+2013-11-28T04:52:41.062569+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=1ms service=5ms status=200 bytes=5
+2013-11-28T04:52:41.715918+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=3ms service=6ms status=200 bytes=5
+2013-11-28T04:53:12.719566+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.84.180.152" dyno=web.1 connect=1ms service=9ms status=200 bytes=5
+2013-11-28T04:51:16.479791+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=14ms service=18ms status=200 bytes=5
+2013-11-28T04:52:41.455703+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=2ms service=7ms status=200 bytes=5
+2013-11-28T04:52:00.158287+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=1ms service=8ms status=200 bytes=5
+2013-11-28T04:52:03.450490+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=1ms service=5ms status=200 bytes=5
+2013-11-28T04:54:45.111556+00:00 heroku[router]: at=info method=GET path=/db host=mpca-api.herokuapp.com fwd="190.84.180.152" dyno=web.1 connect=5ms service=4ms status=404 bytes=24
+2013-11-28T04:54:08.797940+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.84.180.152" dyno=web.1 connect=2ms service=5ms status=200 bytes=5
+2013-11-28T04:54:50.340510+00:00 heroku[router]: at=info method=GET path=/data host=mpca-api.herokuapp.com fwd="190.84.180.152" dyno=web.1 connect=1ms service=11ms status=404 bytes=27
+2013-11-28T04:54:55.759157+00:00 heroku[router]: at=info method=GET path=/data/db.csv host=mpca-api.herokuapp.com fwd="190.84.180.152" dyno=web.1 connect=1ms service=2ms status=404 bytes=34
+2013-11-28T04:54:58.490531+00:00 heroku[router]: at=info method=GET path=/products host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=3ms service=7ms status=200 bytes=5
+2013-11-28T04:55:18.531286+00:00 heroku[router]: at=info method=GET path=/ host=mpca-api.herokuapp.com fwd="190.25.116.181" dyno=web.1 connect=2ms service=9ms status=200 bytes=25
+2013-11-28T05:00:58+00:00 heroku[slug-compiler]: Slug compilation started
+2013-11-28T05:01:09.416128+00:00 heroku[api]: Deploy 82aaace by simon0191@gmail.com
+2013-11-28T05:01:09.450370+00:00 heroku[api]: Release v6 created by simon0191@gmail.com
+2013-11-28T05:01:09+00:00 heroku[slug-compiler]: Slug compilation finished
+2013-11-28T05:01:09.853156+00:00 heroku[web.1]: State changed from up to starting
+2013-11-28T05:01:11.470862+00:00 heroku[web.1]: Starting process with command `node app.js`
+2013-11-28T05:01:12.485629+00:00 app[web.1]: Listening on port: 42020
+2013-11-28T05:01:12.490067+00:00 app[web.1]: { [Error: ENOENT, open 'data/db.csv'] errno: 34, code: 'ENOENT', path: 'data/db.csv' }
+2013-11-28T05:01:13.145738+00:00 heroku[web.1]: State changed from starting to up
+2013-11-28T05:01:13.222800+00:00 heroku[web.1]: Stopping all processes with SIGTERM
+2013-11-28T05:01:16.661202+00:00 heroku[web.1]: Process exited with status 143
+2013-11-28T05:01:31.843329+00:00 heroku[router]: at=info method=GET path=/ host=mpca-api.herokuapp.com fwd="190.84.180.152" dyno=web.1 connect=2ms service=10ms status=200 bytes=25
+2013-11-28T05:01:35.630948+00:00 heroku[router]: at=info method=GET path=/test host=mpca-api.herokuapp.com fwd="190.84.180.152" dyno=web.1 connect=1ms service=5ms status=400 bytes=5
+2013-11-28T05:11:15+00:00 heroku[slug-compiler]: Slug compilation started
+2013-11-28T05:11:28.749643+00:00 heroku[api]: Deploy 871fa4d by simon0191@gmail.com
+2013-11-28T05:11:28.774825+00:00 heroku[api]: Release v7 created by simon0191@gmail.com
+2013-11-28T05:11:28+00:00 heroku[slug-compiler]: Slug compilation finished
+2013-11-28T05:11:29.500820+00:00 heroku[web.1]: State changed from up to starting
+2013-11-28T05:11:32.053840+00:00 heroku[web.1]: Stopping all processes with SIGTERM
+2013-11-28T05:11:31.947788+00:00 heroku[web.1]: Starting process with command `node app.js`
+2013-11-28T05:11:33.738668+00:00 app[web.1]: Listening on port: 34041
+2013-11-28T05:11:33.741927+00:00 app[web.1]: { [Error: ENOENT, open 'data/db.csv'] errno: 34, code: 'ENOENT', path: 'data/db.csv' }
+2013-11-28T05:11:33.903875+00:00 heroku[web.1]: Process exited with status 143
+2013-11-28T05:11:34.281071+00:00 heroku[web.1]: State changed from starting to up
+2013-11-28T05:11:34.440959+00:00 app[web.1]: Error: ENOENT, no such file or directory 'data/db.csv'
+2013-11-28T05:11:34.440959+00:00 app[web.1]:     at fileSystemTest (/app/app.js:44:16)
+2013-11-28T05:11:34.440959+00:00 app[web.1]:     at callbacks (/app/node_modules/express/lib/router/index.js:161:37)
+2013-11-28T05:11:34.440959+00:00 app[web.1]:     at Object.fs.openSync (fs.js:427:18)
+2013-11-28T05:11:34.440959+00:00 app[web.1]:     at pass (/app/node_modules/express/lib/router/index.js:142:5)
+2013-11-28T05:11:34.440959+00:00 app[web.1]:     at Router._dispatch (/app/node_modules/express/lib/router/index.js:170:5)
+2013-11-28T05:11:34.440959+00:00 app[web.1]:     at next (/app/node_modules/express/node_modules/connect/lib/proto.js:190:15)
+2013-11-28T05:11:34.440959+00:00 app[web.1]:     at Object.router (/app/node_modules/express/lib/router/index.js:33:10)
+2013-11-28T05:11:34.440959+00:00 app[web.1]:     at Object.fs.readFileSync (fs.js:284:15)
+2013-11-28T05:11:34.440959+00:00 app[web.1]:     at param (/app/node_modules/express/lib/router/index.js:135:11)
+2013-11-28T05:11:34.441184+00:00 app[web.1]:     at Object.expressInit [as handle] (/app/node_modules/express/lib/middleware.js:31:5)
+2013-11-28T05:11:34.447853+00:00 heroku[router]: at=info method=GET path=/test host=mpca-api.herokuapp.com fwd="190.84.180.152" dyno=web.1 connect=1ms service=11ms status=500 bytes=711
