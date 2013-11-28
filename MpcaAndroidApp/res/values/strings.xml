@@ -17,5 +17,6 @@
     <string name="item_detail_text">Computer Detail</string>
     <string name="main_activity_title">Miner PC Adviser</string>
     <string name="items_list_title">Computers List</string>
+    <string name="default_image">ic_launcher</string>
 
 </resources>

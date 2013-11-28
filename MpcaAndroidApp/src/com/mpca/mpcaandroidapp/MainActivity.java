@@ -2,41 +2,57 @@ package com.mpca.mpcaandroidapp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.protocol.HTTP;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.mpca.ui.RangeSeekBar;
 import com.mpca.ui.RangeSeekBar.OnRangeSeekBarChangeListener;
 import com.mpca.utils.MpcaFilter;
 import com.mpca.utils.MpcaProduct;
-import android.os.Bundle;
-import android.app.Activity;
-import android.content.Intent;
-import android.content.pm.LabeledIntent;
-import android.graphics.Typeface;
-import android.util.Log;
-import android.view.Menu;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.SeekBar;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 public class MainActivity extends Activity {
 	
 	private static SortedMap<MpcaProduct,Boolean> products;
+	@SuppressWarnings("rawtypes")
 	private List<MpcaFilter> filters;
 	
 	private LinearLayout mMainLinear;
@@ -51,14 +67,43 @@ public class MainActivity extends Activity {
 		mMainLinear = (LinearLayout) findViewById(R.id.mainLinearLayout);
 		
 		try {
-			products = readProducts();
+			readProducts();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		filters = createFilters(products);
+		
+		//filters = createFilters(products);
+		//createViewFilters();
+		
+		final Button filterButton = new Button(this);
+		filterButton.setText("Filter");
+		filterButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				try {
+					filter(filters);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				/*for(Map.Entry<MpcaProduct, Boolean> entry:products.entrySet()) {
+					System.out.println(entry.getKey().getModel()+": "+entry.getValue());
+				}*/
+			}
+		});
+		mMainLinear.addView(filterButton);
+		
+	}
+	
+	private void goToProductsList() {
+		Intent i = new Intent(MainActivity.this, ProductsListActivity.class);
+		startActivity(i);
+	}
+
+	private void createViewFilters() {
 		for (MpcaFilter<Comparable> f : filters) {
 			String name = f.getName();
-			TextView nameTv = new TextView(this);
+			TextView nameTv = new TextView(MainActivity.this);
 			nameTv.setText(name);
 			nameTv.setTextSize(18);
 			nameTv.setTypeface(Typeface.DEFAULT_BOLD);
@@ -69,7 +114,7 @@ public class MainActivity extends Activity {
 			for (final Comparable value : map.keySet()) {
 				if(value instanceof String) {
 					String v = value.toString();
-					final CheckBox cb = new CheckBox(this);
+					final CheckBox cb = new CheckBox(MainActivity.this);
 					cb.setText(v);
 					cb.setChecked(true);
 					cb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -87,8 +132,8 @@ public class MainActivity extends Activity {
 				}
 			}
 			if(isIntegerFilter) {
-				final RangeSeekBar<Integer> seekBar = new RangeSeekBar<Integer>(0,(Integer)map.lastKey() , this);
-				final TextView min = new TextView(this);
+				final RangeSeekBar<Integer> seekBar = new RangeSeekBar<Integer>(0,(Integer)map.lastKey() , MainActivity.this);
+				final TextView min = new TextView(MainActivity.this);
 				min.setText("Min: " + 0 + " GB");
 				mMainLinear.addView(min);
 				
@@ -101,7 +146,6 @@ public class MainActivity extends Activity {
 					@Override
 					public void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar,
 							Integer minValue, Integer maxValue) {
-						// TODO Auto-generated method stub
 						setMapRange(map.headMap(minValue), false);
 						setMapRange(map.subMap(minValue, maxValue), true);
 						setMapRange(map.tailMap(maxValue), false);
@@ -122,30 +166,39 @@ public class MainActivity extends Activity {
 				mMainLinear.addView(seekBar);
 			}
 		}
-		
-		final Button filterButton = new Button(this);
-		filterButton.setText("Filter");
-		filterButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				filter(products,filters);
-				Intent i = new Intent(MainActivity.this, ProductsListActivity.class);
-				startActivity(i);
-				/*for(Map.Entry<MpcaProduct, Boolean> entry:products.entrySet()) {
-					System.out.println(entry.getKey().getModel()+": "+entry.getValue());
-				}*/
-			}
-		});
-		mMainLinear.addView(filterButton);
-		
 	}
 	
 	public static SortedMap<MpcaProduct, Boolean> getProducts() {
 		return products;
 	}
 	
-	private SortedMap<MpcaProduct,Boolean> filter(SortedMap<MpcaProduct,Boolean> ps,List<MpcaFilter> fs) {
-		Set<MpcaProduct> keys = ps.keySet();
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void filter(List<MpcaFilter> fs) throws JSONException {
+		
+		JSONArray array = new JSONArray();
+		for (MpcaFilter filter : fs) {
+			Map<String, Object> jsonValues = new HashMap<String, Object>();
+			
+			String name = filter.getName();
+			jsonValues.put("name", name);
+			SortedMap<Comparable, Boolean> elements = filter.getValues();
+			JSONArray elems = new JSONArray();
+			for (Map.Entry<Comparable, Boolean> ele: elements.entrySet()) {
+				if(ele.getValue()) {
+					elems.put(ele.getKey());
+				}
+			}
+			jsonValues.put("elems", elems);
+			array.put(new JSONObject(jsonValues));
+		}
+		
+		JSONObject finalFilters = new JSONObject();
+		finalFilters.put("filters", array);
+		
+		new WSPoster("http://mpca-api.herokuapp.com/products").execute(finalFilters);
+		
+		/*Set<MpcaProduct> keys = ps.keySet();
 		
 		for(MpcaProduct p:keys) {
 			ps.put(p, false);
@@ -162,12 +215,43 @@ public class MainActivity extends Activity {
 			if(nPassedFilters == fs.size()) {
 				ps.put(p, true);
 			}
-		}
-		return ps;
+		}*/
 	}
 
-	private List<MpcaFilter> createFilters(Map<MpcaProduct,Boolean> ps) {
-		MpcaFilter<String> fBrand = new MpcaFilter<String>("Brand");
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private List<MpcaFilter> readJsonFilters(JSONObject jFilters) {
+		List<MpcaFilter> fs = new ArrayList<MpcaFilter>();
+		try {
+			JSONArray jArray = jFilters.getJSONArray("filters");
+			for (int i = 0; i < jArray.length(); i++) {
+				JSONObject jf = jArray.getJSONObject(i);
+				
+				String name = jf.getString("name");
+				String type = jf.getString("type");
+				
+				MpcaFilter filter = null;
+				if(type.equalsIgnoreCase("String")) {
+					filter = new MpcaFilter<String>(name);
+					JSONArray arr = jf.getJSONArray("elems");
+					for (int j = 0; j < arr.length(); j++) {
+						String ele = arr.getString(j);
+						filter.addValue(ele);
+					}
+				} else if(type.equalsIgnoreCase("Number")) {
+					filter = new MpcaFilter<Integer>(name);
+					JSONArray arr = jf.getJSONArray("elems");
+					for (int j = 0; j < arr.length(); j++) {
+						int ele = arr.getInt(j);
+						filter.addValue(ele);
+					}
+				}
+				fs.add(filter);
+			}
+		} catch (JSONException ex) {
+			ex.printStackTrace();
+		}
+		return fs;
+		/*MpcaFilter<String> fBrand = new MpcaFilter<String>("Brand");
 		MpcaFilter<Integer> fRAM = new MpcaFilter<Integer>("RAM");
 		MpcaFilter<Integer> fHardDrive = new MpcaFilter<Integer>("Hard Drive");
 		
@@ -181,7 +265,7 @@ public class MainActivity extends Activity {
 		fs.add(fBrand);
 		fs.add(fRAM);
 		fs.add(fHardDrive);
-		return fs;
+		return fs;*/
 	}
 
 	@Override
@@ -191,8 +275,18 @@ public class MainActivity extends Activity {
 		return true;
 	}
 	
-	public SortedMap<MpcaProduct,Boolean> readProducts() throws IOException {
-		SortedMap<MpcaProduct,Boolean> products = new TreeMap<MpcaProduct,Boolean>();
+	public void readProducts() throws IOException {
+		String productsUrl = "http://mpca-api.herokuapp.com/products";
+		String filtersUrl = "http://mpca-api.herokuapp.com/filters";
+		try {
+			getProductsWebServiceJson(productsUrl, filtersUrl);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		} catch (ExecutionException e1) {
+			e1.printStackTrace();
+		}
+		
+		/*SortedMap<MpcaProduct,Boolean> products = new TreeMap<MpcaProduct,Boolean>();
 		BufferedReader bf = new BufferedReader(new InputStreamReader(
 				getAssets().open("all_products.txt")));
 		int size = Integer.parseInt(bf.readLine());
@@ -218,8 +312,156 @@ public class MainActivity extends Activity {
 			MpcaProduct p = new MpcaProduct(i, model, brand, 
 					ram, hd, recommendation, priority, image, polaritiesIndex);
 			products.put(p,true);
+		}*/
+	}
+
+	private void getProductsWebServiceJson(String ...url) throws InterruptedException, ExecutionException {
+		new ConsumeWS().execute(url);
+	}
+	
+	private SortedMap<MpcaProduct,Boolean> readJProducts(JSONObject jProducts) {
+		SortedMap<MpcaProduct,Boolean> products = new TreeMap<MpcaProduct,Boolean>();
+		try {
+			JSONArray jArray = jProducts.getJSONArray("products");
+			for (int i = 0; i < jArray.length(); i++) {
+				JSONObject pc = jArray.getJSONObject(i);
+				
+				int id = pc.getInt("id");
+				String model = pc.getString("model");
+				String brand = pc.getString("brand");
+				
+				int ram = pc.getInt("ram");
+				int hd = pc.getInt("hd");
+				String recommendation = pc.getString("rec");
+				int priority = pc.getInt("priority");
+				
+				Map<String, Double> polaritiesIndex = new HashMap<String, Double>();
+				polaritiesIndex.put("positive", pc.getDouble("positive"));
+				polaritiesIndex.put("negative", pc.getDouble("negative"));
+				
+				String image = pc.getString("image");
+				
+				MpcaProduct p = new MpcaProduct(id, model, brand, ram, hd, recommendation, priority, image, polaritiesIndex);
+				products.put(p,true);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 		return products;
+	}
+	
+	private class ConsumeWS extends AsyncTask<String, Void, Void> {
+
+		@Override
+		protected Void doInBackground(String... params) {
+			JSONObject jProducts = getJsonFromWS(params[0]);
+			products = readJProducts(jProducts);
+			JSONObject jFilters = getJsonFromWS(params[1]);
+			filters = readJsonFilters(jFilters);
+			//createViewFilters();
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			createViewFilters();
+		}
+		
+	}
+	
+	private class WSPoster extends AsyncTask<JSONObject, Void, Void> {
+		
+		private String url;
+		
+		public WSPoster(String url) {
+			this.url = url;
+		}
+		
+		@Override
+		protected Void doInBackground(JSONObject... params) {
+			JSONObject jObject = params[0];
+			
+			String resp = null;
+			
+			DefaultHttpClient client = new DefaultHttpClient();
+		    HttpPost post = new HttpPost(url);
+
+		    //setting json object to post request.
+		    AbstractHttpEntity entity;
+			try {
+				entity = new ByteArrayEntity(jObject.toString().getBytes("UTF8"));
+				entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+			    post.setEntity(entity);
+
+			    //this is your response:
+			    HttpResponse response = client.execute(post);
+			    HttpEntity e = response.getEntity();
+			    InputStream inputStream = e.getContent();
+			    BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
+				StringBuilder sb = new StringBuilder();
+				
+				String line;
+				while((line = bf.readLine()) != null) {
+					sb.append(line + "\n");
+				}
+				System.out.println(sb.toString());
+				jObject = new JSONObject(sb.toString());
+				products = readJProducts(jObject);
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			} catch (ClientProtocolException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		    
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			goToProductsList();
+		}
+		
+	}
+	
+	private JSONObject getJsonFromWS(String url) {
+		DefaultHttpClient httpClient = new DefaultHttpClient(new BasicHttpParams());
+		HttpGet httpGet = new HttpGet(url);
+		
+		httpGet.setHeader("Content-type", "application/json");
+		
+		JSONObject jObject = null;
+		
+		try {
+			HttpResponse response = httpClient.execute(httpGet);
+			HttpEntity entity = response.getEntity();
+			//response.getEntity().
+			
+			InputStream inputStream = entity.getContent();
+			
+			
+			BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
+			StringBuilder sb = new StringBuilder();
+			
+			String line;
+			while((line = bf.readLine()) != null) {
+				sb.append(line + "\n");
+			}
+			jObject = new JSONObject(sb.toString());
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return jObject;
 	}
 
 }

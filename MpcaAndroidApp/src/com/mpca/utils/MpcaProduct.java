@@ -120,13 +120,13 @@ public class MpcaProduct implements Comparable<MpcaProduct>, Serializable {
 
 	public Comparable getProperty(String name) {
 		
-		if(name.equals("Brand")) {
+		if(name.equalsIgnoreCase("Brand")) {
 			return this.brand;
 		}
-		if(name.equals("RAM")) {
+		if(name.equalsIgnoreCase("RAM")) {
 			return this.ram;
 		}
-		if(name.equals("Hard Drive")) {
+		if(name.equalsIgnoreCase("HD")) {
 			return this.hardDisk;
 		}
 		
