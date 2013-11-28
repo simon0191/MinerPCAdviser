@@ -1,11 +1,21 @@
 package com.mpca.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.mpca.mpcaandroidapp.R;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,17 +27,20 @@ public class MySimpleArrayAdapter extends ArrayAdapter<MpcaProduct> {
 	
 	private Context context;
 	private List<MpcaProduct> values;
+	private Map<String, Bitmap> images;
 	
 	public MySimpleArrayAdapter(Context context, MpcaProduct[] values) {
 		super(context, R.layout.activity_item_fragment, values);
 		this.context = context;
 		this.values = Arrays.asList(values);
+		images = new HashMap<String, Bitmap>();
 	}
 	
 	public MySimpleArrayAdapter(Context context, List<MpcaProduct> values) {
 		super(context, R.layout.activity_item_fragment, values);
 		this.context = context;
 		this.values = values;
+		images = new HashMap<String, Bitmap>();
 	}
 	
 	@Override
@@ -48,11 +61,62 @@ public class MySimpleArrayAdapter extends ArrayAdapter<MpcaProduct> {
 		
 		itemRecommendation.setText(product.getRecommendation());
 		itemBrand.setText(product.getBrand());
+		
+		if(!images.containsKey(product.getImageName())) {
+			new ImageWSConsumer(itemIcon).execute(product.getImageName());
+		} else {
+			itemIcon.setImageBitmap(images.get(product.getImageName()));
+		}
+		
+		/*
 		int imageId = getContext().getResources().getIdentifier(product.getImageName(), 
 				"drawable", getContext().getPackageName());
-		itemIcon.setImageResource(imageId);
+				*/
+		//itemIcon.setImageResource(imageId);
 		
 		return rowView;
+	}
+	
+	private class ImageWSConsumer extends AsyncTask<String, Void, Bitmap> {
+		
+		private ImageView itemIcon;
+		private String imageName;
+		
+		public ImageWSConsumer(ImageView itemIcon) {
+			super();
+			this.itemIcon = itemIcon;
+		}
+		
+		@Override
+		protected Bitmap doInBackground(String... params) {
+			Bitmap img = null;
+			imageName = params[0];
+			try {
+				URL url = new URL(imageName);
+				HttpURLConnection connection  = (HttpURLConnection) url.openConnection();
+
+				InputStream is;
+				is = connection.getInputStream();
+				img = BitmapFactory.decodeStream(is);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return img;
+		}
+		
+		@Override
+		protected void onPostExecute(Bitmap result) {
+			super.onPostExecute(result);
+			if(result != null) {
+				itemIcon.setImageBitmap(result);
+				images.put(imageName, result);
+			} else {
+				String name = getContext().getResources().getString(R.string.default_image);
+				int imageId = getContext().getResources().getIdentifier(name, 
+						"drawable", getContext().getPackageName());
+				itemIcon.setImageResource(imageId);
+			}
+		}
 	}
 	
 }
