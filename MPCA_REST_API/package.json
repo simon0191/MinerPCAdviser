@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "dependencies": {
     "express": "3.1.x",
-    "restler": "2.0.x"
+    "restler": "2.0.x",
+    "collections": "0.2.x"
   },
   "engines": {
     "node": "0.10.x",
