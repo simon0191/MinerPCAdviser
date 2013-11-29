@@ -1,12 +1,16 @@
 package com.mpca.mpcaandroidapp;
 
+import java.io.IOException;
 import java.util.Set;
 
 import com.mpca.utils.MpcaProduct;
+import com.mpca.utils.MySimpleArrayAdapter;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -46,8 +50,8 @@ public class ItemDetailActivity extends Activity {
 		Bundle b = getIntent().getExtras();
 		final MpcaProduct p = (MpcaProduct)
 				b.getSerializable(ProductsListActivity.PRODUCT_TAG);
-		int imageId = getResources().getIdentifier(p.getImageName(), 
-				"drawable", getPackageName());
+		/*int imageId = getResources().getIdentifier(p.getImageName(), 
+				"drawable", getPackageName());*/
 		
 		setTitle(getResources().getString(R.string.item_detail_text));
 		
@@ -63,14 +67,15 @@ public class ItemDetailActivity extends Activity {
 			@Override
 			public void onClick(View view) {
 				Bundle b = new Bundle();
-				String recommendation = p.getRecommendation();
+				b.putSerializable(ProductsListActivity.PRODUCT_TAG, p);
+				/*String recommendation = p.getRecommendation();
 				if(!recommendation.equals(THINK_TWICE_RECOMMENDATION) &&
 						!recommendation.equals(NEVER_MIND_RECOMMENDATION)) {
 					b.putString(WORD_CLOUD, PERFECT_WORD_CLOUD);
 				} else {
 					b.putString(WORD_CLOUD, BAD_WORD_CLOUD);
 				}
-				
+				*/
 				Intent i = new Intent(ItemDetailActivity.this, 
 						WordCloudActivity.class);
 				i.putExtras(b);
@@ -78,10 +83,13 @@ public class ItemDetailActivity extends Activity {
 			}
 		});
 		
+		String imageUrl = p.getImageUrl();
+		new ImageWSConsumer().execute(imageUrl);
+		
 		mPolaritiesTable.setStretchAllColumns(true);
 		mPolaritiesTable.setShrinkAllColumns(true);
 		
-		mProductIcon.setImageResource(imageId);
+		//mProductIcon.setImageResource(imageId);
 		mRecommendationTv.setText("Advise:\n" + p.getRecommendation());
 		mBrandTv.setText(p.getBrand());
 		mModelTv.setText(p.getModel());
@@ -107,7 +115,7 @@ public class ItemDetailActivity extends Activity {
 		TableRow titles = new TableRow(this);
 		titles.setGravity(Gravity.CENTER);
 		TextView polarityTitle = new TextView(this);  
-		polarityTitle.setText("Polarities");  
+		polarityTitle.setText("How is it seen by people?");  
 		polarityTitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);  
 		polarityTitle.setGravity(Gravity.CENTER);  
 		polarityTitle.setTypeface(Typeface.SERIF, Typeface.BOLD);
@@ -125,11 +133,11 @@ public class ItemDetailActivity extends Activity {
 			TableRow row = new TableRow(this);
 			row.setGravity(Gravity.CENTER);
 			TextView polarityTv = new TextView(this);
-			polarityTv.setText(polarity);
+			polarityTv.setText(polarity + " comments");
 			polarityTv.setGravity(Gravity.CENTER_HORIZONTAL);
 			polarityTv.setTypeface(Typeface.SERIF, Typeface.BOLD);
 			TextView indexTv = new TextView(this);
-			indexTv.setText(p.getPolarityIndex(polarity) + "");
+			indexTv.setText(new String((p.getPolarityIndex(polarity)*100) + "").subSequence(0, 4) + "%");
 			indexTv.setGravity(Gravity.CENTER_HORIZONTAL);
 			row.addView(polarityTv);
 			row.addView(indexTv);
@@ -155,6 +163,29 @@ public class ItemDetailActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.item_detail, menu);
 		return true;
+	}
+	
+	private class ImageWSConsumer extends AsyncTask<String, Void, Bitmap> {
+
+		@Override
+		protected Bitmap doInBackground(String... params) {
+			Bitmap img = null;
+			String imageUrl = params[0];
+			try {
+				img = MySimpleArrayAdapter.getImageFromURL(imageUrl);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return img;
+		}
+
+		@Override
+		protected void onPostExecute(Bitmap result) {
+			super.onPostExecute(result);
+			if(result != null) {
+				mProductIcon.setImageBitmap(result);
+			}
+		}
 	}
 
 }

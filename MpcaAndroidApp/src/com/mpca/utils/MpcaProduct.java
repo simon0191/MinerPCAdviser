@@ -16,12 +16,13 @@ public class MpcaProduct implements Comparable<MpcaProduct>, Serializable {
 	private int hardDisk; // Valores en GBs
 	private String recommendation;
 	private Integer priority;
-	private String imageName;
+	private String imageUrl;
 	private Map<String, Double> polaritiesIndex;
+	private String wordcloudUrl;
 	
 	
 	public MpcaProduct(int id, String model, String brand, int ram, int hardDisk,
-			String recommendation, int priority, String imageName) {
+			String recommendation, int priority, String imageUrl, String wordcloudUrl) {
 		this.id = id;
 		this.model = model;
 		this.brand = brand;
@@ -29,13 +30,14 @@ public class MpcaProduct implements Comparable<MpcaProduct>, Serializable {
 		this.hardDisk = hardDisk;
 		this.recommendation = recommendation;
 		this.priority = priority;
-		this.imageName = imageName;
+		this.imageUrl = imageUrl;
 		this.polaritiesIndex = new HashMap<String, Double>();
+		this.wordcloudUrl = wordcloudUrl;
 	}
 	
 	public MpcaProduct(int id, String model, String brand, int ram,
 			int hardDisk, String recommendation, int priority,
-			String imageName, Map<String, Double> polaritiesIndex) {
+			String imageUrl, Map<String, Double> polaritiesIndex, String wordcloudUrl) {
 		this.id = id;
 		this.model = model;
 		this.brand = brand;
@@ -43,8 +45,9 @@ public class MpcaProduct implements Comparable<MpcaProduct>, Serializable {
 		this.hardDisk = hardDisk;
 		this.recommendation = recommendation;
 		this.priority = priority;
-		this.imageName = imageName;
+		this.imageUrl = imageUrl;
 		this.polaritiesIndex = polaritiesIndex;
+		this.wordcloudUrl = wordcloudUrl;
 	}
 	
 	public Set<String> getPolarities() {
@@ -103,11 +106,19 @@ public class MpcaProduct implements Comparable<MpcaProduct>, Serializable {
 	public void setPriority(int priority) {
 		this.priority = priority;
 	}
-	public String getImageName() {
-		return imageName;
+	public String getImageUrl() {
+		return imageUrl;
 	}
-	public void setImageName(String imageName) {
-		this.imageName = imageName;
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public String getWordcloudUrl() {
+		return wordcloudUrl;
+	}
+
+	public void setWordcloudUrl(String wordcloudUrl) {
+		this.wordcloudUrl = wordcloudUrl;
 	}
 
 	@Override

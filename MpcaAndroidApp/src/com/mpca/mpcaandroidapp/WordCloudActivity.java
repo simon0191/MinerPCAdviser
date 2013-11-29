@@ -1,16 +1,41 @@
 package com.mpca.mpcaandroidapp;
 
-import com.mpca.mpcaandroidapp.util.SystemUiHider;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.LinkedList;
+import java.util.List;
 
-import android.annotation.TargetApi;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
-import android.os.Build;
+import android.app.ProgressDialog;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.widget.ImageView;
+
+import com.mpca.mpcaandroidapp.util.SystemUiHider;
+import com.mpca.utils.MpcaProduct;
+import com.mpca.utils.MySimpleArrayAdapter;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -25,19 +50,7 @@ public class WordCloudActivity extends Activity {
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
 	 */
 	private static final boolean AUTO_HIDE = true;
-
-	/**
-	 * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-	 * user interaction before hiding the system UI.
-	 */
-	private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
-
-	/**
-	 * If set, will toggle the system UI visibility upon interaction. Otherwise,
-	 * will show the system UI visibility upon interaction.
-	 */
-	private static final boolean TOGGLE_ON_CLICK = true;
-
+	
 	/**
 	 * The flags to pass to {@link SystemUiHider#getInstance}.
 	 */
@@ -56,7 +69,6 @@ public class WordCloudActivity extends Activity {
 
 		setContentView(R.layout.activity_word_cloud);
 
-		final View controlsView = findViewById(R.id.fullscreen_content_controls);
 		final View contentView = findViewById(R.id.fullscreen_content);
 
 		// Set up an instance of SystemUiHider to control the system UI for
@@ -65,16 +77,16 @@ public class WordCloudActivity extends Activity {
 				HIDER_FLAGS);
 		mSystemUiHider.setup();
 		setTitle(getResources().getString(R.string.word_cloud_text));
+		
+		mWordCloudImage = (ImageView) findViewById(R.id.wordCloudImage);
 
 		// Upon interacting with UI controls, delay any scheduled hide()
 		// operations to prevent the jarring behavior of controls going away
 		// while interacting with the UI.
 		Bundle b = getIntent().getExtras();
-		String asset = b.getString(ItemDetailActivity.WORD_CLOUD);
-		int imageId = getResources().getIdentifier(asset, 
-				"drawable", getPackageName());
-		mWordCloudImage = (ImageView) findViewById(R.id.wordCloudImage);
-		mWordCloudImage.setImageResource(imageId);
+		MpcaProduct p = (MpcaProduct) b.getSerializable(ProductsListActivity.PRODUCT_TAG);
+		new ImageWSConsumer(p.getId()).execute(p.getWordcloudUrl());
+		
 	}
 
 	@Override
@@ -85,6 +97,55 @@ public class WordCloudActivity extends Activity {
 		// created, to briefly hint to the user that UI controls
 		// are available.
 		//delayedHide(100);
+	}
+	
+	private class ImageWSConsumer extends AsyncTask<String, Void, Bitmap> {
+		
+		private int productId;
+		private ProgressDialog progress;
+		
+		public ImageWSConsumer(int productId) {
+			this.productId = productId;
+		}
+		
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			progress = ProgressDialog.show(WordCloudActivity.this, "", "Loading...");
+		}
+		
+		@Override
+		protected Bitmap doInBackground(String... params) {
+			Bitmap img = null;
+			String imageUrl = params[0];
+			try {
+				if(!imageUrl.endsWith("?")) {
+					imageUrl += "?";
+				}
+				
+				List<NameValuePair> parameters = new LinkedList<NameValuePair>();
+				
+				parameters.add(new BasicNameValuePair("id", productId+""));
+				
+				String paramsStr = URLEncodedUtils.format(parameters, "UTF-8");
+				
+				imageUrl += paramsStr;
+				
+				img = MySimpleArrayAdapter.getImageFromURL(imageUrl);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return img;
+		}
+
+		@Override
+		protected void onPostExecute(Bitmap result) {
+			super.onPostExecute(result);
+			progress.dismiss();
+			if(result != null) {
+				mWordCloudImage.setImageBitmap(result);
+			}
+		}
 	}
 
 	/**
@@ -109,13 +170,5 @@ public class WordCloudActivity extends Activity {
 			mSystemUiHider.hide();
 		}
 	};
-
-	/**
-	 * Schedules a call to hide() in [delay] milliseconds, canceling any
-	 * previously scheduled calls.
-	 */
-	private void delayedHide(int delayMillis) {
-		mHideHandler.removeCallbacks(mHideRunnable);
-		mHideHandler.postDelayed(mHideRunnable, delayMillis);
-	}
+	
 }

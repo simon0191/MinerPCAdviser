@@ -30,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -75,7 +76,12 @@ public class MainActivity extends Activity {
 		//filters = createFilters(products);
 		//createViewFilters();
 		
-		final Button filterButton = new Button(this);
+		//addFilterButton();
+		
+	}
+	
+	private void addFilterButton() {
+		final Button filterButton = new Button(MainActivity.this);
 		filterButton.setText("Filter");
 		filterButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -83,16 +89,11 @@ public class MainActivity extends Activity {
 				try {
 					filter(filters);
 				} catch (JSONException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				/*for(Map.Entry<MpcaProduct, Boolean> entry:products.entrySet()) {
-					System.out.println(entry.getKey().getModel()+": "+entry.getValue());
-				}*/
 			}
 		});
 		mMainLinear.addView(filterButton);
-		
 	}
 	
 	private void goToProductsList() {
@@ -197,25 +198,6 @@ public class MainActivity extends Activity {
 		finalFilters.put("filters", array);
 		
 		new WSPoster("http://mpca-api.herokuapp.com/products").execute(finalFilters);
-		
-		/*Set<MpcaProduct> keys = ps.keySet();
-		
-		for(MpcaProduct p:keys) {
-			ps.put(p, false);
-			int nPassedFilters = 0;
-			for(MpcaFilter f:fs) {
-				Set<Map.Entry<Comparable,Boolean>> entrySet = f.getValues().entrySet();
-				for (Map.Entry<Comparable, Boolean> entry : entrySet) {
-					if(entry.getValue() && p.getProperty(f.getName()).equals(entry.getKey())) {
-						nPassedFilters++;
-						break;
-					}
-				}
-			}
-			if(nPassedFilters == fs.size()) {
-				ps.put(p, true);
-			}
-		}*/
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -251,21 +233,6 @@ public class MainActivity extends Activity {
 			ex.printStackTrace();
 		}
 		return fs;
-		/*MpcaFilter<String> fBrand = new MpcaFilter<String>("Brand");
-		MpcaFilter<Integer> fRAM = new MpcaFilter<Integer>("RAM");
-		MpcaFilter<Integer> fHardDrive = new MpcaFilter<Integer>("Hard Drive");
-		
-		for (MpcaProduct p : ps.keySet()) {
-			fBrand.addValue(p.getBrand());
-			fRAM.addValue(p.getRam());
-			fHardDrive.addValue(p.getHardDisk());
-		}
-		
-		List<MpcaFilter> fs = new ArrayList<MpcaFilter>();
-		fs.add(fBrand);
-		fs.add(fRAM);
-		fs.add(fHardDrive);
-		return fs;*/
 	}
 
 	@Override
@@ -285,34 +252,6 @@ public class MainActivity extends Activity {
 		} catch (ExecutionException e1) {
 			e1.printStackTrace();
 		}
-		
-		/*SortedMap<MpcaProduct,Boolean> products = new TreeMap<MpcaProduct,Boolean>();
-		BufferedReader bf = new BufferedReader(new InputStreamReader(
-				getAssets().open("all_products.txt")));
-		int size = Integer.parseInt(bf.readLine());
-		for (int i = 0; i < size; i++) {
-			String model = bf.readLine();
-			String brand = bf.readLine();
-			int ram = Integer.parseInt(bf.readLine());
-			int hd = Integer.parseInt(bf.readLine());
-			String recommendation = bf.readLine();
-			int priority = Integer.parseInt(bf.readLine());
-			int polaritiesQ = Integer.parseInt(bf.readLine());
-			Map<String, Double> polaritiesIndex = new HashMap<String, Double>();
-			for (int j = 0; j < polaritiesQ; j++) {
-				String []polarityLine = bf.readLine().split(" +");
-				polaritiesIndex.put(polarityLine[0],
-						Double.parseDouble(polarityLine[1]));
-			}
-			String image = bf.readLine();
-			if(image.equals("null")) {
-				image = "ic_launcher";
-			}
-			
-			MpcaProduct p = new MpcaProduct(i, model, brand, 
-					ram, hd, recommendation, priority, image, polaritiesIndex);
-			products.put(p,true);
-		}*/
 	}
 
 	private void getProductsWebServiceJson(String ...url) throws InterruptedException, ExecutionException {
@@ -339,9 +278,10 @@ public class MainActivity extends Activity {
 				polaritiesIndex.put("positive", pc.getDouble("positive"));
 				polaritiesIndex.put("negative", pc.getDouble("negative"));
 				
-				String image = pc.getString("image");
+				String imageUrl = pc.getString("image");
+				String wordcloudUrl = pc.getString("wordcloud");
 				
-				MpcaProduct p = new MpcaProduct(id, model, brand, ram, hd, recommendation, priority, image, polaritiesIndex);
+				MpcaProduct p = new MpcaProduct(id, model, brand, ram, hd, recommendation, priority, imageUrl, polaritiesIndex, wordcloudUrl);
 				products.put(p,true);
 			}
 		} catch (JSONException e) {
@@ -366,6 +306,8 @@ public class MainActivity extends Activity {
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
 			createViewFilters();
+			addFilterButton();
+			Bundle b = new Bundle();
 		}
 		
 	}
@@ -373,16 +315,21 @@ public class MainActivity extends Activity {
 	private class WSPoster extends AsyncTask<JSONObject, Void, Void> {
 		
 		private String url;
+		private ProgressDialog progress;
 		
 		public WSPoster(String url) {
 			this.url = url;
 		}
 		
 		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			progress = ProgressDialog.show(MainActivity.this, "", "Loading...");
+		}
+		
+		@Override
 		protected Void doInBackground(JSONObject... params) {
 			JSONObject jObject = params[0];
-			
-			String resp = null;
 			
 			DefaultHttpClient client = new DefaultHttpClient();
 		    HttpPost post = new HttpPost(url);
@@ -409,7 +356,6 @@ public class MainActivity extends Activity {
 				jObject = new JSONObject(sb.toString());
 				products = readJProducts(jObject);
 			} catch (JSONException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
@@ -425,6 +371,7 @@ public class MainActivity extends Activity {
 		@Override
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
+			progress.dismiss();
 			goToProductsList();
 		}
 		
