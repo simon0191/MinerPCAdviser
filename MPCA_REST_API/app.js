@@ -18,31 +18,6 @@ var getFilteredProducts = function(req, res) {
 	try {
 		console.log(req.body);
 		var actFilters = req.body.filters;
-
-
-		/*
-		private SortedMap<MpcaProduct,Boolean> filter(SortedMap<MpcaProduct,Boolean> ps,List<MpcaFilter> fs) {
-		Set<MpcaProduct> keys = ps.keySet();
-		
-		for(MpcaProduct p:keys) {
-			ps.put(p, false);
-			int nPassedFilters = 0;
-			for(MpcaFilter f:fs) {
-				Set<Map.Entry<Comparable,Boolean>> entrySet = f.getValues().entrySet();
-				for (Map.Entry<Comparable, Boolean> entry : entrySet) {
-					if(entry.getValue() && p.getProperty(f.getName()).equals(entry.getKey())) {
-						nPassedFilters++;
-						break;
-					}
-				}
-			}
-			if(nPassedFilters == fs.size()) {
-				ps.put(p, true);
-			}
-		}
-		return ps;
-	}
-		*/
 		var filteredPs = [];
 		products.forEach(function(p){
 			var add = false;
