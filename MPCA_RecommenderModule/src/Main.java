@@ -1,10 +1,14 @@
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import model.controllers.MpcaProductJpaController;
+import model.entities.MpcaComment;
 import model.entities.MpcaProduct;
 import model.utils.MpcaPolarity;
 import model.utils.Range;
@@ -30,8 +34,30 @@ import recommender.MpcaRecommender;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        JSONObject jo = getJsonFromWS("http://mpca-api.herokuapp.com/products");
-        System.out.println(jo);
+        
+        //BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        
+        File f = new File("C:\\Users\\Antonio\\Desktop\\output.txt");
+        if(!f.exists()) {
+            f.createNewFile();
+        }
+        FileWriter fw = new FileWriter(f);
+        BufferedWriter bw = new BufferedWriter(fw);
+        
+        List<MpcaProduct> ps = new MpcaProductJpaController().findMpcaProductEntities();
+        for (MpcaProduct p : ps) {
+            for (MpcaComment c : p.getMpcaCommentList()) {
+                //System.out.println(c.getCommentText());
+                bw.write(c.getCommentText()+"\n");
+            }
+            //System.out.println("Id: " + p.getProductId() + ", Model: " + p.getModel());
+            bw.write("Id: " + p.getProductId() + ", Model: " + p.getModel() + "\n");
+            //System.out.println("=========================================================\n");
+            bw.write("=========================================================\n");
+        }
+        bw.close();
+        //JSONObject jo = getJsonFromWS("http://mpca-api.herokuapp.com/products");
+        //System.out.println(jo);
         /*List<MpcaProduct> products = new MpcaProductJpaController().findMpcaProductEntities();
          MpcaRecommender recommender = MpcaRecommender.getInstance();
          System.out.println("============================================");
