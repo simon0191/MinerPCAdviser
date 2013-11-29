@@ -5,22 +5,20 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 
-import com.mpca.utils.MpcaProduct;
-import com.mpca.utils.MySimpleArrayAdapter;
-
-import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.support.v4.app.DialogFragment;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+
+import com.mpca.utils.MpcaProduct;
+import com.mpca.utils.MySimpleArrayAdapter;
 
 public class ProductsListActivity extends Activity {
 	
@@ -52,7 +50,6 @@ public class ProductsListActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int pos, long id) {
-				//Toast.makeText(ProductsListActivity.this, "Product " + pos + " was selected", Toast.LENGTH_SHORT).show();
 				Bundle b = new Bundle();
 				b.putSerializable(PRODUCT_TAG, finalProducts.get(pos));
 				Intent i = new Intent(ProductsListActivity.this, ItemDetailActivity.class);
@@ -79,7 +76,6 @@ public class ProductsListActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.products_list, menu);
 		return true;
 	}
