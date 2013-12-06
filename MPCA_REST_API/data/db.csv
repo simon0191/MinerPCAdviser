@@ -1,6 +1,6 @@
 id	model	brand	ram	hd	rec	priority	positive	negative	wordcloud	image
 integer	string	string	integer	integer	string	integer	float	float	string	string
-1	MD101LL/A	APPLE	4	500	BUY IT!	2	0.874	0.126	https://raw.github.com/simon0191/MinerPCAdviser/develop/Wordclouds/2.%20MD101LL-A.png	https://raw.github.com/simon0191/MinerPCAdviser/c006bf19e988253eabdf527592093b60471cb429/MpcaAndroidApp/res/drawable-hdpi/pc_3.png
+1	MD101LL/A	APPLE	4	500	BUY IT!	2	0.874	0.126	https://raw.github.com/simon0191/MinerPCAdviser/develop/Wordclouds/2.%20MD101LL-A.png	http://images.amazon.com/images/G/01/software/detail-page/B001AMHWP8-1.jpg
 2	S400CA-DB51T	ASUS	6	500	IT'S A GOOD OPTION	3	0.75345	0.24655	https://raw.github.com/simon0191/MinerPCAdviser/develop/Wordclouds/3.%20S400CA-DB51T.png	https://raw.github.com/simon0191/MinerPCAdviser/c006bf19e988253eabdf527592093b60471cb429/MpcaAndroidApp/res/drawable-hdpi/pc_2.png
 3	XE303C12-A01US	SAMSUNG	2	16	IT'S A GOOD OPTION	3	0.79234	0.20766	https://raw.github.com/simon0191/MinerPCAdviser/develop/Wordclouds/4.%20XE303C12-A01US.png	https://raw.github.com/simon0191/MinerPCAdviser/c006bf19e988253eabdf527592093b60471cb429/MpcaAndroidApp/res/drawable-hdpi/pc_3.png
 4	NX.M49AA.004	ACER	6	500	IT'S A GOOD OPTION	3	0.78134	0.21866	https://raw.github.com/simon0191/MinerPCAdviser/develop/Wordclouds/18.%20NX.M49AA.004.png	https://raw.github.com/simon0191/MinerPCAdviser/c006bf19e988253eabdf527592093b60471cb429/MpcaAndroidApp/res/drawable-hdpi/pc_4.png
