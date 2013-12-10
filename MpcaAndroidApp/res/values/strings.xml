@@ -18,5 +18,7 @@
     <string name="main_activity_title">Miner PC Adviser</string>
     <string name="items_list_title">Computers List</string>
     <string name="default_image">ic_launcher</string>
+    <string name="connection_fail_title">Connection Failed</string>
+    <string name="connection_fail_message">You must connect to internet</string>
 
 </resources>

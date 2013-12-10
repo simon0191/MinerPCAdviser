@@ -25,6 +25,8 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -103,6 +105,7 @@ public class WordCloudActivity extends Activity {
 		
 		private int productId;
 		private ProgressDialog progress;
+		private boolean success = true;
 		
 		public ImageWSConsumer(int productId) {
 			this.productId = productId;
@@ -133,7 +136,8 @@ public class WordCloudActivity extends Activity {
 				
 				img = MySimpleArrayAdapter.getImageFromURL(imageUrl);
 			} catch (IOException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				success = false;
 			}
 			return img;
 		}
@@ -144,6 +148,18 @@ public class WordCloudActivity extends Activity {
 			progress.dismiss();
 			if(result != null) {
 				mWordCloudImage.setImageBitmap(result);
+			}
+			if(!success) {
+				Builder alert = new Builder(WordCloudActivity.this);
+				alert.setTitle(R.string.connection_fail_title);
+				alert.setMessage(R.string.connection_fail_message)
+				.setCancelable(false)
+				.setPositiveButton(R.string.ok_text, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						WordCloudActivity.this.finish();
+					}
+				}).show();
 			}
 		}
 	}

@@ -4,19 +4,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.AbstractHttpEntity;
@@ -30,7 +27,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -43,6 +43,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mpca.ui.RangeSeekBar;
@@ -57,6 +58,8 @@ public class MainActivity extends Activity {
 	private List<MpcaFilter> filters;
 	
 	private LinearLayout mMainLinear;
+	
+	private ProgressBar mProgressBar = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +108,7 @@ public class MainActivity extends Activity {
 		for (MpcaFilter<Comparable> f : filters) {
 			String name = f.getName();
 			TextView nameTv = new TextView(MainActivity.this);
-			nameTv.setText(name);
+			nameTv.setText(name.toUpperCase());
 			nameTv.setTextSize(18);
 			nameTv.setTypeface(Typeface.DEFAULT_BOLD);
 			mMainLinear.addView(nameTv);
@@ -290,14 +293,41 @@ public class MainActivity extends Activity {
 		return products;
 	}
 	
+	private void createProgressBar() {
+		removeProgressBar();
+		mProgressBar = new ProgressBar(MainActivity.this);
+		mMainLinear.addView(mProgressBar);
+	}
+	
+	private void removeProgressBar() {
+		if(mProgressBar != null) {
+			mMainLinear.removeView(mProgressBar);
+		}
+	}
+	
 	private class ConsumeWS extends AsyncTask<String, Void, Void> {
-
+		
+		private boolean success = true;
+		
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			createProgressBar();
+		}
+		
 		@Override
 		protected Void doInBackground(String... params) {
-			JSONObject jProducts = getJsonFromWS(params[0]);
-			products = readJProducts(jProducts);
-			JSONObject jFilters = getJsonFromWS(params[1]);
-			filters = readJsonFilters(jFilters);
+			JSONObject jProducts;
+			try {
+				jProducts = getJsonFromWS(params[0]);
+				products = readJProducts(jProducts);
+				JSONObject jFilters = getJsonFromWS(params[1]);
+				filters = readJsonFilters(jFilters);
+			} catch (Exception e) {
+				//e.printStackTrace();
+				success = false;
+				System.out.println("NOT SUCCESS");
+			}
 			//createViewFilters();
 			return null;
 		}
@@ -305,17 +335,35 @@ public class MainActivity extends Activity {
 		@Override
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
-			createViewFilters();
-			addFilterButton();
-			Bundle b = new Bundle();
+			if(success) {
+				removeProgressBar();
+				createViewFilters();
+				addFilterButton();
+			} else {
+				createExitAlertDialog();
+			}
 		}
 		
+	}
+	
+	private void createExitAlertDialog() {
+		Builder alert = new Builder(MainActivity.this);
+		alert.setTitle(R.string.connection_fail_title);
+		alert.setMessage(R.string.connection_fail_message)
+		.setCancelable(false)
+		.setPositiveButton(R.string.ok_text, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				MainActivity.this.finish();
+			}
+		}).show();
 	}
 	
 	private class WSPoster extends AsyncTask<JSONObject, Void, Void> {
 		
 		private String url;
 		private ProgressDialog progress;
+		private boolean success = true;
 		
 		public WSPoster(String url) {
 			this.url = url;
@@ -355,14 +403,9 @@ public class MainActivity extends Activity {
 				System.out.println(sb.toString());
 				jObject = new JSONObject(sb.toString());
 				products = readJProducts(jObject);
-			} catch (JSONException e1) {
-				e1.printStackTrace();
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} catch (ClientProtocolException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
+			} catch (Exception e1) {
+				//e1.printStackTrace();
+				success = false;
 			}
 		    
 			return null;
@@ -372,12 +415,25 @@ public class MainActivity extends Activity {
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
 			progress.dismiss();
-			goToProductsList();
+			if(success) {
+				goToProductsList();
+			} else {
+				Builder alert = new Builder(MainActivity.this);
+				alert.setTitle(R.string.connection_fail_title);
+				alert.setMessage(R.string.connection_fail_message)
+				.setCancelable(false)
+				.setPositiveButton(R.string.ok_text, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				}).show();
+			}
 		}
 		
 	}
 	
-	private JSONObject getJsonFromWS(String url) {
+	private JSONObject getJsonFromWS(String url) throws IOException, JSONException {
 		DefaultHttpClient httpClient = new DefaultHttpClient(new BasicHttpParams());
 		HttpGet httpGet = new HttpGet(url);
 		
@@ -385,29 +441,22 @@ public class MainActivity extends Activity {
 		
 		JSONObject jObject = null;
 		
-		try {
-			HttpResponse response = httpClient.execute(httpGet);
-			HttpEntity entity = response.getEntity();
-			//response.getEntity().
-			
-			InputStream inputStream = entity.getContent();
-			
-			
-			BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
-			StringBuilder sb = new StringBuilder();
-			
-			String line;
-			while((line = bf.readLine()) != null) {
-				sb.append(line + "\n");
-			}
-			jObject = new JSONObject(sb.toString());
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
+		HttpResponse response = httpClient.execute(httpGet);
+		HttpEntity entity = response.getEntity();
+		//response.getEntity().
+		
+		InputStream inputStream = entity.getContent();
+		
+		
+		BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
+		StringBuilder sb = new StringBuilder();
+		
+		String line;
+		while((line = bf.readLine()) != null) {
+			sb.append(line + "\n");
 		}
+		jObject = new JSONObject(sb.toString());
+		
 		return jObject;
 	}
 
