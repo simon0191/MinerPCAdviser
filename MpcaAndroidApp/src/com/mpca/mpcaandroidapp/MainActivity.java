@@ -1,35 +1,14 @@
 package com.mpca.mpcaandroidapp;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.protocol.HTTP;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -49,17 +28,18 @@ import android.widget.TextView;
 import com.mpca.ui.RangeSeekBar;
 import com.mpca.ui.RangeSeekBar.OnRangeSeekBarChangeListener;
 import com.mpca.utils.MpcaFilter;
-import com.mpca.utils.MpcaProduct;
+import com.mpca.utils.MpcaIConstants;
+import com.mpca.utils.MpcaJObjectsReader;
 
 public class MainActivity extends Activity {
 	
-	private static SortedMap<MpcaProduct,Boolean> products;
+	//private static SortedMap<MpcaProduct,Boolean> products;
 	@SuppressWarnings("rawtypes")
 	private List<MpcaFilter> filters;
 	
 	private LinearLayout mMainLinear;
 	
-	private ProgressBar mProgressBar = null;
+	private ProgressBar mProgressBar = null;	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,11 +56,6 @@ public class MainActivity extends Activity {
 			e.printStackTrace();
 		}
 		
-		//filters = createFilters(products);
-		//createViewFilters();
-		
-		//addFilterButton();
-		
 	}
 	
 	private void addFilterButton() {
@@ -89,23 +64,31 @@ public class MainActivity extends Activity {
 		filterButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				try {
+				/*try {
 					filter(filters);
 				} catch (JSONException e) {
 					e.printStackTrace();
-				}
+				}*/
+				
+				Bundle b = new Bundle();
+				
+				b.putSerializable(MpcaIConstants.FILTERS_TAG, filters.toArray());
+				
+				Intent i = new Intent(MainActivity.this, ProductsListActivity.class);
+				i.putExtras(b);
+				startActivity(i);
 			}
 		});
 		mMainLinear.addView(filterButton);
 	}
 	
-	private void goToProductsList() {
+	/*private void goToProductsList() {
 		Intent i = new Intent(MainActivity.this, ProductsListActivity.class);
 		startActivity(i);
-	}
+	}*/
 
 	private void createViewFilters() {
-		for (MpcaFilter<Comparable> f : filters) {
+		for (MpcaFilter f : filters) {
 			String name = f.getName();
 			TextView nameTv = new TextView(MainActivity.this);
 			nameTv.setText(name.toUpperCase());
@@ -172,12 +155,12 @@ public class MainActivity extends Activity {
 		}
 	}
 	
-	public static SortedMap<MpcaProduct, Boolean> getProducts() {
+	/*public static SortedMap<MpcaProduct, Boolean> getProducts() {
 		return products;
-	}
+	}*/
 	
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	/*@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void filter(List<MpcaFilter> fs) throws JSONException {
 		
 		JSONArray array = new JSONArray();
@@ -201,9 +184,9 @@ public class MainActivity extends Activity {
 		finalFilters.put("filters", array);
 		
 		new WSPoster("http://mpca-api.herokuapp.com/products").execute(finalFilters);
-	}
+	}*/
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	/*@SuppressWarnings({ "rawtypes", "unchecked" })
 	private List<MpcaFilter> readJsonFilters(JSONObject jFilters) {
 		List<MpcaFilter> fs = new ArrayList<MpcaFilter>();
 		try {
@@ -236,7 +219,7 @@ public class MainActivity extends Activity {
 			ex.printStackTrace();
 		}
 		return fs;
-	}
+	}*/
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -246,10 +229,8 @@ public class MainActivity extends Activity {
 	}
 	
 	public void readProducts() throws IOException {
-		String productsUrl = "http://mpca-api.herokuapp.com/products";
-		String filtersUrl = "http://mpca-api.herokuapp.com/filters";
 		try {
-			getProductsWebServiceJson(productsUrl, filtersUrl);
+			getProductsWebServiceJson(MpcaIConstants.PRODUCTS_URL, MpcaIConstants.FILTERS_URL);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		} catch (ExecutionException e1) {
@@ -261,7 +242,7 @@ public class MainActivity extends Activity {
 		new ConsumeWS().execute(url);
 	}
 	
-	private SortedMap<MpcaProduct,Boolean> readJProducts(JSONObject jProducts) {
+	/*private SortedMap<MpcaProduct,Boolean> readJProducts(JSONObject jProducts) {
 		SortedMap<MpcaProduct,Boolean> products = new TreeMap<MpcaProduct,Boolean>();
 		try {
 			JSONArray jArray = jProducts.getJSONArray("products");
@@ -291,7 +272,7 @@ public class MainActivity extends Activity {
 			e.printStackTrace();
 		}
 		return products;
-	}
+	}*/
 	
 	private void createProgressBar() {
 		removeProgressBar();
@@ -317,12 +298,9 @@ public class MainActivity extends Activity {
 		
 		@Override
 		protected Void doInBackground(String... params) {
-			JSONObject jProducts;
 			try {
-				jProducts = getJsonFromWS(params[0]);
-				products = readJProducts(jProducts);
-				JSONObject jFilters = getJsonFromWS(params[1]);
-				filters = readJsonFilters(jFilters);
+				JSONObject jFilters = MpcaJObjectsReader.getJsonFromWS(params[1]);
+				filters = MpcaJObjectsReader.readJsonFilters(jFilters);
 			} catch (Exception e) {
 				//e.printStackTrace();
 				success = false;
@@ -359,7 +337,7 @@ public class MainActivity extends Activity {
 		}).show();
 	}
 	
-	private class WSPoster extends AsyncTask<JSONObject, Void, Void> {
+	/*private class WSPoster extends AsyncTask<JSONObject, Void, Void> {
 		
 		private String url;
 		private ProgressDialog progress;
@@ -416,7 +394,7 @@ public class MainActivity extends Activity {
 			super.onPostExecute(result);
 			progress.dismiss();
 			if(success) {
-				goToProductsList();
+				//goToProductsList();
 			} else {
 				Builder alert = new Builder(MainActivity.this);
 				alert.setTitle(R.string.connection_fail_title);
@@ -431,9 +409,9 @@ public class MainActivity extends Activity {
 			}
 		}
 		
-	}
+	}*/
 	
-	private JSONObject getJsonFromWS(String url) throws IOException, JSONException {
+	/*private JSONObject getJsonFromWS(String url) throws IOException, JSONException {
 		DefaultHttpClient httpClient = new DefaultHttpClient(new BasicHttpParams());
 		HttpGet httpGet = new HttpGet(url);
 		
@@ -458,6 +436,6 @@ public class MainActivity extends Activity {
 		jObject = new JSONObject(sb.toString());
 		
 		return jObject;
-	}
+	}*/
 
 }

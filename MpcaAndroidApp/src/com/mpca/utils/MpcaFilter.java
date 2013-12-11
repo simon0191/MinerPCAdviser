@@ -1,14 +1,14 @@
 package com.mpca.utils;
 
+import java.io.Serializable;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-public class MpcaFilter<T extends Comparable> {
+public class MpcaFilter<T extends Comparable> implements Serializable {
 	private String name;
 	private SortedMap<T,Boolean> values;
 	
 	public MpcaFilter(String name) {
-		super();
 		this.name = name;
 		values = new TreeMap<T,Boolean>();
 	}
